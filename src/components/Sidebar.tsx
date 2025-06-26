@@ -76,7 +76,7 @@ export const Sidebar = () => {
       <div className="flex items-center justify-between p-4 border-b border-gray-800">
         <div className="flex items-center gap-2">
           <img src="/lovable-uploads/407e5ec8-9b67-42ee-acf0-b238e194aa64.png" alt="Logo" className="w-8 h-8" />
-          <span className="text-white font-semibold">OpenArt</span>
+          <span className="text-white font-semibold">OneTribe</span>
         </div>
         <button
           onClick={() => setIsCollapsed(true)}
