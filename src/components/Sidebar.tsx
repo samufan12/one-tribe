@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { ChevronRight, HomeIcon, Users, Video, Image, Edit, Palette, Grid, LayoutGrid, Rss, Code, ChevronDown, BookOpen, HelpCircle, Sparkles, Palette as ThemeIcon, Newspaper, Clock, Bookmark, Heart, Album, Boxes } from "lucide-react";
 
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'profile';
+
 type SidebarItemProps = {
   icon: React.ReactNode;
   label: string;
@@ -18,6 +20,11 @@ type DropdownItemProps = {
   isActive?: boolean;
   onClick?: () => void;
 };
+
+interface SidebarProps {
+  activeView: ContentView;
+  onNavigate: (view: ContentView) => void;
+}
 
 const SidebarItem = ({ icon, label, isActive = false, isNew = false, hasDropdown = false, onClick }: SidebarItemProps) => (
   <button 
@@ -48,12 +55,33 @@ const DropdownItem = ({ icon, label, isExternal = false, isActive = false, onCli
   </button>
 );
 
-export const Sidebar = () => {
+export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [myStuffOpen, setMyStuffOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState("Home");
   const [activeDropdownItem, setActiveDropdownItem] = useState("");
+
+  const getViewFromLabel = (label: string): ContentView | null => {
+    switch (label) {
+      case "Home":
+        return "home";
+      case "Marketplace":
+        return "marketplace";
+      case "Community Feed":
+        return "community";
+      case "Messages":
+        return "messages";
+      default:
+        return null;
+    }
+  };
+
+  const handleNavigation = (label: string) => {
+    const view = getViewFromLabel(label);
+    if (view) {
+      onNavigate(view);
+    }
+  };
 
   if (isCollapsed) {
     return (
@@ -90,63 +118,63 @@ export const Sidebar = () => {
         <SidebarItem 
           icon={<HomeIcon size={20} />} 
           label="Home" 
-          isActive={activeItem === "Home"}
-          onClick={() => setActiveItem("Home")}
+          isActive={activeView === "home"}
+          onClick={() => handleNavigation("Home")}
         />
         <SidebarItem 
           icon={<Grid size={20} />} 
           label="Marketplace" 
-          isActive={activeItem === "Marketplace"}
-          onClick={() => setActiveItem("Marketplace")}
+          isActive={activeView === "marketplace"}
+          onClick={() => handleNavigation("Marketplace")}
         />
         <SidebarItem 
           icon={<Rss size={20} />} 
           label="Community Feed" 
-          isActive={activeItem === "Community Feed"}
-          onClick={() => setActiveItem("Community Feed")}
+          isActive={activeView === "community"}
+          onClick={() => handleNavigation("Community Feed")}
         />
         <SidebarItem 
           icon={<Users size={20} />} 
           label="Messages" 
           isNew 
-          isActive={activeItem === "Messages"}
-          onClick={() => setActiveItem("Messages")}
+          isActive={activeView === "messages"}
+          onClick={() => handleNavigation("Messages")}
         />
         <SidebarItem 
           icon={<Video size={20} />} 
           label="Sell Item" 
-          isActive={activeItem === "Sell Item"}
-          onClick={() => setActiveItem("Sell Item")}
+          isActive={false}
+          onClick={() => console.log("Sell Item clicked")}
         />
         <SidebarItem 
           icon={<Image size={20} />} 
           label="Categories" 
-          isActive={activeItem === "Categories"}
-          onClick={() => setActiveItem("Categories")}
+          isActive={false}
+          onClick={() => console.log("Categories clicked")}
         />
         <SidebarItem 
           icon={<Edit size={20} />} 
           label="Watchlist" 
-          isActive={activeItem === "Watchlist"}
-          onClick={() => setActiveItem("Watchlist")}
+          isActive={false}
+          onClick={() => console.log("Watchlist clicked")}
         />
         <SidebarItem 
           icon={<Palette size={20} />} 
           label="Style Guide" 
-          isActive={activeItem === "Style Guide"}
-          onClick={() => setActiveItem("Style Guide")}
+          isActive={false}
+          onClick={() => console.log("Style Guide clicked")}
         />
         <SidebarItem 
           icon={<LayoutGrid size={20} />} 
           label="Size Charts" 
-          isActive={activeItem === "Size Charts"}
-          onClick={() => setActiveItem("Size Charts")}
+          isActive={false}
+          onClick={() => console.log("Size Charts clicked")}
         />
         <SidebarItem 
           icon={<Code size={20} />} 
           label="Seller Tools" 
-          isActive={activeItem === "Seller Tools"}
-          onClick={() => setActiveItem("Seller Tools")}
+          isActive={false}
+          onClick={() => console.log("Seller Tools clicked")}
         />
       </div>
 
@@ -155,12 +183,9 @@ export const Sidebar = () => {
           <SidebarItem 
             icon={myStuffOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             label="My stuff" 
-            isActive={activeItem === "My stuff"}
+            isActive={false}
             hasDropdown
-            onClick={() => {
-              setMyStuffOpen(!myStuffOpen);
-              setActiveItem("My stuff");
-            }}
+            onClick={() => setMyStuffOpen(!myStuffOpen)}
           />
 
           {myStuffOpen && (
@@ -204,11 +229,8 @@ export const Sidebar = () => {
             icon={resourcesOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             label="Resources" 
             hasDropdown
-            isActive={activeItem === "Resources"}
-            onClick={() => {
-              setResourcesOpen(!resourcesOpen);
-              setActiveItem("Resources");
-            }}
+            isActive={false}
+            onClick={() => setResourcesOpen(!resourcesOpen)}
           />
           
           {resourcesOpen && (

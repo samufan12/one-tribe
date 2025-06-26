@@ -9,14 +9,13 @@ type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'profile'
 const Index = () => {
   const [activeView, setActiveView] = useState<ContentView>('home');
 
-  // Listen to sidebar navigation (you'll need to pass this down or use context)
   const handleSidebarNavigation = (view: ContentView) => {
     setActiveView(view);
   };
 
   return (
     <div className="min-h-screen bg-background flex">
-      <Sidebar />
+      <Sidebar activeView={activeView} onNavigate={handleSidebarNavigation} />
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 p-6">
