@@ -1,59 +1,17 @@
 
 import { useState } from "react";
-import { ChevronRight, HomeIcon, Users, Video, Image, Edit, Palette, Grid, LayoutGrid, Rss, Code, ChevronDown, BookOpen, HelpCircle, Sparkles, Palette as ThemeIcon, Newspaper, Clock, Bookmark, Heart, Album, Boxes } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { SidebarItem } from "./sidebar/SidebarItem";
+import { DropdownItem } from "./sidebar/DropdownItem";
+import { SidebarDropdownSection } from "./sidebar/SidebarDropdownSection";
+import { mainNavItems, myStuffItems, resourcesItems } from "./sidebar/sidebarData";
 
 type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'profile';
-
-type SidebarItemProps = {
-  icon: React.ReactNode;
-  label: string;
-  isActive?: boolean;
-  isNew?: boolean;
-  hasDropdown?: boolean;
-  onClick?: () => void;
-};
-
-type DropdownItemProps = {
-  icon: React.ReactNode;
-  label: string;
-  isExternal?: boolean;
-  isActive?: boolean;
-  onClick?: () => void;
-};
 
 interface SidebarProps {
   activeView: ContentView;
   onNavigate: (view: ContentView) => void;
 }
-
-const SidebarItem = ({ icon, label, isActive = false, isNew = false, hasDropdown = false, onClick }: SidebarItemProps) => (
-  <button 
-    className={`w-full flex items-center gap-3 p-3 rounded-md transition-colors ${isActive ? 'bg-accent' : 'hover:bg-accent'}`}
-    onClick={onClick}
-  >
-    <div className={isActive ? "text-white" : "text-gray-300"}>{icon}</div>
-    <span className="text-white text-sm font-medium flex-1 text-left">{label}</span>
-    {isNew && (
-      <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">
-        NEW
-      </span>
-    )}
-    {hasDropdown && (
-      isActive ? <ChevronDown size={16} className="text-gray-300" /> : <ChevronRight size={16} className="text-gray-300" />
-    )}
-  </button>
-);
-
-const DropdownItem = ({ icon, label, isExternal = false, isActive = false, onClick }: DropdownItemProps) => (
-  <button 
-    className={`w-full flex items-center gap-3 p-3 pl-12 hover:bg-accent rounded-md transition-colors ${isActive ? 'bg-accent' : ''}`}
-    onClick={onClick}
-  >
-    <div className={isActive ? "text-white" : "text-gray-300"}>{icon}</div>
-    <span className={`text-sm ${isActive ? "text-white" : "text-gray-300"}`}>{label}</span>
-    {isExternal && <span className="ml-2 px-1 bg-muted rounded-sm text-[10px] text-gray-300">↗</span>}
-  </button>
-);
 
 export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -81,6 +39,10 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
     if (view) {
       onNavigate(view);
     }
+  };
+
+  const handleNonNavigationClick = (label: string) => {
+    console.log(`${label} clicked`);
   };
 
   if (isCollapsed) {
@@ -115,167 +77,58 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
       </div>
 
       <div className="py-2 px-3 flex flex-col gap-1">
-        <SidebarItem 
-          icon={<HomeIcon size={20} />} 
-          label="Home" 
-          isActive={activeView === "home"}
-          onClick={() => handleNavigation("Home")}
-        />
-        <SidebarItem 
-          icon={<Grid size={20} />} 
-          label="Marketplace" 
-          isActive={activeView === "marketplace"}
-          onClick={() => handleNavigation("Marketplace")}
-        />
-        <SidebarItem 
-          icon={<Rss size={20} />} 
-          label="Community Feed" 
-          isActive={activeView === "community"}
-          onClick={() => handleNavigation("Community Feed")}
-        />
-        <SidebarItem 
-          icon={<Users size={20} />} 
-          label="Messages" 
-          isNew 
-          isActive={activeView === "messages"}
-          onClick={() => handleNavigation("Messages")}
-        />
-        <SidebarItem 
-          icon={<Video size={20} />} 
-          label="Sell Item" 
-          isActive={false}
-          onClick={() => console.log("Sell Item clicked")}
-        />
-        <SidebarItem 
-          icon={<Image size={20} />} 
-          label="Categories" 
-          isActive={false}
-          onClick={() => console.log("Categories clicked")}
-        />
-        <SidebarItem 
-          icon={<Edit size={20} />} 
-          label="Watchlist" 
-          isActive={false}
-          onClick={() => console.log("Watchlist clicked")}
-        />
-        <SidebarItem 
-          icon={<Palette size={20} />} 
-          label="Style Guide" 
-          isActive={false}
-          onClick={() => console.log("Style Guide clicked")}
-        />
-        <SidebarItem 
-          icon={<LayoutGrid size={20} />} 
-          label="Size Charts" 
-          isActive={false}
-          onClick={() => console.log("Size Charts clicked")}
-        />
-        <SidebarItem 
-          icon={<Code size={20} />} 
-          label="Seller Tools" 
-          isActive={false}
-          onClick={() => console.log("Seller Tools clicked")}
-        />
+        {mainNavItems.map((item) => (
+          <SidebarItem
+            key={item.key}
+            icon={item.icon}
+            label={item.label}
+            isActive={activeView === item.key}
+            isNew={item.isNew}
+            onClick={() => {
+              const view = getViewFromLabel(item.label);
+              if (view) {
+                handleNavigation(item.label);
+              } else {
+                handleNonNavigationClick(item.label);
+              }
+            }}
+          />
+        ))}
       </div>
 
       <div className="flex-grow overflow-auto">
-        <div className="py-2 px-3">
-          <SidebarItem 
-            icon={myStuffOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            label="My stuff" 
-            isActive={false}
-            hasDropdown
-            onClick={() => setMyStuffOpen(!myStuffOpen)}
-          />
+        <SidebarDropdownSection
+          title="My stuff"
+          isOpen={myStuffOpen}
+          onToggle={() => setMyStuffOpen(!myStuffOpen)}
+        >
+          {myStuffItems.map((item) => (
+            <DropdownItem
+              key={item.label}
+              icon={item.icon}
+              label={item.label}
+              isActive={activeDropdownItem === item.label}
+              onClick={() => setActiveDropdownItem(item.label)}
+            />
+          ))}
+        </SidebarDropdownSection>
 
-          {myStuffOpen && (
-            <div className="mt-1 space-y-1 animate-fade-in">
-              <DropdownItem 
-                icon={<Clock size={16} />} 
-                label="Creation History" 
-                isActive={activeDropdownItem === "Creation History"}
-                onClick={() => setActiveDropdownItem("Creation History")}
-              />
-              <DropdownItem 
-                icon={<Bookmark size={16} />} 
-                label="Bookmarks" 
-                isActive={activeDropdownItem === "Bookmarks"}
-                onClick={() => setActiveDropdownItem("Bookmarks")}
-              />
-              <DropdownItem 
-                icon={<Heart size={16} />} 
-                label="Liked" 
-                isActive={activeDropdownItem === "Liked"}
-                onClick={() => setActiveDropdownItem("Liked")}
-              />
-              <DropdownItem 
-                icon={<Album size={16} />} 
-                label="Saved Albums" 
-                isActive={activeDropdownItem === "Saved Albums"}
-                onClick={() => setActiveDropdownItem("Saved Albums")}
-              />
-              <DropdownItem 
-                icon={<Boxes size={16} />} 
-                label="Trained Models" 
-                isActive={activeDropdownItem === "Trained Models"}
-                onClick={() => setActiveDropdownItem("Trained Models")}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="py-2 px-3">
-          <SidebarItem 
-            icon={resourcesOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            label="Resources" 
-            hasDropdown
-            isActive={false}
-            onClick={() => setResourcesOpen(!resourcesOpen)}
-          />
-          
-          {resourcesOpen && (
-            <div className="mt-1 space-y-1 animate-fade-in">
-              <DropdownItem 
-                icon={<BookOpen size={16} />} 
-                label="Tutorials" 
-                isActive={activeDropdownItem === "Tutorials"}
-                onClick={() => setActiveDropdownItem("Tutorials")}
-              />
-              <DropdownItem 
-                icon={<HelpCircle size={16} />} 
-                label="Wiki" 
-                isExternal 
-                isActive={activeDropdownItem === "Wiki"}
-                onClick={() => setActiveDropdownItem("Wiki")}
-              />
-              <DropdownItem 
-                icon={<HelpCircle size={16} />} 
-                label="Help Center" 
-                isActive={activeDropdownItem === "Help Center"}
-                onClick={() => setActiveDropdownItem("Help Center")}
-              />
-              <DropdownItem 
-                icon={<Sparkles size={16} />} 
-                label="What's New" 
-                isActive={activeDropdownItem === "What's New"}
-                onClick={() => setActiveDropdownItem("What's New")}
-              />
-              <DropdownItem 
-                icon={<ThemeIcon size={16} />} 
-                label="Theme Gallery" 
-                isActive={activeDropdownItem === "Theme Gallery"}
-                onClick={() => setActiveDropdownItem("Theme Gallery")}
-              />
-              <DropdownItem 
-                icon={<Newspaper size={16} />} 
-                label="Blog" 
-                isExternal 
-                isActive={activeDropdownItem === "Blog"}
-                onClick={() => setActiveDropdownItem("Blog")}
-              />
-            </div>
-          )}
-        </div>
+        <SidebarDropdownSection
+          title="Resources"
+          isOpen={resourcesOpen}
+          onToggle={() => setResourcesOpen(!resourcesOpen)}
+        >
+          {resourcesItems.map((item) => (
+            <DropdownItem
+              key={item.label}
+              icon={item.icon}
+              label={item.label}
+              isExternal={item.isExternal}
+              isActive={activeDropdownItem === item.label}
+              onClick={() => setActiveDropdownItem(item.label)}
+            />
+          ))}
+        </SidebarDropdownSection>
       </div>
     </div>
   );
