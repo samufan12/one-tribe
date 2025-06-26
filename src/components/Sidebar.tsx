@@ -94,47 +94,10 @@ export const Sidebar = () => {
           onClick={() => setActiveItem("Home")}
         />
         <SidebarItem 
-          icon={<Users size={20} />} 
-          label="Characters" 
-          isNew 
-          isActive={activeItem === "Characters"}
-          onClick={() => setActiveItem("Characters")}
-        />
-        <SidebarItem 
-          icon={<Video size={20} />} 
-          label="Videos" 
-          isActive={activeItem === "Videos"}
-          onClick={() => setActiveItem("Videos")}
-        />
-        <SidebarItem 
-          icon={<Image size={20} />} 
-          label="Create Image" 
-          isActive={activeItem === "Create Image"}
-          onClick={() => setActiveItem("Create Image")}
-        />
-        <SidebarItem 
-          icon={<Edit size={20} />} 
-          label="Edit Image" 
-          isActive={activeItem === "Edit Image"}
-          onClick={() => setActiveItem("Edit Image")}
-        />
-        <SidebarItem 
-          icon={<Palette size={20} />} 
-          label="Style Palettes" 
-          isActive={activeItem === "Style Palettes"}
-          onClick={() => setActiveItem("Style Palettes")}
-        />
-        <SidebarItem 
           icon={<Grid size={20} />} 
-          label="Models" 
-          isActive={activeItem === "Models"}
-          onClick={() => setActiveItem("Models")}
-        />
-        <SidebarItem 
-          icon={<LayoutGrid size={20} />} 
-          label="Apps" 
-          isActive={activeItem === "Apps"}
-          onClick={() => setActiveItem("Apps")}
+          label="Marketplace" 
+          isActive={activeItem === "Marketplace"}
+          onClick={() => setActiveItem("Marketplace")}
         />
         <SidebarItem 
           icon={<Rss size={20} />} 
@@ -143,10 +106,47 @@ export const Sidebar = () => {
           onClick={() => setActiveItem("Community Feed")}
         />
         <SidebarItem 
+          icon={<Users size={20} />} 
+          label="Messages" 
+          isNew 
+          isActive={activeItem === "Messages"}
+          onClick={() => setActiveItem("Messages")}
+        />
+        <SidebarItem 
+          icon={<Video size={20} />} 
+          label="Sell Item" 
+          isActive={activeItem === "Sell Item"}
+          onClick={() => setActiveItem("Sell Item")}
+        />
+        <SidebarItem 
+          icon={<Image size={20} />} 
+          label="Categories" 
+          isActive={activeItem === "Categories"}
+          onClick={() => setActiveItem("Categories")}
+        />
+        <SidebarItem 
+          icon={<Edit size={20} />} 
+          label="Watchlist" 
+          isActive={activeItem === "Watchlist"}
+          onClick={() => setActiveItem("Watchlist")}
+        />
+        <SidebarItem 
+          icon={<Palette size={20} />} 
+          label="Style Guide" 
+          isActive={activeItem === "Style Guide"}
+          onClick={() => setActiveItem("Style Guide")}
+        />
+        <SidebarItem 
+          icon={<LayoutGrid size={20} />} 
+          label="Size Charts" 
+          isActive={activeItem === "Size Charts"}
+          onClick={() => setActiveItem("Size Charts")}
+        />
+        <SidebarItem 
           icon={<Code size={20} />} 
-          label="ComfyUI Workflows" 
-          isActive={activeItem === "ComfyUI Workflows"}
-          onClick={() => setActiveItem("ComfyUI Workflows")}
+          label="Seller Tools" 
+          isActive={activeItem === "Seller Tools"}
+          onClick={() => setActiveItem("Seller Tools")}
         />
       </div>
 
