@@ -4,7 +4,7 @@ import { CommunityFeed } from "./CommunityFeed";
 import { ChatInterface } from "./ChatInterface";
 import { Marketplace } from "./Marketplace";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'chat' | 'profile';
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'profile';
 
 interface MainContentProps {
   activeView: ContentView;
@@ -16,7 +16,7 @@ export const MainContent = ({ activeView }: MainContentProps) => {
       return <Marketplace />;
     case 'community':
       return <CommunityFeed />;
-    case 'chat':
+    case 'messages':
       return (
         <div className="h-[calc(100vh-4rem)]">
           <ChatInterface />
