@@ -1,8 +1,25 @@
+
 import { useState } from "react";
-import { HelpCircle, MessageSquare, BookOpen, GraduationCap, Plus } from "lucide-react";
+import { HelpCircle, MessageSquare, BookOpen, GraduationCap, Plus, ShoppingCart, Search, User } from "lucide-react";
+
 const Header = () => {
   const [helpMenuOpen, setHelpMenuOpen] = useState(false);
-  return <div className="h-16 flex items-center justify-end px-6 border-b border-gray-800">
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  return (
+    <div className="h-16 flex items-center justify-between px-6 border-b border-gray-800">
+      {/* Search Bar */}
+      <div className="flex-1 max-w-md">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search for cultural goods..."
+            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+      </div>
+
       <div className="flex items-center gap-4 relative">
         {/* YouTube icon */}
         <a href="#" className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800">
@@ -14,48 +31,58 @@ const Header = () => {
           <img src="/lovable-uploads/92333427-5a32-4cf8-b110-afc5b57c9f27.png" alt="Discord" className="w-6 h-6" />
         </a>
         
+        {/* Shopping Cart */}
+        <button className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative">
+          <ShoppingCart size={20} />
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            3
+          </span>
+        </button>
+        
         {/* Help icon with dropdown */}
         <div className="relative">
-          <button className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800" onClick={() => setHelpMenuOpen(!helpMenuOpen)}>
+          <button 
+            className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800" 
+            onClick={() => setHelpMenuOpen(!helpMenuOpen)}
+          >
             <HelpCircle size={20} />
           </button>
           
-          {helpMenuOpen && <div className="absolute right-0 mt-2 w-48 bg-[#1e1e1e] border border-gray-800 rounded-md shadow-lg py-1 z-50">
+          {helpMenuOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-[#1e1e1e] border border-gray-800 rounded-md shadow-lg py-1 z-50">
               <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800">
                 <MessageSquare size={16} />
-                <span>Feedback</span>
+                <span>Customer Support</span>
               </a>
               <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800">
                 <HelpCircle size={16} />
-                <span>Help Center</span>
+                <span>FAQ</span>
               </a>
               <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800">
                 <BookOpen size={16} />
-                <span>Tutorials</span>
+                <span>Size Guide</span>
               </a>
               <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800">
                 <GraduationCap size={16} />
-                <span>Wiki</span>
+                <span>Cultural Guide</span>
               </a>
-            </div>}
+            </div>
+          )}
         </div>
         
-        {/* Upgrade button */}
-        <button className="px-4 py-1.5 text-gray-300 text-sm border border-gray-700 rounded-md hover:bg-gray-800 transition-colors">
-          Upgrade
-        </button>
-        
-        {/* Create button */}
-        <button className="transition-colors text-white flex items-center gap-1 rounded-md px-4 py-1.5 text-sm font-medium bg-blue-700 hover:bg-blue-600">
-          <Plus size={16} />
-          Create
-        </button>
-        
-        {/* Sign In button */}
-        <button className="px-4 py-1.5 text-gray-300 text-sm border border-gray-700 rounded-md hover:bg-gray-800 transition-colors">
+        {/* Account/Sign In button */}
+        <button className="flex items-center gap-2 px-4 py-1.5 text-gray-300 text-sm border border-gray-700 rounded-md hover:bg-gray-800 transition-colors">
+          <User size={16} />
           Sign In
         </button>
+        
+        {/* Wishlist/Favorites */}
+        <button className="px-4 py-1.5 text-gray-300 text-sm border border-gray-700 rounded-md hover:bg-gray-800 transition-colors">
+          Wishlist
+        </button>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Header;
