@@ -6,6 +6,7 @@ export const mainNavItems = [
   { icon: <Grid size={20} />, label: "Marketplace", key: "marketplace" },
   { icon: <Rss size={20} />, label: "Community Feed", key: "community" },
   { icon: <Users size={20} />, label: "Messages", key: "messages", isNew: true },
+  { icon: <Sparkles size={20} />, label: "AI Assistant", key: "assistant", isNew: true },
   { icon: <Video size={20} />, label: "Sell Item", key: "sell" },
   { icon: <Image size={20} />, label: "Categories", key: "categories" },
   { icon: <Edit size={20} />, label: "Watchlist", key: "watchlist" },

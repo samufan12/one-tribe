@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { MainContent } from "@/components/MainContent";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'profile';
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile';
 
 const Index = () => {
   const [activeView, setActiveView] = useState<ContentView>('home');

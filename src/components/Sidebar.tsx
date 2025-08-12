@@ -6,7 +6,7 @@ import { DropdownItem } from "./sidebar/DropdownItem";
 import { SidebarDropdownSection } from "./sidebar/SidebarDropdownSection";
 import { mainNavItems, myStuffItems, resourcesItems } from "./sidebar/sidebarData";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'profile';
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile';
 
 interface SidebarProps {
   activeView: ContentView;
@@ -29,6 +29,8 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
         return "community";
       case "Messages":
         return "messages";
+      case "AI Assistant":
+        return "assistant";
       default:
         return null;
     }

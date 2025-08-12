@@ -3,8 +3,9 @@ import { useState } from "react";
 import { CommunityFeed } from "./CommunityFeed";
 import { ChatInterface } from "./ChatInterface";
 import { Marketplace } from "./Marketplace";
+import { Assistant } from "./Assistant";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'profile';
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile';
 
 interface MainContentProps {
   activeView: ContentView;
@@ -20,6 +21,12 @@ export const MainContent = ({ activeView }: MainContentProps) => {
       return (
         <div className="h-[calc(100vh-4rem)]">
           <ChatInterface />
+        </div>
+      );
+    case 'assistant':
+      return (
+        <div className="h-[calc(100vh-4rem)]">
+          <Assistant />
         </div>
       );
     case 'home':
