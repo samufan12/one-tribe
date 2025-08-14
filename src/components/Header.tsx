@@ -1,10 +1,15 @@
 
 import { useState } from "react";
-import { HelpCircle, MessageSquare, BookOpen, GraduationCap, Plus, ShoppingCart, Search, User } from "lucide-react";
+import { HelpCircle, MessageSquare, BookOpen, GraduationCap, Plus, ShoppingCart, Search, User, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [helpMenuOpen, setHelpMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="h-16 flex items-center justify-between px-6 border-b border-gray-800">
@@ -70,11 +75,33 @@ const Header = () => {
           )}
         </div>
         
-        {/* Account/Sign In button */}
-        <button className="flex items-center gap-2 px-4 py-1.5 text-gray-300 text-sm border border-gray-700 rounded-md hover:bg-gray-800 transition-colors">
-          <User size={16} />
-          Sign In
-        </button>
+        {/* Account/Auth buttons */}
+        {user ? (
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-300">
+              {user.email}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={signOut}
+              className="flex items-center gap-2"
+            >
+              <LogOut size={16} />
+              Sign Out
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/auth')}
+            className="flex items-center gap-2"
+          >
+            <User size={16} />
+            Sign In
+          </Button>
+        )}
         
         {/* Wishlist/Favorites */}
         <button className="px-4 py-1.5 text-gray-300 text-sm border border-gray-700 rounded-md hover:bg-gray-800 transition-colors">
