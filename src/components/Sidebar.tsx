@@ -1,12 +1,11 @@
-
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { sidebarItems, sidebarDropdownSections } from "./sidebar/sidebarData";
 import { SidebarItem } from "./sidebar/SidebarItem";
-import { DropdownItem } from "./sidebar/DropdownItem";
-import { SidebarDropdownSection } from "./sidebar/SidebarDropdownSection";
-import { mainNavItems, myStuffItems, resourcesItems } from "./sidebar/sidebarData";
+import { ModernSidebarDropdownSection } from "./sidebar/ModernSidebarDropdownSection";
+import { BecomeSellerModal } from "./BecomeSellerModal";
+import { useUserRole } from "@/hooks/useUserRole";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile';
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile' | 'become-seller' | 'seller-tools';
 
 interface SidebarProps {
   activeView: ContentView;
@@ -14,124 +13,84 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [resourcesOpen, setResourcesOpen] = useState(false);
-  const [myStuffOpen, setMyStuffOpen] = useState(false);
-  const [activeDropdownItem, setActiveDropdownItem] = useState("");
+  const [showBecomeSellerModal, setShowBecomeSellerModal] = useState(false);
+  const { isSeller, loading } = useUserRole();
 
-  const getViewFromLabel = (label: string): ContentView | null => {
-    switch (label) {
-      case "Home":
-        return "home";
-      case "Marketplace":
-        return "marketplace";
-      case "Community Feed":
-        return "community";
-      case "Messages":
-        return "messages";
-      case "AI Assistant":
-        return "assistant";
-      default:
-        return null;
+  const handleItemClick = (itemId: string) => {
+    if (itemId === 'become-seller') {
+      if (!isSeller() && !loading) {
+        setShowBecomeSellerModal(true);
+      }
+    } else {
+      onNavigate(itemId as ContentView);
     }
   };
 
-  const handleNavigation = (label: string) => {
-    const view = getViewFromLabel(label);
-    if (view) {
-      onNavigate(view);
+  // Filter sidebar sections based on user role
+  const filteredSections = sidebarDropdownSections.map(section => {
+    if (section.title === "Selling") {
+      // Show seller tools only for sellers
+      return {
+        ...section,
+        items: section.items.filter(item => 
+          item.id === "sell" || (item.id === "seller-tools" && isSeller())
+        )
+      };
     }
-  };
-
-  const handleNonNavigationClick = (label: string) => {
-    console.log(`${label} clicked`);
-  };
-
-  if (isCollapsed) {
-    return (
-      <div className="w-16 bg-sidebar min-h-screen flex flex-col items-center py-4 border-r border-gray-800">
-        <div className="mb-8">
-          <img src="/lovable-uploads/407e5ec8-9b67-42ee-acf0-b238e194aa64.png" alt="Logo" className="w-8 h-8" />
-        </div>
-        <button
-          onClick={() => setIsCollapsed(false)}
-          className="absolute left-16 top-1/2 -translate-y-1/2 bg-gray-800 rounded-full p-1 text-white hover:bg-gray-700 transition-colors"
-        >
-          <ChevronRight size={16} />
-        </button>
-      </div>
-    );
-  }
+    
+    if (section.title === "Account") {
+      // Show "Become Seller" only for non-sellers
+      return {
+        ...section,
+        items: section.items.filter(item => 
+          item.id === "profile" || (item.id === "become-seller" && !isSeller() && !loading)
+        )
+      };
+    }
+    
+    return section;
+  }).filter(section => section.items.length > 0);
 
   return (
-    <div className="w-[232px] bg-sidebar min-h-screen flex flex-col border-r border-gray-800">
-      <div className="flex items-center justify-between p-4 border-b border-gray-800">
-        <div className="flex items-center gap-2">
-          <img src="/lovable-uploads/407e5ec8-9b67-42ee-acf0-b238e194aa64.png" alt="Logo" className="w-8 h-8" />
-          <span className="text-white font-semibold">OneTribe</span>
+    <>
+      <div className="w-64 bg-sidebar border-r border-border min-h-screen">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">K</span>
+            </div>
+            <span className="font-semibold text-lg">Kemis Marketplace</span>
+          </div>
+          
+          <nav className="space-y-2">
+            {sidebarItems.map((item) => (
+              <SidebarItem
+                key={item.id}
+                icon={<item.icon size={16} />}
+                label={item.title}
+                isActive={activeView === item.id}
+                onClick={() => onNavigate(item.id)}
+              />
+            ))}
+          </nav>
+
+          <div className="mt-8 space-y-6">
+            {filteredSections.map((section) => (
+              <ModernSidebarDropdownSection
+                key={section.title}
+                section={section}
+                activeView={activeView}
+                onNavigate={handleItemClick}
+              />
+            ))}
+          </div>
         </div>
-        <button
-          onClick={() => setIsCollapsed(true)}
-          className="text-gray-400 hover:text-white transition-colors p-1 rounded-md hover:bg-gray-800"
-        >
-          <ChevronRight size={16} />
-        </button>
       </div>
-
-      <div className="py-2 px-3 flex flex-col gap-1">
-        {mainNavItems.map((item) => (
-          <SidebarItem
-            key={item.key}
-            icon={item.icon}
-            label={item.label}
-            isActive={activeView === item.key}
-            isNew={item.isNew}
-            onClick={() => {
-              const view = getViewFromLabel(item.label);
-              if (view) {
-                handleNavigation(item.label);
-              } else {
-                handleNonNavigationClick(item.label);
-              }
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="flex-grow overflow-auto">
-        <SidebarDropdownSection
-          title="My stuff"
-          isOpen={myStuffOpen}
-          onToggle={() => setMyStuffOpen(!myStuffOpen)}
-        >
-          {myStuffItems.map((item) => (
-            <DropdownItem
-              key={item.label}
-              icon={item.icon}
-              label={item.label}
-              isActive={activeDropdownItem === item.label}
-              onClick={() => setActiveDropdownItem(item.label)}
-            />
-          ))}
-        </SidebarDropdownSection>
-
-        <SidebarDropdownSection
-          title="Resources"
-          isOpen={resourcesOpen}
-          onToggle={() => setResourcesOpen(!resourcesOpen)}
-        >
-          {resourcesItems.map((item) => (
-            <DropdownItem
-              key={item.label}
-              icon={item.icon}
-              label={item.label}
-              isExternal={item.isExternal}
-              isActive={activeDropdownItem === item.label}
-              onClick={() => setActiveDropdownItem(item.label)}
-            />
-          ))}
-        </SidebarDropdownSection>
-      </div>
-    </div>
+      
+      <BecomeSellerModal 
+        open={showBecomeSellerModal} 
+        onOpenChange={setShowBecomeSellerModal} 
+      />
+    </>
   );
 };

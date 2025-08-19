@@ -6,7 +6,7 @@ import { MainContent } from "@/components/MainContent";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile';
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile' | 'become-seller' | 'seller-tools';
 
 const Index = () => {
   const [activeView, setActiveView] = useState<ContentView>('home');
