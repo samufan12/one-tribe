@@ -5,7 +5,7 @@ import { ModernSidebarDropdownSection } from "./sidebar/ModernSidebarDropdownSec
 import { BecomeSellerModal } from "./BecomeSellerModal";
 import { useUserRole } from "@/hooks/useUserRole";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile' | 'become-seller' | 'seller-tools';
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile' | 'become-seller' | 'seller-tools' | 'sell' | 'categories' | 'watchlist' | 'style-guide' | 'size-charts';
 
 interface SidebarProps {
   activeView: ContentView;
@@ -57,9 +57,9 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
         <div className="p-6">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">K</span>
+              <span className="text-primary-foreground font-bold text-sm">O</span>
             </div>
-            <span className="font-semibold text-lg">Kemis Marketplace</span>
+            <span className="font-semibold text-lg">OneTribe</span>
           </div>
           
           <nav className="space-y-2">

@@ -3,8 +3,13 @@ import { CommunityFeed } from "./CommunityFeed";
 import { ChatInterface } from "./ChatInterface";
 import { Assistant } from "./Assistant";
 import { SellerTools } from "./SellerTools";
+import { SellItem } from "./SellItem";
+import { Categories } from "./Categories";
+import { Watchlist } from "./Watchlist";
+import { StyleGuide } from "./StyleGuide";
+import { SizeCharts } from "./SizeCharts";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile' | 'become-seller' | 'seller-tools';
+type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile' | 'become-seller' | 'seller-tools' | 'sell' | 'categories' | 'watchlist' | 'style-guide' | 'size-charts';
 
 interface MainContentProps {
   activeView: ContentView;
@@ -15,7 +20,7 @@ const HomeContent = () => (
     {/* Hero Section */}
     <div className="text-center py-12">
       <h1 className="text-4xl font-bold mb-4">
-        Welcome to Kemis Marketplace
+        Welcome to OneTribe
       </h1>
       <p className="text-xl text-muted-foreground mb-8">
         The premier marketplace for authentic traditional clothing
@@ -109,6 +114,16 @@ export const MainContent = ({ activeView }: MainContentProps) => {
         return <ProfileContent />;
       case 'seller-tools':
         return <SellerTools />;
+      case 'sell':
+        return <SellItem />;
+      case 'categories':
+        return <Categories />;
+      case 'watchlist':
+        return <Watchlist />;
+      case 'style-guide':
+        return <StyleGuide />;
+      case 'size-charts':
+        return <SizeCharts />;
       case 'become-seller':
         return <ProfileContent />; // This will be handled by the modal
       default:

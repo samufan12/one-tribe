@@ -1,6 +1,12 @@
 
 import { useState } from "react";
 import { Filter, Grid, List, Search, Heart, MessageCircle } from "lucide-react";
+import kemis1 from "@/assets/kemis-1.jpg";
+import kemis2 from "@/assets/kemis-2.jpg";
+import coffeeSet from "@/assets/coffee-set.jpg";
+import seller1 from "@/assets/seller-1.jpg";
+import seller2 from "@/assets/seller-2.jpg";
+import seller3 from "@/assets/seller-3.jpg";
 
 type MarketplaceItem = {
   id: string;
@@ -27,10 +33,10 @@ const mockItems: MarketplaceItem[] = [
     id: "1",
     name: "Traditional Ethiopian Habesha Kemis",
     price: 240,
-    images: ["/lovable-uploads/8827d443-a68b-4bd9-998f-3c4c410510e9.png"],
+    images: [kemis1],
     seller: {
       name: "Meron Tadesse",
-      avatar: "/lovable-uploads/e565a3ea-dc96-4344-a533-62026d4245e1.png",
+      avatar: seller1,
       rating: 4.9
     },
     category: "Traditional Wear",
@@ -46,10 +52,10 @@ const mockItems: MarketplaceItem[] = [
     id: "2",
     name: "Vintage Eritrean Traditional Dress",
     price: 180,
-    images: ["/lovable-uploads/b89881e6-12b4-4527-9c22-1052b8116ca9.png"],
+    images: [kemis2],
     seller: {
       name: "Sara Ghebrehiwet",
-      avatar: "/lovable-uploads/d16f3783-6af1-4327-8936-c5a50eb0cab5.png",
+      avatar: seller2,
       rating: 4.7
     },
     category: "Traditional Wear",
@@ -65,10 +71,10 @@ const mockItems: MarketplaceItem[] = [
     id: "3",
     name: "Ethiopian Coffee Ceremony Set",
     price: 85,
-    images: ["/lovable-uploads/d8b5e246-d962-466e-ad7d-61985e448fb9.png"],
+    images: [coffeeSet],
     seller: {
       name: "Daniel Berhe",
-      avatar: "/lovable-uploads/b67f802d-430a-4e5a-8755-b61e10470d58.png",
+      avatar: seller3,
       rating: 4.8
     },
     category: "Home & Decor",
