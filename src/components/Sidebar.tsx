@@ -1,28 +1,41 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sidebarItems, sidebarDropdownSections } from "./sidebar/sidebarData";
 import { SidebarItem } from "./sidebar/SidebarItem";
 import { ModernSidebarDropdownSection } from "./sidebar/ModernSidebarDropdownSection";
 import { BecomeSellerModal } from "./BecomeSellerModal";
 import { useUserRole } from "@/hooks/useUserRole";
 
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile' | 'become-seller' | 'seller-tools' | 'sell' | 'categories' | 'watchlist' | 'style-guide' | 'size-charts';
-
-interface SidebarProps {
-  activeView: ContentView;
-  onNavigate: (view: ContentView) => void;
-}
-
-export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
+export const Sidebar = () => {
   const [showBecomeSellerModal, setShowBecomeSellerModal] = useState(false);
   const { isSeller, loading } = useUserRole();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const getViewFromPath = (pathname: string): string => {
+    if (pathname === '/') return 'home';
+    return pathname.substring(1).replace('-', '-');
+  };
+
+  const activeView = getViewFromPath(location.pathname);
 
   const handleItemClick = (itemId: string) => {
     if (itemId === 'become-seller') {
       if (!isSeller() && !loading) {
         setShowBecomeSellerModal(true);
       }
+    } else if (itemId === 'home') {
+      navigate('/');
     } else {
-      onNavigate(itemId as ContentView);
+      navigate(`/${itemId}`);
+    }
+  };
+
+  const handleMainNavigation = (itemId: string) => {
+    if (itemId === 'home') {
+      navigate('/');
+    } else {
+      navigate(`/${itemId}`);
     }
   };
 
@@ -69,7 +82,7 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
                 icon={<item.icon size={16} />}
                 label={item.title}
                 isActive={activeView === item.id}
-                onClick={() => onNavigate(item.id)}
+                onClick={() => handleMainNavigation(item.id)}
               />
             ))}
           </nav>

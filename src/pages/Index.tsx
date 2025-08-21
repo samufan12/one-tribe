@@ -1,51 +1,109 @@
 
-import { useState, useEffect } from "react";
-import { Sidebar } from "@/components/Sidebar";
-import Header from "@/components/Header";
-import { MainContent } from "@/components/MainContent";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-
-type ContentView = 'home' | 'marketplace' | 'community' | 'messages' | 'assistant' | 'profile' | 'become-seller' | 'seller-tools' | 'sell' | 'categories' | 'watchlist' | 'style-guide' | 'size-charts';
+import Header from "@/components/Header";
 
 const Index = () => {
-  const [activeView, setActiveView] = useState<ContentView>('home');
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
-
-  const handleSidebarNavigation = (view: ContentView) => {
-    setActiveView(view);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+  const HomeContent = () => (
+    <div className="space-y-8">
+      {/* Hero Section */}
+      <div className="text-center py-12">
+        <h1 className="text-4xl font-bold mb-4">
+          Welcome to OneTribe
+        </h1>
+        <p className="text-xl text-muted-foreground mb-8">
+          The premier marketplace for authentic traditional clothing
+        </p>
+        <div className="flex justify-center gap-4">
+          <button 
+            onClick={() => navigate('/marketplace')}
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+          >
+            Start Shopping
+          </button>
+          <button 
+            onClick={() => navigate('/sell')}
+            className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+          >
+            Sell Your Items
+          </button>
         </div>
       </div>
-    );
-  }
 
-  if (!user) {
-    return null;
-  }
+      {/* Featured Categories */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold">Featured Categories</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div 
+            className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors cursor-pointer"
+            onClick={() => navigate('/categories')}
+          >
+            <div className="w-full h-48 bg-muted rounded-md mb-4 flex items-center justify-center">
+              <span className="text-muted-foreground">Traditional Kemis</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Traditional Kemis</h3>
+            <p className="text-muted-foreground">Authentic traditional dresses and cultural attire</p>
+          </div>
+          
+          <div 
+            className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors cursor-pointer"
+            onClick={() => navigate('/categories')}
+          >
+            <div className="w-full h-48 bg-muted rounded-md mb-4 flex items-center justify-center">
+              <span className="text-muted-foreground">Cultural Accessories</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Cultural Accessories</h3>
+            <p className="text-muted-foreground">Traditional jewelry, scarves, and accessories</p>
+          </div>
+          
+          <div 
+            className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors cursor-pointer"
+            onClick={() => navigate('/categories')}
+          >
+            <div className="w-full h-48 bg-muted rounded-md mb-4 flex items-center justify-center">
+              <span className="text-muted-foreground">Handcrafts</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Handcrafts & Art</h3>
+            <p className="text-muted-foreground">Handwoven items and traditional crafts</p>       
+          </div>
+        </div>
+      </div>
+
+      {/* Community Highlights */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold">Community Highlights</h2>
+        <div className="bg-card rounded-lg border p-6">
+          <p className="text-muted-foreground mb-4">
+            Join our growing community of traditional clothing enthusiasts. 
+            Connect with sellers, discover authentic goods, and share your cultural heritage.
+          </p>
+          <div className="flex gap-4">
+            <button 
+              onClick={() => navigate('/community')}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              Join Community Feed
+            </button>
+            <button 
+              onClick={() => navigate('/marketplace')}
+              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
+            >
+              Browse Marketplace
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <Sidebar activeView={activeView} onNavigate={handleSidebarNavigation} />
-      <div className="flex-1 flex flex-col">
-        <Header />
-        <main className="flex-1 p-6">
-          <MainContent activeView={activeView} />
-        </main>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto px-4 py-8">
+        <HomeContent />
       </div>
     </div>
   );

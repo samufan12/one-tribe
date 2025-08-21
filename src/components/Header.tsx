@@ -37,7 +37,10 @@ const Header = () => {
         </a>
         
         {/* Shopping Cart */}
-        <button className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative">
+        <button 
+          onClick={() => navigate('/cart')}
+          className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative"
+        >
           <ShoppingCart size={20} />
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
             3
@@ -55,22 +58,34 @@ const Header = () => {
           
           {helpMenuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-[#1e1e1e] border border-gray-800 rounded-md shadow-lg py-1 z-50">
-              <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800">
+              <button 
+                onClick={() => navigate('/support')}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 w-full text-left"
+              >
                 <MessageSquare size={16} />
                 <span>Customer Support</span>
-              </a>
-              <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800">
+              </button>
+              <button 
+                onClick={() => navigate('/faq')}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 w-full text-left"
+              >
                 <HelpCircle size={16} />
                 <span>FAQ</span>
-              </a>
-              <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800">
+              </button>
+              <button 
+                onClick={() => navigate('/size-charts')}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 w-full text-left"
+              >
                 <BookOpen size={16} />
                 <span>Size Guide</span>
-              </a>
-              <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800">
+              </button>
+              <button 
+                onClick={() => navigate('/cultural-guide')}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 w-full text-left"
+              >
                 <GraduationCap size={16} />
                 <span>Cultural Guide</span>
-              </a>
+              </button>
             </div>
           )}
         </div>
@@ -104,7 +119,10 @@ const Header = () => {
         )}
         
         {/* Wishlist/Favorites */}
-        <button className="px-4 py-1.5 text-gray-300 text-sm border border-gray-700 rounded-md hover:bg-gray-800 transition-colors">
+        <button 
+          onClick={() => navigate('/watchlist')}
+          className="px-4 py-1.5 text-gray-300 text-sm border border-gray-700 rounded-md hover:bg-gray-800 transition-colors"
+        >
           Wishlist
         </button>
       </div>
