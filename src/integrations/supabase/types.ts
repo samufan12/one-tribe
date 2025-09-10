@@ -85,6 +85,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_user_role: {
+        Args: {
+          new_role: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
+        }
+        Returns: boolean
+      }
       edge_functions_ai_assistant: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -96,9 +103,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      remove_user_role: {
+        Args: {
+          role_to_remove: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
+        }
+        Returns: boolean
+      }
+      request_seller_status: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
-      app_role: "seller" | "buyer"
+      app_role: "seller" | "buyer" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -226,7 +244,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["seller", "buyer"],
+      app_role: ["seller", "buyer", "admin"],
     },
   },
 } as const
