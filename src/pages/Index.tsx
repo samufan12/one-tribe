@@ -1,7 +1,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
+import { Layout } from "@/components/Layout";
 
 const Index = () => {
   const { user } = useAuth();
@@ -100,12 +100,9 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        <HomeContent />
-      </div>
-    </div>
+    <Layout>
+      <HomeContent />
+    </Layout>
   );
 };
 
