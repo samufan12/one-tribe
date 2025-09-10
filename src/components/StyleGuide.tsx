@@ -1,4 +1,7 @@
 import { Palette, Ruler, Shirt, Info } from "lucide-react";
+import kemis1 from "@/assets/kemis-1.jpg";
+import kemis2 from "@/assets/kemis-2.jpg";
+import seller2 from "@/assets/seller-2.jpg";
 
 export const StyleGuide = () => {
   const traditionalStyles = [
@@ -52,8 +55,12 @@ export const StyleGuide = () => {
           {traditionalStyles.map((style, index) => (
             <div key={index} className="bg-card rounded-lg border p-6">
               <div className="flex flex-col md:flex-row gap-6">
-                <div className="md:w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
-                  <Shirt className="w-16 h-16 text-muted-foreground" />
+                <div className="md:w-48 h-48 rounded-lg overflow-hidden">
+                  <img 
+                    src={index === 0 ? kemis1 : index === 1 ? kemis2 : seller2} 
+                    alt={style.name} 
+                    className="w-full h-full object-cover" 
+                  />
                 </div>
                 <div className="flex-1 space-y-4">
                   <div>

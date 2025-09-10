@@ -2,6 +2,9 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import kemis1 from "@/assets/kemis-1.jpg";
+import kemis2 from "@/assets/kemis-2.jpg";
+import coffeeSet from "@/assets/coffee-set.jpg";
 
 const Index = () => {
   const { user } = useAuth();
@@ -41,8 +44,8 @@ const Index = () => {
             className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors cursor-pointer"
             onClick={() => navigate('/categories')}
           >
-            <div className="w-full h-48 bg-muted rounded-md mb-4 flex items-center justify-center">
-              <span className="text-muted-foreground">Traditional Kemis</span>
+            <div className="w-full h-48 rounded-md mb-4 overflow-hidden">
+              <img src={kemis1} alt="Traditional Kemis" className="w-full h-full object-cover" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Traditional Kemis</h3>
             <p className="text-muted-foreground">Authentic traditional dresses and cultural attire</p>
@@ -52,8 +55,8 @@ const Index = () => {
             className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors cursor-pointer"
             onClick={() => navigate('/categories')}
           >
-            <div className="w-full h-48 bg-muted rounded-md mb-4 flex items-center justify-center">
-              <span className="text-muted-foreground">Cultural Accessories</span>
+            <div className="w-full h-48 rounded-md mb-4 overflow-hidden">
+              <img src={kemis2} alt="Cultural Accessories" className="w-full h-full object-cover" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Cultural Accessories</h3>
             <p className="text-muted-foreground">Traditional jewelry, scarves, and accessories</p>
@@ -63,8 +66,8 @@ const Index = () => {
             className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors cursor-pointer"
             onClick={() => navigate('/categories')}
           >
-            <div className="w-full h-48 bg-muted rounded-md mb-4 flex items-center justify-center">
-              <span className="text-muted-foreground">Handcrafts</span>
+            <div className="w-full h-48 rounded-md mb-4 overflow-hidden">
+              <img src={coffeeSet} alt="Handcrafts" className="w-full h-full object-cover" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Handcrafts & Art</h3>
             <p className="text-muted-foreground">Handwoven items and traditional crafts</p>       

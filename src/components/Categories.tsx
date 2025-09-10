@@ -1,4 +1,8 @@
 import { Package, Palette, Coffee, Gem, Music, Brush } from "lucide-react";
+import kemis1 from "@/assets/kemis-1.jpg";
+import kemis2 from "@/assets/kemis-2.jpg";
+import coffeeSet from "@/assets/coffee-set.jpg";
+import seller1 from "@/assets/seller-1.jpg";
 
 const categories = [
   {
@@ -79,18 +83,46 @@ export const Categories = () => {
       <div className="space-y-6">
         <h2 className="text-2xl font-bold">Popular This Week</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="bg-card rounded-lg border overflow-hidden hover:border-primary/50 transition-colors">
-              <div className="w-full h-48 bg-muted flex items-center justify-center">
-                <Package className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <div className="p-4">
-                <h4 className="font-medium mb-1">Popular Item {item}</h4>
-                <p className="text-sm text-muted-foreground mb-2">Traditional category</p>
-                <p className="font-semibold text-primary">$120</p>
-              </div>
+          <div className="bg-card rounded-lg border overflow-hidden hover:border-primary/50 transition-colors">
+            <div className="w-full h-48 overflow-hidden">
+              <img src={kemis1} alt="Traditional Habesha Kemis" className="w-full h-full object-cover" />
             </div>
-          ))}
+            <div className="p-4">
+              <h4 className="font-medium mb-1">Traditional Habesha Kemis</h4>
+              <p className="text-sm text-muted-foreground mb-2">Traditional Wear</p>
+              <p className="font-semibold text-primary">$240</p>
+            </div>
+          </div>
+          <div className="bg-card rounded-lg border overflow-hidden hover:border-primary/50 transition-colors">
+            <div className="w-full h-48 overflow-hidden">
+              <img src={kemis2} alt="Elegant Cultural Dress" className="w-full h-full object-cover" />
+            </div>
+            <div className="p-4">
+              <h4 className="font-medium mb-1">Elegant Cultural Dress</h4>
+              <p className="text-sm text-muted-foreground mb-2">Traditional Wear</p>
+              <p className="font-semibold text-primary">$185</p>
+            </div>
+          </div>
+          <div className="bg-card rounded-lg border overflow-hidden hover:border-primary/50 transition-colors">
+            <div className="w-full h-48 overflow-hidden">
+              <img src={coffeeSet} alt="Coffee Ceremony Set" className="w-full h-full object-cover" />
+            </div>
+            <div className="p-4">
+              <h4 className="font-medium mb-1">Coffee Ceremony Set</h4>
+              <p className="text-sm text-muted-foreground mb-2">Home & Decor</p>
+              <p className="font-semibold text-primary">$85</p>
+            </div>
+          </div>
+          <div className="bg-card rounded-lg border overflow-hidden hover:border-primary/50 transition-colors">
+            <div className="w-full h-48 overflow-hidden">
+              <img src={seller1} alt="Traditional Jewelry" className="w-full h-full object-cover" />
+            </div>
+            <div className="p-4">
+              <h4 className="font-medium mb-1">Traditional Jewelry Set</h4>
+              <p className="text-sm text-muted-foreground mb-2">Jewelry & Accessories</p>
+              <p className="font-semibold text-primary">$125</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

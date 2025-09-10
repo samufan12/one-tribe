@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Upload, DollarSign, Tag, Package, Camera } from "lucide-react";
+import kemis1 from "@/assets/kemis-1.jpg";
+import kemis2 from "@/assets/kemis-2.jpg";
+import coffeeSet from "@/assets/coffee-set.jpg";
 
 export const SellItem = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +33,36 @@ export const SellItem = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="space-y-8">
+        {/* Tips Section */}
+        <div className="bg-card rounded-lg border p-6">
+          <h2 className="text-xl font-semibold mb-4">Selling Tips</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="w-full h-32 rounded-md mb-3 overflow-hidden">
+                <img src={kemis1} alt="High quality photos" className="w-full h-full object-cover" />
+              </div>
+              <h3 className="font-medium mb-2">High Quality Photos</h3>
+              <p className="text-sm text-muted-foreground">Use natural lighting and show multiple angles</p>
+            </div>
+            <div className="text-center">
+              <div className="w-full h-32 rounded-md mb-3 overflow-hidden">
+                <img src={kemis2} alt="Detailed descriptions" className="w-full h-full object-cover" />
+              </div>
+              <h3 className="font-medium mb-2">Detailed Descriptions</h3>
+              <p className="text-sm text-muted-foreground">Include materials, measurements, and history</p>
+            </div>
+            <div className="text-center">
+              <div className="w-full h-32 rounded-md mb-3 overflow-hidden">
+                <img src={coffeeSet} alt="Fair pricing" className="w-full h-full object-cover" />
+              </div>
+              <h3 className="font-medium mb-2">Fair Pricing</h3>
+              <p className="text-sm text-muted-foreground">Research similar items for competitive pricing</p>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
         {/* Photos */}
         <div className="bg-card rounded-lg border p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -174,6 +206,7 @@ export const SellItem = () => {
           </button>
         </div>
       </form>
+    </div>
     </div>
   );
 };
