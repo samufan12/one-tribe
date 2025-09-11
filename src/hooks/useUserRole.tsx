@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
-export type UserRole = 'seller' | 'buyer';
+export type UserRole = 'seller' | 'buyer' | 'admin';
 
 interface UserProfile {
   id: string;
@@ -73,6 +73,7 @@ export const useUserRole = () => {
 
   const isSeller = (): boolean => hasRole('seller');
   const isBuyer = (): boolean => hasRole('buyer');
+  const isAdmin = (): boolean => hasRole('admin');
 
   const becomeSeller = async (businessData: {
     business_name: string;
@@ -82,12 +83,10 @@ export const useUserRole = () => {
     if (!user) return;
 
     try {
-      // Add seller role
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({ user_id: user.id, role: 'seller' });
+      // Request seller status (will need admin approval)
+      const { error: requestError } = await supabase.rpc('request_seller_status');
 
-      if (roleError) throw roleError;
+      if (requestError) throw requestError;
 
       // Update profile with business information
       const { error: profileError } = await supabase
@@ -103,8 +102,11 @@ export const useUserRole = () => {
 
       // Refresh data
       await fetchUserData();
+      
+      // Note: User will receive 'seller' role after admin approval
+      // For now, they can add business info but won't have seller privileges yet
     } catch (error) {
-      console.error('Error becoming seller:', error);
+      console.error('Error requesting seller status:', error);
       throw error;
     }
   };
@@ -134,6 +136,7 @@ export const useUserRole = () => {
     hasRole,
     isSeller,
     isBuyer,
+    isAdmin,
     becomeSeller,
     updateProfile,
     refetch: fetchUserData,

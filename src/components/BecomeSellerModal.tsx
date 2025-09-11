@@ -38,15 +38,15 @@ export const BecomeSellerModal = ({ open, onOpenChange }: BecomeSellerModalProps
     try {
       await becomeSeller(formData);
       toast({
-        title: "Success",
-        description: "Your seller account has been created! You can now list items for sale.",
+        title: "Seller Request Submitted",
+        description: "Your seller application has been submitted for admin review. You'll be notified once approved.",
       });
       onOpenChange(false);
       setFormData({ business_name: '', business_address: '', business_phone: '' });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create seller account. Please try again.",
+        description: "Failed to submit seller application. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -58,8 +58,14 @@ export const BecomeSellerModal = ({ open, onOpenChange }: BecomeSellerModalProps
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Become a Seller</DialogTitle>
+          <DialogTitle>Apply to Become a Seller</DialogTitle>
         </DialogHeader>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <h4 className="font-medium text-blue-900 mb-2">Application Process</h4>
+          <p className="text-sm text-blue-700">
+            Your seller application will be reviewed by our admin team. You'll be notified once approved and can then start listing items for sale.
+          </p>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="business_name">Business Name *</Label>
@@ -115,7 +121,7 @@ export const BecomeSellerModal = ({ open, onOpenChange }: BecomeSellerModalProps
               Cancel
             </Button>
             <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? "Creating Account..." : "Become Seller"}
+              {loading ? "Submitting Application..." : "Submit Application"}
             </Button>
           </div>
         </form>
