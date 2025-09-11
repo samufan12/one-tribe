@@ -82,7 +82,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          business_name: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string | null
+          user_id: string | null
+          verification_status: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assign_user_role: {
@@ -95,6 +127,45 @@ export type Database = {
       edge_functions_ai_assistant: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      get_all_public_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avatar_url: string
+          bio: string
+          business_name: string
+          created_at: string
+          display_name: string
+          id: string
+          user_id: string
+          verification_status: string
+        }[]
+      }
+      get_public_profile: {
+        Args: { profile_user_id: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          business_name: string
+          created_at: string
+          display_name: string
+          id: string
+          user_id: string
+          verification_status: string
+        }[]
+      }
+      get_seller_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avatar_url: string
+          bio: string
+          business_name: string
+          created_at: string
+          display_name: string
+          id: string
+          user_id: string
+          verification_status: string
+        }[]
       }
       has_role: {
         Args: {
