@@ -100,11 +100,9 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: {
           avatar_url: string
-          bio: string
           business_name: string
           created_at: string
           display_name: string
-          id: string
           user_id: string
           verification_status: string
         }[]
@@ -117,7 +115,6 @@ export type Database = {
           business_name: string
           created_at: string
           display_name: string
-          id: string
           user_id: string
           verification_status: string
         }[]
@@ -126,11 +123,9 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: {
           avatar_url: string
-          bio: string
           business_name: string
           created_at: string
           display_name: string
-          id: string
           user_id: string
           verification_status: string
         }[]
