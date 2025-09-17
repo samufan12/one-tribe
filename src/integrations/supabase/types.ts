@@ -165,7 +165,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_seller_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          user_id: string | null
+          verification_status: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assign_user_role: {
@@ -218,6 +241,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: { check_user_id?: string }
         Returns: boolean
       }
       remove_user_role: {
