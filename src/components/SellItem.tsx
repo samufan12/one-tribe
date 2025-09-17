@@ -30,10 +30,12 @@ export const SellItem = () => {
   const categories = ["Traditional Wear", "Home & Decor", "Jewelry", "Art", "Music"];
   const conditions = ["New with tags", "New without tags", "Excellent", "Very Good", "Good", "Fair"];
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleImageSelect = (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
     
-    if (files.length + selectedImages.length > 5) {
+    if (fileArray.length + selectedImages.length > 5) {
       toast({
         title: "Too many images",
         description: "You can upload maximum 5 images per product",
@@ -42,11 +44,19 @@ export const SellItem = () => {
       return;
     }
 
-    const newFiles = files.filter(file => {
+    const newFiles = fileArray.filter(file => {
       if (file.size > 10 * 1024 * 1024) { // 10MB limit
         toast({
           title: "File too large",
           description: `${file.name} is larger than 10MB`,
+          variant: "destructive",
+        });
+        return false;
+      }
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file type",
+          description: `${file.name} is not an image file`,
           variant: "destructive",
         });
         return false;
@@ -64,6 +74,26 @@ export const SellItem = () => {
       };
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageSelect(e.dataTransfer.files);
+    }
   };
 
   const removeImage = (index: number) => {
@@ -217,13 +247,28 @@ export const SellItem = () => {
           )}
 
           <div 
-            className="border-2 border-dashed border-muted rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200 ${
+              dragActive 
+                ? 'border-primary bg-primary/5 scale-105' 
+                : 'border-muted hover:border-primary/50 hover:bg-accent/5'
+            }`}
             onClick={() => fileInputRef.current?.click()}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
           >
-            <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-2">Click to upload photos or drag and drop</p>
+            <Upload className={`mx-auto h-12 w-12 mb-4 transition-colors ${
+              dragActive ? 'text-primary' : 'text-muted-foreground'
+            }`} />
+            <p className="text-muted-foreground mb-2">
+              {dragActive ? 'Drop your images here' : 'Click to upload photos or drag and drop'}
+            </p>
             <p className="text-sm text-muted-foreground">PNG, JPG, GIF up to 10MB (max 5 images)</p>
-            <button type="button" className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md">
+            <button 
+              type="button" 
+              className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
               Choose Files
             </button>
           </div>
@@ -233,7 +278,7 @@ export const SellItem = () => {
             type="file"
             accept="image/*"
             multiple
-            onChange={handleImageSelect}
+            onChange={(e) => handleImageSelect(e.target.files || [])}
             className="hidden"
           />
         </div>

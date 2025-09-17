@@ -4,6 +4,7 @@ import { Filter, Grid, List, Search, Heart, MessageCircle } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { format } from "date-fns";
 import kemis1 from "@/assets/kemis-1.jpg";
+import { ProductSkeletonGrid } from "./ProductSkeleton";
 
 export const Marketplace = () => {
   const { products, loading, fetchProducts, toggleLike } = useProducts();
@@ -45,21 +46,30 @@ export const Marketplace = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <h1 className="text-3xl font-bold text-white">Marketplace</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Marketplace</h1>
+          <p className="text-muted-foreground mt-1">
+            {loading ? 'Loading...' : `${products.length} items available`}
+          </p>
+        </div>
         
         <div className="flex items-center gap-2">
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-md transition-colors ${
-              viewMode === 'grid' ? 'bg-primary text-white' : 'bg-gray-700 text-gray-300'
+            className={`p-2 rounded-md transition-all duration-200 ${
+              viewMode === 'grid' 
+                ? 'bg-primary text-primary-foreground shadow-md' 
+                : 'bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground'
             }`}
           >
             <Grid size={20} />
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`p-2 rounded-md transition-colors ${
-              viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-700 text-gray-300'
+            className={`p-2 rounded-md transition-all duration-200 ${
+              viewMode === 'list' 
+                ? 'bg-primary text-primary-foreground shadow-md' 
+                : 'bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground'
             }`}
           >
             <List size={20} />
@@ -67,30 +77,30 @@ export const Marketplace = () => {
         </div>
       </div>
 
-      {/* Search and Filters */}
+        {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search items..."
-            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-md placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
           />
         </div>
         
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary"
+          className="px-4 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
         >
           {categories.map(category => (
             <option key={category} value={category}>{category}</option>
           ))}
         </select>
         
-        <button className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors flex items-center gap-2">
+        <button className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-md transition-colors flex items-center gap-2 hover:scale-105 active:scale-95">
           <Filter size={20} />
           Filters
         </button>
@@ -98,12 +108,7 @@ export const Marketplace = () => {
 
       {/* Items Grid/List */}
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading products...</p>
-          </div>
-        </div>
+        <ProductSkeletonGrid count={6} listView={viewMode === 'list'} />
       ) : products.length === 0 ? (
         <div className="text-center py-12">
           <div className="w-32 h-32 mx-auto mb-4 rounded-lg overflow-hidden">
@@ -125,7 +130,7 @@ export const Marketplace = () => {
           {products.map((product) => (
             <div 
               key={product.id} 
-              className={`bg-gray-900 rounded-lg border border-gray-800 overflow-hidden hover:border-gray-700 transition-colors ${
+              className={`bg-card rounded-lg border overflow-hidden hover:border-accent/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                 viewMode === 'list' ? 'flex' : ''
               }`}
             >
@@ -140,11 +145,13 @@ export const Marketplace = () => {
                   />
                   <button 
                     onClick={() => toggleLike(product.id)}
-                    className="absolute top-3 right-3 p-2 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+                    className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 transition-all duration-200 hover:scale-110"
                   >
                     <Heart 
                       size={16} 
-                      className={product.is_liked ? 'text-red-500 fill-current' : 'text-white'} 
+                      className={`transition-colors ${
+                        product.is_liked ? 'text-red-500 fill-current' : 'text-white hover:text-red-300'
+                      }`} 
                     />
                   </button>
                 </div>
@@ -152,38 +159,40 @@ export const Marketplace = () => {
               
               <div className="p-4 flex-1">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-white font-semibold text-lg leading-tight">{product.title}</h3>
-                  <span className="text-xl font-bold text-primary">${product.price}</span>
+                  <h3 className="font-semibold text-lg leading-tight line-clamp-2 pr-2">{product.title}</h3>
+                  <span className="text-xl font-bold text-primary whitespace-nowrap">${product.price}</span>
                 </div>
                 
                 {product.seller && (
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white text-xs font-medium">
+                    <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary text-xs font-medium">
                       {product.seller.display_name?.[0]?.toUpperCase() || 'U'}
                     </div>
-                    <span className="text-sm text-gray-300">{product.seller.display_name || 'Anonymous'}</span>
+                    <span className="text-sm text-muted-foreground">{product.seller.display_name || 'Anonymous'}</span>
                   </div>
                 )}
                 
-                <div className="flex items-center gap-3 text-sm text-gray-400 mb-3">
-                  <span>{product.category}</span>
-                  {product.size && <span>Size {product.size}</span>}
-                  <span>{product.condition}</span>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3 flex-wrap">
+                  <span className="bg-accent/30 px-2 py-1 rounded text-xs">{product.category}</span>
+                  {product.size && <span className="bg-accent/30 px-2 py-1 rounded text-xs">Size {product.size}</span>}
+                  <span className="bg-accent/30 px-2 py-1 rounded text-xs">{product.condition}</span>
                 </div>
                 
-                <p className="text-sm text-gray-300 mb-4 line-clamp-2">{product.description}</p>
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-gray-400">
-                    <span className="flex items-center gap-1">
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+                    <span className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer">
                       <Heart size={14} />
                       {product.likes}
                     </span>
-                    <span>{product.location}</span>
+                    <span className="flex items-center gap-1">
+                      📍 {product.location}
+                    </span>
                     <span>{getTimeAgo(product.created_at)}</span>
                   </div>
                   
-                  <button className="p-2 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
+                  <button className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all duration-200 hover:scale-110 active:scale-95">
                     <MessageCircle size={16} />
                   </button>
                 </div>
