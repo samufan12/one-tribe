@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -47,14 +48,30 @@ serve(async (req) => {
       );
     }
 
-    const { messages } = await req.json();
+    // Input validation schema
+    const messageSchema = z.object({
+      role: z.enum(['user', 'assistant', 'system']),
+      content: z.string().min(1).max(4000)
+    });
 
-    if (!messages || !Array.isArray(messages)) {
+    const messagesSchema = z.array(messageSchema).min(1).max(20);
+
+    // Parse and validate request body
+    const body = await req.json();
+    const validation = messagesSchema.safeParse(body.messages);
+    
+    if (!validation.success) {
+      console.error('Message validation failed:', validation.error.errors);
       return new Response(
-        JSON.stringify({ error: 'Invalid messages format' }),
+        JSON.stringify({ 
+          error: 'Invalid messages format', 
+          details: validation.error.errors[0].message 
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const messages = validation.data;
 
     console.log(`AI Assistant request from user ${user.id}, messages: ${messages.length}`);
 
