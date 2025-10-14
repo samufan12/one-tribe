@@ -2,6 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import DOMPurify from 'https://esm.sh/isomorphic-dompurify@2.14.0';
 
 // Input sanitization helper
 function sanitizeContent(content: string): string {
