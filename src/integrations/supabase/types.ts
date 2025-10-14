@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_assistant_usage: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       product_likes: {
         Row: {
           created_at: string
@@ -175,6 +193,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_ai_rate_limit: {
+        Args: {
+          p_max_requests?: number
+          p_user_id: string
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       edge_functions_ai_assistant: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -223,6 +249,10 @@ export type Database = {
       is_admin: {
         Args: { check_user_id?: string }
         Returns: boolean
+      }
+      log_ai_usage: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       remove_user_role: {
         Args: {

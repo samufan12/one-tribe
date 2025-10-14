@@ -3,6 +3,16 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
+// Input sanitization helper
+function sanitizeContent(content: string): string {
+  // Remove any potential script tags or malicious content
+  return content
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '')
+    .trim();
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -41,6 +51,40 @@ serve(async (req) => {
       );
     }
 
+    // Check rate limit
+    const { data: rateLimitCheck, error: rateLimitError } = await supabaseClient
+      .rpc('check_ai_rate_limit', { 
+        p_user_id: user.id,
+        p_window_minutes: 60,
+        p_max_requests: 20
+      });
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError);
+      return new Response(
+        JSON.stringify({ error: 'Unable to verify rate limit' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!rateLimitCheck) {
+      console.log(`Rate limit exceeded for user ${user.id}`);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded',
+          message: 'You have reached the maximum number of requests. Please try again later.'
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Log usage
+    const { error: logError } = await supabaseClient.rpc('log_ai_usage');
+    if (logError) {
+      console.error('Failed to log AI usage:', logError);
+      // Continue anyway - logging failure shouldn't block the request
+    }
+
     if (!openAIApiKey) {
       return new Response(
         JSON.stringify({ error: 'OpenAI API key not configured' }),
@@ -71,7 +115,11 @@ serve(async (req) => {
       );
     }
 
-    const messages = validation.data;
+    // Sanitize message content to prevent injection attacks
+    const messages = validation.data.map(msg => ({
+      ...msg,
+      content: sanitizeContent(msg.content)
+    }));
 
     console.log(`AI Assistant request from user ${user.id}, messages: ${messages.length}`);
 
@@ -97,8 +145,11 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
+      // Sanitize error logging to prevent sensitive data exposure
+      console.error('OpenAI API error:', {
+        status: response.status,
+        statusText: response.statusText
+      });
       return new Response(
         JSON.stringify({ error: 'Failed to get AI response' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
