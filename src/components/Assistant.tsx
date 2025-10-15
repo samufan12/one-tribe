@@ -41,7 +41,13 @@ export const Assistant = () => {
 
     if (error) {
       console.error("AI Assistant error:", error);
-      throw new Error("Failed to get AI response");
+      
+      // Handle specific error cases
+      if (error.message?.includes('Rate limit')) {
+        throw new Error("You've reached the maximum number of requests. Please try again in a few minutes.");
+      }
+      
+      throw new Error("Failed to get AI response. Please try again.");
     }
 
     return data.message;
@@ -59,7 +65,8 @@ export const Assistant = () => {
       const assistantTurn: ChatTurn = { id: `${userTurn.id}-a`, role: "assistant", content: reply };
       setMessages(prev => [...prev, assistantTurn]);
     } catch (e) {
-      setMessages(prev => [...prev, { id: `${userTurn.id}-err`, role: "assistant", content: "There was an error getting AI response. Please try again." }]);
+      const errorMessage = e instanceof Error ? e.message : "There was an error getting AI response. Please try again.";
+      setMessages(prev => [...prev, { id: `${userTurn.id}-err`, role: "assistant", content: errorMessage }]);
     } finally {
       setLoading(false);
     }
