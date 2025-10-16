@@ -28,22 +28,22 @@ const Header = () => {
       <div className="flex items-center gap-4 relative">
         {/* YouTube icon */}
         <a 
-          href="https://youtube.com/@onetribe" 
+          href="https://www.youtube.com/" 
           target="_blank" 
           rel="noopener noreferrer"
           className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800"
-          aria-label="Visit OneTribe YouTube channel"
+          aria-label="Visit YouTube"
         >
           <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-6 h-6" />
         </a>
         
         {/* Discord icon */}
         <a 
-          href="https://discord.gg/onetribe" 
+          href="https://discord.com/" 
           target="_blank" 
           rel="noopener noreferrer"
           className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800"
-          aria-label="Join OneTribe Discord community"
+          aria-label="Visit Discord"
         >
           <img src="/lovable-uploads/92333427-5a32-4cf8-b110-afc5b57c9f27.png" alt="Discord" className="w-6 h-6" />
         </a>
