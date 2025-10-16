@@ -31,10 +31,14 @@ const Header = () => {
           href="https://www.youtube.com/" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800"
+          className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative z-50"
           aria-label="Visit YouTube"
+          onClick={(e) => {
+            console.log('YouTube link clicked', e);
+            console.log('Link href:', e.currentTarget.href);
+          }}
         >
-          <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-6 h-6" />
+          <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-6 h-6 pointer-events-none" />
         </a>
         
         {/* Discord icon */}
@@ -42,10 +46,14 @@ const Header = () => {
           href="https://discord.com/" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800"
+          className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative z-50"
           aria-label="Visit Discord"
+          onClick={(e) => {
+            console.log('Discord link clicked', e);
+            console.log('Link href:', e.currentTarget.href);
+          }}
         >
-          <img src="/lovable-uploads/92333427-5a32-4cf8-b110-afc5b57c9f27.png" alt="Discord" className="w-6 h-6" />
+          <img src="/lovable-uploads/92333427-5a32-4cf8-b110-afc5b57c9f27.png" alt="Discord" className="w-6 h-6 pointer-events-none" />
         </a>
         
         {/* Shopping Cart */}
