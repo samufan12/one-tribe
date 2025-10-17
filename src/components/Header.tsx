@@ -3,7 +3,6 @@ import { useState } from "react";
 import { HelpCircle, MessageSquare, BookOpen, GraduationCap, Plus, ShoppingCart, Search, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -11,35 +10,6 @@ const Header = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const handleExternalOpen = (url: string) => {
-    try {
-      const newWin = window.open(url, '_blank', 'noopener,noreferrer');
-      if (!newWin) {
-        try {
-          if (window.top) {
-            // Try to navigate the top window as a fallback
-            window.top.location.href = url;
-            return;
-          }
-        } catch (err) {
-          // ignore cross-origin assignment errors
-        }
-        toast({
-          title: "Unable to open link",
-          description: "Popup was blocked. Please allow popups or use Ctrl/Cmd+Click.",
-        });
-      }
-    } catch (err) {
-      console.error('Failed to open external link', err);
-      toast({
-        title: "Open link failed",
-        description: "Please try again or open the link in a new tab.",
-        variant: "destructive",
-      });
-    }
-  };
   return (
     <div className="h-16 flex items-center justify-between px-6 border-b border-gray-800">
       {/* Search Bar */}
@@ -62,11 +32,6 @@ const Header = () => {
             rel="noopener noreferrer"
             className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative z-50"
             aria-label="Visit YouTube"
-            onClick={(e) => {
-              e.preventDefault();
-              console.log('YouTube link clicked');
-              handleExternalOpen('https://www.youtube.com/');
-            }}
           >
             <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-6 h-6 pointer-events-none" />
           </a>
@@ -78,11 +43,6 @@ const Header = () => {
             rel="noopener noreferrer"
             className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative z-50"
             aria-label="Visit Discord"
-            onClick={(e) => {
-              e.preventDefault();
-              console.log('Discord link clicked');
-              handleExternalOpen('https://discord.com/');
-            }}
           >
             <img src="/lovable-uploads/92333427-5a32-4cf8-b110-afc5b57c9f27.png" alt="Discord" className="w-6 h-6 pointer-events-none" />
           </a>
