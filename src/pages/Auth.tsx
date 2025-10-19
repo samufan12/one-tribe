@@ -6,14 +6,63 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Lock, User } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Mail, Lock, User, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { z } from 'zod';
+
+// Common weak passwords to check against
+const COMMON_PASSWORDS = [
+  'password', '123456', '12345678', 'qwerty', 'abc123', 'monkey', 
+  '1234567', 'letmein', 'trustno1', 'dragon', 'baseball', 'iloveyou',
+  'master', 'sunshine', 'ashley', 'bailey', 'passw0rd', 'shadow', '123123'
+];
+
+const passwordSchema = z.string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number")
+  .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
+  .refine((pwd) => !COMMON_PASSWORDS.includes(pwd.toLowerCase()), "This password is too common");
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const validatePassword = (pwd: string) => {
+    if (!pwd) {
+      setPasswordErrors([]);
+      return;
+    }
+    
+    const errors: string[] = [];
+    
+    if (pwd.length < 8) errors.push("At least 8 characters");
+    if (!/[A-Z]/.test(pwd)) errors.push("One uppercase letter");
+    if (!/[a-z]/.test(pwd)) errors.push("One lowercase letter");
+    if (!/[0-9]/.test(pwd)) errors.push("One number");
+    if (!/[^A-Za-z0-9]/.test(pwd)) errors.push("One special character");
+    if (COMMON_PASSWORDS.includes(pwd.toLowerCase())) errors.push("Password is too common");
+    
+    setPasswordErrors(errors);
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (passwordTouched) {
+      validatePassword(value);
+    }
+  };
+
+  const handlePasswordBlur = () => {
+    setPasswordTouched(true);
+    validatePassword(password);
+  };
 
   useEffect(() => {
     // Check if user is already logged in
@@ -187,16 +236,45 @@ const Auth = () => {
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
                     <Input
                       type="password"
-                      placeholder="Password (min 6 characters)"
+                      placeholder="Password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => handlePasswordChange(e.target.value)}
+                      onBlur={handlePasswordBlur}
                       className="pl-10"
                     />
                   </div>
+                  
+                  {password && passwordTouched && (
+                    <div className="space-y-2 mt-2">
+                      {passwordErrors.length > 0 ? (
+                        <Alert variant="destructive" className="py-2">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription className="ml-2">
+                            <p className="text-sm font-medium mb-1">Password requirements:</p>
+                            <ul className="text-xs space-y-1">
+                              {passwordErrors.map((error, idx) => (
+                                <li key={idx} className="flex items-center gap-1">
+                                  <X className="h-3 w-3" />
+                                  {error}
+                                </li>
+                              ))}
+                            </ul>
+                          </AlertDescription>
+                        </Alert>
+                      ) : (
+                        <Alert className="py-2 border-green-500 bg-green-500/10">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <AlertDescription className="ml-2 text-green-500 text-sm">
+                            Password meets all requirements
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <Button 
                   onClick={() => handleEmailAuth(true)}
-                  disabled={loading || !email || !password || password.length < 6}
+                  disabled={loading || !email || !password || passwordErrors.length > 0}
                   className="w-full"
                 >
                   {loading ? 'Creating account...' : 'Sign Up'}
