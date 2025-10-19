@@ -163,14 +163,6 @@ export const Marketplace = () => {
                   <span className="text-xl font-bold text-primary whitespace-nowrap">${product.price}</span>
                 </div>
                 
-                {product.seller && (
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary text-xs font-medium">
-                      {product.seller.display_name?.[0]?.toUpperCase() || 'U'}
-                    </div>
-                    <span className="text-sm text-muted-foreground">{product.seller.display_name || 'Anonymous'}</span>
-                  </div>
-                )}
                 
                 <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3 flex-wrap">
                   <span className="bg-accent/30 px-2 py-1 rounded text-xs">{product.category}</span>

@@ -5,7 +5,6 @@ import { useToast } from './use-toast';
 
 export type Product = {
   id: string;
-  user_id: string;
   title: string;
   description: string;
   price: number;
@@ -14,15 +13,9 @@ export type Product = {
   size?: string;
   location: string;
   images: string[];
-  status: 'active' | 'sold' | 'draft';
   likes: number;
   views: number;
   created_at: string;
-  updated_at: string;
-  seller?: {
-    display_name: string;
-    avatar_url?: string;
-  };
   is_liked?: boolean;
 };
 
@@ -48,22 +41,10 @@ export const useProducts = () => {
     try {
       setLoading(true);
       
-      // First get products
-      let query = supabase
-        .from('products')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+      // Use the anonymous function to get products without user_id
+      const { data: productsData, error: productsError } = await supabase
+        .rpc('get_public_products');
 
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-
-      if (category !== 'All') {
-        query = query.eq('category', category);
-      }
-
-      const { data: productsData, error: productsError } = await query;
       if (productsError) throw productsError;
 
       if (!productsData || productsData.length === 0) {
@@ -71,35 +52,37 @@ export const useProducts = () => {
         return;
       }
 
-      // Get seller profiles
-      const userIds = [...new Set(productsData.map(p => p.user_id))];
-      const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('user_id, display_name, avatar_url')
-        .in('user_id', userIds);
-
-      // Get product likes for current user
-      let likesData: any[] = [];
-      if (user) {
-        const productIds = productsData.map(p => p.id);
-        const { data: userLikes } = await supabase
-          .from('product_likes')
-          .select('product_id')
-          .eq('user_id', user.id)
-          .in('product_id', productIds);
-        likesData = userLikes || [];
+      // Filter by search term and category client-side
+      let filteredProducts = productsData;
+      
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        filteredProducts = filteredProducts.filter(p => 
+          p.title.toLowerCase().includes(searchLower) || 
+          p.description.toLowerCase().includes(searchLower)
+        );
       }
 
-      const productsWithLikes: Product[] = productsData.map(product => ({
-        ...product,
-        status: product.status as 'active' | 'sold' | 'draft',
-        images: product.images || [],
-        seller: profilesData?.find(p => p.user_id === product.user_id) ? {
-          display_name: profilesData.find(p => p.user_id === product.user_id)?.display_name || 'Anonymous',
-          avatar_url: profilesData.find(p => p.user_id === product.user_id)?.avatar_url,
-        } : undefined,
-        is_liked: likesData.some(like => like.product_id === product.id),
-      }));
+      if (category !== 'All') {
+        filteredProducts = filteredProducts.filter(p => p.category === category);
+      }
+
+      // Check if user liked each product
+      const productsWithLikes: Product[] = await Promise.all(
+        filteredProducts.map(async (product) => {
+          let is_liked = false;
+          if (user) {
+            const { data } = await supabase
+              .rpc('has_user_liked_product', { product_id: product.id });
+            is_liked = data || false;
+          }
+          return {
+            ...product,
+            images: product.images || [],
+            is_liked,
+          };
+        })
+      );
 
       setProducts(productsWithLikes);
     } catch (error: any) {
