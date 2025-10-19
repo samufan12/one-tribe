@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -216,6 +216,27 @@ export type Database = {
           verification_status: string
         }[]
       }
+      get_product_like_count: {
+        Args: { product_id: string }
+        Returns: number
+      }
+      get_public_products: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+          condition: string
+          created_at: string
+          description: string
+          id: string
+          images: string[]
+          likes: number
+          location: string
+          price: number
+          size: string
+          title: string
+          views: number
+        }[]
+      }
       get_public_profile: {
         Args: { profile_user_id: string }
         Returns: {
@@ -244,6 +265,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      has_user_liked_product: {
+        Args: { product_id: string }
         Returns: boolean
       }
       is_admin: {
