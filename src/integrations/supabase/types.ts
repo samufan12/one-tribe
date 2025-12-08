@@ -201,12 +201,9 @@ export type Database = {
         }
         Returns: boolean
       }
-      edge_functions_ai_assistant: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      edge_functions_ai_assistant: { Args: never; Returns: undefined }
       get_all_public_profiles: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           avatar_url: string
           business_name: string
@@ -216,12 +213,9 @@ export type Database = {
           verification_status: string
         }[]
       }
-      get_product_like_count: {
-        Args: { product_id: string }
-        Returns: number
-      }
+      get_product_like_count: { Args: { product_id: string }; Returns: number }
       get_public_products: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           category: string
           condition: string
@@ -250,7 +244,7 @@ export type Database = {
         }[]
       }
       get_seller_profiles: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           avatar_url: string
           business_name: string
@@ -267,18 +261,9 @@ export type Database = {
         }
         Returns: boolean
       }
-      has_user_liked_product: {
-        Args: { product_id: string }
-        Returns: boolean
-      }
-      is_admin: {
-        Args: { check_user_id?: string }
-        Returns: boolean
-      }
-      log_ai_usage: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      has_user_liked_product: { Args: { product_id: string }; Returns: boolean }
+      is_admin: { Args: { check_user_id?: string }; Returns: boolean }
+      log_ai_usage: { Args: never; Returns: string }
       remove_user_role: {
         Args: {
           role_to_remove: Database["public"]["Enums"]["app_role"]
@@ -286,10 +271,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      request_seller_status: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      request_seller_status: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "seller" | "buyer" | "admin"
