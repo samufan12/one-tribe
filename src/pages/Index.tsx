@@ -27,12 +27,22 @@ const Index = () => {
           >
             Start Shopping
           </button>
-          <button 
-            onClick={() => navigate('/sell')}
-            className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
-          >
-            Sell Your Items
-          </button>
+          {!user && (
+            <button 
+              onClick={() => navigate('/auth')}
+              className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+            >
+              Sign In / Sign Up
+            </button>
+          )}
+          {user && (
+            <button 
+              onClick={() => navigate('/sell')}
+              className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+            >
+              Sell Your Items
+            </button>
+          )}
         </div>
       </div>
 
