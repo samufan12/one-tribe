@@ -69,7 +69,7 @@ const Auth = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/');
+        navigate('/home');
       }
     };
     checkUser();
@@ -99,7 +99,7 @@ const Auth = () => {
         // Continue even if this fails
       }
 
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/home`;
 
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
@@ -125,7 +125,7 @@ const Auth = () => {
         if (error) throw error;
         
         if (data.user) {
-          window.location.href = '/';
+          window.location.href = '/home';
         }
       }
     } catch (error: any) {

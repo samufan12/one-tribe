@@ -5,10 +5,18 @@ import { Layout } from "@/components/Layout";
 import kemis1 from "@/assets/kemis-1.jpg";
 import kemis2 from "@/assets/kemis-2.jpg";
 import coffeeSet from "@/assets/coffee-set.jpg";
+import { useEffect } from "react";
 
 const Index = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect unauthenticated users to landing page
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/');
+    }
+  }, [user, loading, navigate]);
 
   const HomeContent = () => (
     <div className="space-y-8">
