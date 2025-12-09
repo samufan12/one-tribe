@@ -1,13 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { ShoppingBag, Users, Shield, Sparkles, ArrowRight, Star } from "lucide-react";
-import kemis1 from "@/assets/kemis-1.jpg";
-import kemis2 from "@/assets/kemis-2.jpg";
-import coffeeSet from "@/assets/coffee-set.jpg";
-import seller1 from "@/assets/seller-1.jpg";
-import seller2 from "@/assets/seller-2.jpg";
-import seller3 from "@/assets/seller-3.jpg";
+import africanDress1 from "@/assets/african-dress-1.jpg";
+import africanFashion2 from "@/assets/african-fashion-2.jpg";
+import africanFashion3 from "@/assets/african-fashion-3.jpg";
+import ethiopianCoffee from "@/assets/ethiopian-coffee.jpg";
+import person1 from "@/assets/person-1.jpg";
+import person2 from "@/assets/person-2.jpg";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -15,24 +14,20 @@ const Landing = () => {
 
   const features = [
     {
-      icon: ShoppingBag,
       title: "Authentic Marketplace",
       description: "Discover genuine traditional clothing and handcrafted items from verified sellers across the community."
     },
     {
-      icon: Users,
       title: "Vibrant Community",
       description: "Connect with fellow enthusiasts, share styling tips, and celebrate cultural heritage together."
     },
     {
-      icon: Shield,
       title: "Secure Transactions",
       description: "Shop with confidence knowing your purchases are protected with our buyer guarantee."
     },
     {
-      icon: Sparkles,
-      title: "AI Style Assistant",
-      description: "Get personalized recommendations and styling advice from our intelligent fashion assistant."
+      title: "Personal Style Guidance",
+      description: "Get personalized recommendations and styling advice tailored to your preferences."
     }
   ];
 
@@ -40,19 +35,19 @@ const Landing = () => {
     {
       name: "Makda T.",
       role: "Verified Buyer",
-      image: seller1,
+      image: person1,
       quote: "Finally found authentic traditional dresses that remind me of home. The quality is exceptional!"
     },
     {
       name: "Yonas K.",
       role: "Seller",
-      image: seller2,
+      image: person2,
       quote: "OneTribe has helped me reach customers worldwide. My handcrafts are now appreciated globally."
     },
     {
       name: "Sara M.",
       role: "Community Member",
-      image: seller3,
+      image: person1,
       quote: "The community here is so supportive. I've learned so much about traditional styling."
     }
   ];
@@ -73,7 +68,6 @@ const Landing = () => {
               {user ? (
                 <Button onClick={() => navigate('/home')}>
                   Go to App
-                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
                 <>
@@ -96,7 +90,6 @@ const Landing = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                <Sparkles className="h-4 w-4" />
                 Discover Authentic Culture
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
@@ -109,7 +102,6 @@ const Landing = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8">
                   Start Shopping
-                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button size="lg" variant="outline" onClick={() => navigate('/marketplace')} className="text-lg px-8">
                   Browse Collection
@@ -136,25 +128,18 @@ const Landing = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
                   <div className="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src={kemis1} alt="Traditional Kemis" className="w-full h-64 object-cover" />
+                    <img src={africanDress1} alt="Traditional African Dress" className="w-full h-64 object-cover" />
                   </div>
                   <div className="rounded-2xl overflow-hidden shadow-xl">
-                    <img src={coffeeSet} alt="Coffee Set" className="w-full h-40 object-cover" />
+                    <img src={ethiopianCoffee} alt="Ethiopian Coffee Ceremony" className="w-full h-40 object-cover" />
                   </div>
                 </div>
                 <div className="pt-8 space-y-4">
                   <div className="rounded-2xl overflow-hidden shadow-xl">
-                    <img src={kemis2} alt="Cultural Accessories" className="w-full h-40 object-cover" />
+                    <img src={africanFashion3} alt="African Fashion" className="w-full h-40 object-cover" />
                   </div>
-                  <div className="rounded-2xl overflow-hidden shadow-2xl bg-primary/10 p-6 flex flex-col items-center justify-center h-64">
-                    <div className="flex -space-x-2 mb-4">
-                      <img src={seller1} alt="" className="w-10 h-10 rounded-full border-2 border-background object-cover" />
-                      <img src={seller2} alt="" className="w-10 h-10 rounded-full border-2 border-background object-cover" />
-                      <img src={seller3} alt="" className="w-10 h-10 rounded-full border-2 border-background object-cover" />
-                    </div>
-                    <p className="text-center text-sm text-muted-foreground">
-                      Join thousands of sellers and buyers in our community
-                    </p>
+                  <div className="rounded-2xl overflow-hidden shadow-2xl">
+                    <img src={africanFashion2} alt="Traditional Style" className="w-full h-64 object-cover" />
                   </div>
                 </div>
               </div>
@@ -175,9 +160,6 @@ const Landing = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="bg-card rounded-2xl p-6 border shadow-sm hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
-                </div>
                 <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
                 <p className="text-muted-foreground text-sm">{feature.description}</p>
               </div>
@@ -198,11 +180,6 @@ const Landing = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <div key={index} className="bg-card rounded-2xl p-6 border">
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                  ))}
-                </div>
                 <p className="text-muted-foreground mb-6">"{testimonial.quote}"</p>
                 <div className="flex items-center gap-3">
                   <img 
