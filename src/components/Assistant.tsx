@@ -17,7 +17,7 @@ export const Assistant = () => {
     id: "welcome",
     role: "assistant",
     content:
-      "Selam! I'm your Habesha AI shopping assistant. I can help you discover authentic Ethiopian & Eritrean goods, compare items, and explain cultural context. Ask me anything!",
+      "Please enter what you're looking for, and we'll help you find it.",
   }]);
 
   const containerRef = useRef<HTMLDivElement>(null);
