@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { HelpCircle, MessageSquare, BookOpen, GraduationCap, Plus, ShoppingCart, Search, User, LogOut, Copy } from "lucide-react";
+import { HelpCircle, MessageSquare, BookOpen, GraduationCap, Plus, ShoppingCart, Search, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,20 +13,6 @@ const Header = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const copyToClipboard = (url: string, label: string) => {
-    navigator.clipboard.writeText(url).then(() => {
-      toast({
-        title: "Link copied!",
-        description: `${label} link copied to clipboard`,
-      });
-    }).catch(() => {
-      toast({
-        title: "Failed to copy",
-        description: "Please try again",
-        variant: "destructive",
-      });
-    });
-  };
   return (
     <div className="h-16 flex items-center justify-between px-6 border-b border-gray-800">
       {/* Search Bar */}
@@ -42,45 +28,16 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-4 relative">
-        {/* YouTube icon */}
-        <div className="flex items-center gap-1">
-          <a 
-            href="https://www.youtube.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative z-50"
-            aria-label="Visit YouTube"
-          >
-            <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-6 h-6 pointer-events-none" />
-          </a>
-          <button
-            onClick={() => copyToClipboard('https://www.youtube.com/', 'YouTube')}
-            className="flex items-center justify-center w-8 h-8 text-gray-500 hover:text-white transition-colors rounded-md hover:bg-gray-800"
-            aria-label="Copy YouTube link"
-          >
-            <Copy size={14} />
-          </button>
-        </div>
-        
-        {/* Discord icon */}
-        <div className="flex items-center gap-1">
-          <a 
-            href="https://discord.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800 relative z-50"
-            aria-label="Visit Discord"
-          >
-            <img src="/lovable-uploads/92333427-5a32-4cf8-b110-afc5b57c9f27.png" alt="Discord" className="w-6 h-6 pointer-events-none" />
-          </a>
-          <button
-            onClick={() => copyToClipboard('https://discord.com/', 'Discord')}
-            className="flex items-center justify-center w-8 h-8 text-gray-500 hover:text-white transition-colors rounded-md hover:bg-gray-800"
-            aria-label="Copy Discord link"
-          >
-            <Copy size={14} />
-          </button>
-        </div>
+        {/* YouTube link */}
+        <a 
+          href="https://www.youtube.com/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center justify-center w-10 h-10 text-gray-400 hover:text-white transition-colors rounded-md hover:bg-gray-800"
+          aria-label="Visit YouTube"
+        >
+          <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-6 h-6" />
+        </a>
         
         {/* Shopping Cart */}
         <button 
