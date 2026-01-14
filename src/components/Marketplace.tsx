@@ -1,16 +1,45 @@
-
 import { useState, useEffect } from "react";
-import { Filter, Grid, List, Search, Heart, MessageCircle } from "lucide-react";
+import { Filter, Grid, List, Search, Heart, MessageCircle, Lock } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import kemis1 from "@/assets/kemis-1.jpg";
 import { ProductSkeletonGrid } from "./ProductSkeleton";
+import { toast } from "sonner";
 
 export const Marketplace = () => {
   const { products, loading, fetchProducts, toggleLike } = useProducts();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const handleAuthRequired = (action: string) => {
+    toast.error(`Please sign in to ${action}`, {
+      action: {
+        label: "Sign In",
+        onClick: () => navigate("/auth"),
+      },
+    });
+  };
+
+  const handleLike = (productId: string) => {
+    if (!user) {
+      handleAuthRequired("like items");
+      return;
+    }
+    toggleLike(productId);
+  };
+
+  const handleMessage = () => {
+    if (!user) {
+      handleAuthRequired("contact sellers");
+      return;
+    }
+    navigate("/messages");
+  };
 
   const categories = ["All", "Traditional Wear", "Home & Decor", "Jewelry", "Art", "Music"];
 
@@ -144,7 +173,7 @@ export const Marketplace = () => {
                     }`}
                   />
                   <button 
-                    onClick={() => toggleLike(product.id)}
+                    onClick={() => handleLike(product.id)}
                     className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 transition-all duration-200 hover:scale-110"
                   >
                     <Heart 
@@ -184,8 +213,13 @@ export const Marketplace = () => {
                     <span>{getTimeAgo(product.created_at)}</span>
                   </div>
                   
-                  <button className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all duration-200 hover:scale-110 active:scale-95">
+                  <button 
+                    onClick={handleMessage}
+                    className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all duration-200 hover:scale-110 active:scale-95 flex items-center gap-1"
+                    title={user ? "Message seller" : "Sign in to message seller"}
+                  >
                     <MessageCircle size={16} />
+                    {!user && <Lock size={12} />}
                   </button>
                 </div>
               </div>
