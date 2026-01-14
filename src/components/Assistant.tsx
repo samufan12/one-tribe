@@ -10,6 +10,13 @@ type ChatTurn = {
   content: string;
 };
 
+const QUICK_PROMPTS = [
+  "What traditional Ethiopian clothing do you have?",
+  "Help me find a gift for someone",
+  "What sizes are available for dresses?",
+  "Tell me about Habesha cultural items",
+];
+
 export const Assistant = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,7 +49,6 @@ export const Assistant = () => {
     if (error) {
       console.error("AI Assistant error:", error);
       
-      // Handle specific error cases
       if (error.message?.includes('Rate limit')) {
         throw new Error("You've reached the maximum number of requests. Please try again in a few minutes.");
       }
@@ -53,9 +59,11 @@ export const Assistant = () => {
     return data.message;
   };
 
-  const onSend = async () => {
-    if (!canSend) return;
-    const userTurn: ChatTurn = { id: Date.now().toString(), role: "user", content: input.trim() };
+  const onSend = async (messageText?: string) => {
+    const text = messageText || input.trim();
+    if (!text || loading) return;
+    
+    const userTurn: ChatTurn = { id: Date.now().toString(), role: "user", content: text };
     setMessages(prev => [...prev, userTurn]);
     setInput("");
     setLoading(true);
@@ -72,6 +80,8 @@ export const Assistant = () => {
     }
   };
 
+  const showQuickPrompts = messages.length === 1;
+
   return (
     <div className="h-full flex flex-col">
       <header className="p-4 border-b border-gray-800 flex items-center gap-3">
@@ -87,6 +97,21 @@ export const Assistant = () => {
             </div>
           </div>
         ))}
+        
+        {showQuickPrompts && !loading && (
+          <div className="flex flex-wrap gap-2 mt-4">
+            {QUICK_PROMPTS.map((prompt, index) => (
+              <button
+                key={index}
+                onClick={() => onSend(prompt)}
+                className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg border border-gray-700 transition-colors"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        )}
+        
         {loading && (
           <div className="text-gray-400 text-sm">Thinking…</div>
         )}
@@ -103,7 +128,7 @@ export const Assistant = () => {
           />
           <button
             disabled={!canSend}
-            onClick={onSend}
+            onClick={() => onSend()}
             className="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             <Send size={18} /> Send
