@@ -17,7 +17,7 @@ export const Assistant = () => {
     id: "welcome",
     role: "assistant",
     content:
-      "Please enter what you're looking for, and we'll help you find it.",
+      "Please enter what you're looking for, and we'll help you find it (AI Assistant).",
   }]);
 
   const containerRef = useRef<HTMLDivElement>(null);
