@@ -1,22 +1,15 @@
-import { useEffect, ReactNode } from "react";
+import { ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import Header from "./Header";
 
 interface LayoutProps {
   children: ReactNode;
+  requireAuth?: boolean;
 }
 
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children, requireAuth = false }: LayoutProps) => {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
 
   if (loading) {
     return (
@@ -29,7 +22,8 @@ export const Layout = ({ children }: LayoutProps) => {
     );
   }
 
-  if (!user) {
+  // Only require auth if explicitly set
+  if (requireAuth && !user) {
     return null;
   }
 
