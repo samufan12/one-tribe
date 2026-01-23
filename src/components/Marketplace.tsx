@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Filter, Grid, List, Search, Heart, MessageCircle, Lock } from "lucide-react";
+import { Grid, List, Search, Heart, MessageCircle, Lock, ChevronDown } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ export const Marketplace = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("newest");
 
   const handleAuthRequired = (action: string) => {
     toast.error(`Please sign in to ${action}`, {
@@ -43,185 +44,174 @@ export const Marketplace = () => {
 
   const categories = ["All", "Traditional Wear", "Home & Decor", "Jewelry", "Art", "Music"];
 
-  // Fetch products when search term or category changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchProducts(searchTerm, selectedCategory);
-    }, 300); // Debounce search
-
+    }, 300);
     return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedCategory]);
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
     
-    if (diffInDays === 0) {
-      return 'Today';
-    } else if (diffInDays === 1) {
-      return '1 day ago';
-    } else if (diffInDays < 7) {
-      return `${diffInDays} days ago`;
-    } else if (diffInDays < 30) {
-      const weeks = Math.floor(diffInDays / 7);
-      return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-    } else {
-      return format(date, 'MMM d, yyyy');
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    return format(date, 'MMM d');
+  };
+
+  const getConditionColor = (condition: string) => {
+    switch (condition?.toLowerCase()) {
+      case 'new': return 'bg-green-100 text-green-800';
+      case 'like new': return 'bg-blue-100 text-blue-800';
+      case 'good': return 'bg-yellow-100 text-yellow-800';
+      case 'fair': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Marketplace</h1>
-          <p className="text-muted-foreground mt-1">
-            {loading ? 'Loading...' : `${products.length} items available`}
-          </p>
+    <div className="max-w-[1400px] mx-auto px-4 py-6">
+      {/* Filters Bar */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search items..."
+              className="pl-9 pr-4 py-2 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 w-48"
+            />
+          </div>
+
+          {/* Category Filter */}
+          <div className="relative">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="appearance-none px-4 py-2 pr-10 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
+            >
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={16} />
+          </div>
+
+          {/* Sort */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="appearance-none px-4 py-2 pr-10 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
+            >
+              <option value="newest">Newest</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="popular">Most Popular</option>
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={16} />
+          </div>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-md transition-all duration-200 ${
-              viewMode === 'grid' 
-                ? 'bg-primary text-primary-foreground shadow-md' 
-                : 'bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Grid size={20} />
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`p-2 rounded-md transition-all duration-200 ${
-              viewMode === 'list' 
-                ? 'bg-primary text-primary-foreground shadow-md' 
-                : 'bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <List size={20} />
-          </button>
+
+        {/* View Mode & Results Count */}
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">
+            {loading ? 'Loading...' : `${products.length} items`}
+          </span>
+          <div className="flex items-center border border-border rounded-md overflow-hidden">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 ${viewMode === 'grid' ? 'bg-foreground text-background' : 'bg-background text-foreground hover:bg-muted'}`}
+            >
+              <Grid size={18} />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 ${viewMode === 'list' ? 'bg-foreground text-background' : 'bg-background text-foreground hover:bg-muted'}`}
+            >
+              <List size={18} />
+            </button>
+          </div>
         </div>
       </div>
 
-        {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search items..."
-            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-md placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-          />
-        </div>
-        
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-        >
-          {categories.map(category => (
-            <option key={category} value={category}>{category}</option>
-          ))}
-        </select>
-        
-        <button className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-md transition-colors flex items-center gap-2 hover:scale-105 active:scale-95">
-          <Filter size={20} />
-          Filters
-        </button>
-      </div>
-
-      {/* Items Grid/List */}
+      {/* Products Grid */}
       {loading ? (
-        <ProductSkeletonGrid count={6} listView={viewMode === 'list'} />
+        <ProductSkeletonGrid count={12} listView={viewMode === 'list'} />
       ) : products.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="w-32 h-32 mx-auto mb-4 rounded-lg overflow-hidden">
+        <div className="text-center py-16">
+          <div className="w-24 h-24 mx-auto mb-4 rounded-lg overflow-hidden">
             <img src={kemis1} alt="No products" className="w-full h-full object-cover opacity-50" />
           </div>
-          <h3 className="text-lg font-medium mb-2">No products found</h3>
-          <p className="text-muted-foreground mb-4">
-            {searchTerm || selectedCategory !== 'All' 
-              ? 'Try adjusting your search or filters'
-              : 'Be the first to list an item in the marketplace!'
-            }
-          </p>
+          <p className="text-muted-foreground text-lg">No items found</p>
+          <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters</p>
         </div>
       ) : (
-        <div className={viewMode === 'grid' 
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" 
-          : "space-y-4"
-        }>
+        <div className={`grid gap-4 ${
+          viewMode === 'grid' 
+            ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' 
+            : 'grid-cols-1'
+        }`}>
           {products.map((product) => (
-            <div 
-              key={product.id} 
-              className={`bg-card rounded-lg border overflow-hidden hover:border-accent/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
-                viewMode === 'list' ? 'flex' : ''
+            <div
+              key={product.id}
+              className={`group bg-background rounded-lg overflow-hidden border border-border hover:border-foreground/20 transition-all ${
+                viewMode === 'list' ? 'flex gap-4' : ''
               }`}
             >
-              <div className={viewMode === 'list' ? 'w-48 flex-shrink-0' : ''}>
-                <div className="relative">
-                  <img 
-                    src={product.images?.[0] || kemis1} 
-                    alt={product.title}
-                    className={`object-cover ${
-                      viewMode === 'list' ? 'w-full h-48' : 'w-full h-64'
-                    }`}
+              {/* Image */}
+              <div className={`relative overflow-hidden bg-muted ${
+                viewMode === 'list' ? 'w-40 h-40 shrink-0' : 'aspect-square'
+              }`}>
+                <img
+                  src={product.images?.[0] || kemis1}
+                  alt={product.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                
+                {/* Like Button */}
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleLike(product.id); }}
+                  className="absolute top-2 right-2 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background transition-colors"
+                >
+                  <Heart 
+                    size={16} 
+                    className={product.is_liked ? "fill-red-500 text-red-500" : "text-foreground"} 
                   />
-                  <button 
-                    onClick={() => handleLike(product.id)}
-                    className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 transition-all duration-200 hover:scale-110"
-                  >
-                    <Heart 
-                      size={16} 
-                      className={`transition-colors ${
-                        product.is_liked ? 'text-red-500 fill-current' : 'text-white hover:text-red-300'
-                      }`} 
-                    />
-                  </button>
-                </div>
+                </button>
+
+                {/* Condition Badge */}
+                <span className={`absolute top-2 left-2 px-2 py-0.5 text-xs font-medium rounded ${getConditionColor(product.condition)}`}>
+                  {product.condition}
+                </span>
               </div>
-              
-              <div className="p-4 flex-1">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold text-lg leading-tight line-clamp-2 pr-2">{product.title}</h3>
-                  <span className="text-xl font-bold text-primary whitespace-nowrap">${product.price}</span>
-                </div>
-                
-                
-                <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3 flex-wrap">
-                  <span className="bg-accent/30 px-2 py-1 rounded text-xs">{product.category}</span>
-                  {product.size && <span className="bg-accent/30 px-2 py-1 rounded text-xs">Size {product.size}</span>}
-                  <span className="bg-accent/30 px-2 py-1 rounded text-xs">{product.condition}</span>
-                </div>
-                
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-                
+
+              {/* Info */}
+              <div className="p-3 flex-1">
+                <p className="text-xs text-muted-foreground mb-1">{product.category}</p>
+                <h3 className="font-medium text-foreground text-sm line-clamp-2 mb-2">
+                  {product.title}
+                </h3>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-                    <span className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer">
-                      <Heart size={14} />
-                      {product.likes}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      📍 {product.location}
-                    </span>
-                    <span>{getTimeAgo(product.created_at)}</span>
-                  </div>
-                  
+                  <p className="font-bold text-foreground">${product.price}</p>
                   <button 
                     onClick={handleMessage}
-                    className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all duration-200 hover:scale-110 active:scale-95 flex items-center gap-1"
-                    title={user ? "Message seller" : "Sign in to message seller"}
+                    className="p-1.5 text-muted-foreground hover:text-foreground transition-colors relative"
+                    title={user ? "Message seller" : "Sign in to message"}
                   >
                     <MessageCircle size={16} />
-                    {!user && <Lock size={12} />}
+                    {!user && <Lock size={10} className="absolute -bottom-0.5 -right-0.5" />}
                   </button>
                 </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {product.location} · {getTimeAgo(product.created_at)}
+                </p>
               </div>
             </div>
           ))}

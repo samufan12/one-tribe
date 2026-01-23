@@ -1,11 +1,13 @@
-import { Layout } from "@/components/Layout";
+import GrailedLayout from "@/components/GrailedLayout";
 import { Categories as CategoriesComponent } from "@/components/Categories";
 
 const CategoriesPage = () => {
   return (
-    <Layout>
-      <CategoriesComponent />
-    </Layout>
+    <GrailedLayout>
+      <div className="max-w-[1400px] mx-auto px-4 py-6">
+        <CategoriesComponent />
+      </div>
+    </GrailedLayout>
   );
 };
 

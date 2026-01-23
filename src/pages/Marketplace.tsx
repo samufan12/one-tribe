@@ -1,11 +1,11 @@
-import { Layout } from "@/components/Layout";
+import GrailedLayout from "@/components/GrailedLayout";
 import { Marketplace as MarketplaceComponent } from "@/components/Marketplace";
 
 const MarketplacePage = () => {
   return (
-    <Layout>
+    <GrailedLayout showCategoryNav={false}>
       <MarketplaceComponent />
-    </Layout>
+    </GrailedLayout>
   );
 };
 

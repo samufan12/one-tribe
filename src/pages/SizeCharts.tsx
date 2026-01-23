@@ -1,11 +1,13 @@
-import { Layout } from "@/components/Layout";
+import GrailedLayout from "@/components/GrailedLayout";
 import { SizeCharts as SizeChartsComponent } from "@/components/SizeCharts";
 
 const SizeChartsPage = () => {
   return (
-    <Layout>
-      <SizeChartsComponent />
-    </Layout>
+    <GrailedLayout>
+      <div className="max-w-[1400px] mx-auto px-4 py-6">
+        <SizeChartsComponent />
+      </div>
+    </GrailedLayout>
   );
 };
 
