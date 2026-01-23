@@ -1,11 +1,13 @@
-import { Layout } from "@/components/Layout";
+import GrailedLayout from "@/components/GrailedLayout";
 import { SellItem as SellItemComponent } from "@/components/SellItem";
 
 const SellItemPage = () => {
   return (
-    <Layout>
-      <SellItemComponent />
-    </Layout>
+    <GrailedLayout>
+      <div className="max-w-[1400px] mx-auto px-4 py-6">
+        <SellItemComponent />
+      </div>
+    </GrailedLayout>
   );
 };
 

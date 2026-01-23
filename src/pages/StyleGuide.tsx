@@ -1,11 +1,13 @@
-import { Layout } from "@/components/Layout";
+import GrailedLayout from "@/components/GrailedLayout";
 import { StyleGuide as StyleGuideComponent } from "@/components/StyleGuide";
 
 const StyleGuidePage = () => {
   return (
-    <Layout>
-      <StyleGuideComponent />
-    </Layout>
+    <GrailedLayout>
+      <div className="max-w-[1400px] mx-auto px-4 py-6">
+        <StyleGuideComponent />
+      </div>
+    </GrailedLayout>
   );
 };
 

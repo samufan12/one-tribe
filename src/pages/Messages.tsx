@@ -1,11 +1,13 @@
-import { Layout } from "@/components/Layout";
+import GrailedLayout from "@/components/GrailedLayout";
 import { ChatInterface } from "@/components/ChatInterface";
 
 const MessagesPage = () => {
   return (
-    <Layout>
-      <ChatInterface />
-    </Layout>
+    <GrailedLayout>
+      <div className="max-w-[1400px] mx-auto px-4 py-6">
+        <ChatInterface />
+      </div>
+    </GrailedLayout>
   );
 };
 
