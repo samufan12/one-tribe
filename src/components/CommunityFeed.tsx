@@ -85,19 +85,19 @@ export const CommunityFeed = () => {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">Community Feed</h2>
+        <h2 className="text-2xl font-bold text-foreground">Community Feed</h2>
         <div className="flex gap-2">
-          <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
+          <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
             Latest
           </button>
-          <button className="px-4 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors">
+          <button className="px-4 py-2 bg-muted text-muted-foreground rounded-md hover:bg-accent transition-colors">
             Popular
           </button>
         </div>
       </div>
 
       {posts.map((post) => (
-        <div key={post.id} className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+        <div key={post.id} className="bg-card rounded-lg border border-border overflow-hidden">
           {/* User Header */}
           <div className="p-4 flex items-center gap-3">
             <img 
@@ -107,14 +107,14 @@ export const CommunityFeed = () => {
             />
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <span className="text-white font-medium">{post.user.name}</span>
+                <span className="text-foreground font-medium">{post.user.name}</span>
                 {post.user.verified && (
-                  <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs">✓</span>
+                  <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-primary-foreground text-xs">✓</span>
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock size={12} />
                 <span>{post.timestamp}</span>
               </div>
@@ -128,7 +128,7 @@ export const CommunityFeed = () => {
               alt={post.item.name}
               className="w-full h-96 object-cover"
             />
-            <div className="absolute top-4 right-4 bg-black/70 text-white px-2 py-1 rounded-md text-sm">
+            <div className="absolute top-4 right-4 bg-foreground/80 text-background px-2 py-1 rounded-md text-sm">
               ${post.item.price}
             </div>
           </div>
@@ -137,8 +137,8 @@ export const CommunityFeed = () => {
           <div className="p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
-                <h3 className="text-white font-semibold text-lg mb-1">{post.item.name}</h3>
-                <div className="flex items-center gap-4 text-sm text-gray-400 mb-2">
+                <h3 className="text-foreground font-semibold text-lg mb-1">{post.item.name}</h3>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
                   <div className="flex items-center gap-1">
                     <Tag size={14} />
                     <span>{post.item.category}</span>
@@ -151,30 +151,30 @@ export const CommunityFeed = () => {
               </div>
             </div>
 
-            <p className="text-gray-300 mb-4">{post.caption}</p>
+            <p className="text-muted-foreground mb-4">{post.caption}</p>
 
             {/* Engagement Bar */}
-            <div className="flex items-center justify-between pt-3 border-t border-gray-800">
+            <div className="flex items-center justify-between pt-3 border-t border-border">
               <div className="flex items-center gap-6">
                 <button 
                   onClick={() => handleLike(post.id)}
                   className={`flex items-center gap-2 transition-colors ${
-                    post.isLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                    post.isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
                   }`}
                 >
                   <Heart size={20} fill={post.isLiked ? 'currentColor' : 'none'} />
                   <span>{post.likes}</span>
                 </button>
-                <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                <button className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
                   <MessageCircle size={20} />
                   <span>{post.comments}</span>
                 </button>
-                <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                <button className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
                   <Share2 size={20} />
                 </button>
               </div>
               
-              <div className="flex items-center gap-1 text-sm text-gray-500">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Eye size={16} />
                 <span>{post.views}</span>
               </div>

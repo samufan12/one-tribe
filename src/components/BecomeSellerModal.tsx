@@ -60,9 +60,9 @@ export const BecomeSellerModal = ({ open, onOpenChange }: BecomeSellerModalProps
         <DialogHeader>
           <DialogTitle>Apply to Become a Seller</DialogTitle>
         </DialogHeader>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-          <h4 className="font-medium text-blue-900 mb-2">Application Process</h4>
-          <p className="text-sm text-blue-700">
+        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+          <h4 className="font-medium text-primary mb-2">Application Process</h4>
+          <p className="text-sm text-primary/80">
             Your seller application will be reviewed by our admin team. You'll be notified once approved and can then start listing items for sale.
           </p>
         </div>

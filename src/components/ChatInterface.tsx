@@ -87,8 +87,8 @@ export const ChatInterface = () => {
   if (selectedChat === null) {
     return (
       <div className="h-full">
-        <div className="p-4 border-b border-gray-800">
-          <h2 className="text-xl font-semibold text-white">Messages</h2>
+        <div className="p-4 border-b border-border">
+          <h2 className="text-xl font-semibold text-foreground">Messages</h2>
         </div>
         
         <div className="space-y-1 p-2">
@@ -96,7 +96,7 @@ export const ChatInterface = () => {
             <button
               key={chat.user.id}
               onClick={() => setSelectedChat(index)}
-              className="w-full p-3 flex items-center gap-3 hover:bg-gray-800 rounded-lg transition-colors"
+              className="w-full p-3 flex items-center gap-3 hover:bg-muted rounded-lg transition-colors"
             >
               <div className="relative">
                 <img 
@@ -105,18 +105,18 @@ export const ChatInterface = () => {
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 {chat.user.isOnline && (
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-gray-900 rounded-full"></div>
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full"></div>
                 )}
               </div>
               
               <div className="flex-1 text-left">
                 <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">{chat.user.name}</span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-foreground font-medium">{chat.user.name}</span>
+                  <span className="text-xs text-muted-foreground">
                     {chat.messages[chat.messages.length - 1]?.timestamp}
                   </span>
                 </div>
-                <p className="text-sm text-gray-400 truncate">
+                <p className="text-sm text-muted-foreground truncate">
                   {chat.messages[chat.messages.length - 1]?.content}
                 </p>
               </div>
@@ -132,10 +132,10 @@ export const ChatInterface = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Chat Header */}
-      <div className="p-4 border-b border-gray-800 flex items-center gap-3">
+      <div className="p-4 border-b border-border flex items-center gap-3">
         <button 
           onClick={() => setSelectedChat(null)}
-          className="text-gray-400 hover:text-white"
+          className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft size={20} />
         </button>
@@ -147,18 +147,18 @@ export const ChatInterface = () => {
             className="w-10 h-10 rounded-full object-cover"
           />
           {currentChat.user.isOnline && (
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-gray-900 rounded-full"></div>
+            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>
           )}
         </div>
         
         <div className="flex-1">
-          <h3 className="text-white font-medium">{currentChat.user.name}</h3>
-          <p className="text-xs text-gray-400">
+          <h3 className="text-foreground font-medium">{currentChat.user.name}</h3>
+          <p className="text-xs text-muted-foreground">
             {currentChat.user.isOnline ? "Online" : `Last seen ${currentChat.user.lastSeen}`}
           </p>
         </div>
         
-        <button className="text-gray-400 hover:text-white">
+        <button className="text-muted-foreground hover:text-foreground">
           <MoreVertical size={20} />
         </button>
       </div>
@@ -172,8 +172,8 @@ export const ChatInterface = () => {
           >
             <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
               message.senderId === 'me' 
-                ? 'bg-primary text-white' 
-                : 'bg-gray-800 text-gray-100'
+                ? 'bg-primary text-primary-foreground' 
+                : 'bg-muted text-foreground'
             }`}>
               {message.type === 'offer' && message.offerDetails ? (
                 <div className="space-y-2">
@@ -185,7 +185,7 @@ export const ChatInterface = () => {
                       <button className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
                         Accept
                       </button>
-                      <button className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700">
+                      <button className="px-3 py-1 bg-muted-foreground/20 text-foreground text-sm rounded hover:bg-muted-foreground/30">
                         Counter
                       </button>
                     </div>
@@ -201,12 +201,12 @@ export const ChatInterface = () => {
       </div>
 
       {/* Message Input */}
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-4 border-t border-border">
         <div className="flex items-center gap-2">
-          <button className="text-gray-400 hover:text-white p-2">
+          <button className="text-muted-foreground hover:text-foreground p-2">
             <Paperclip size={20} />
           </button>
-          <button className="text-gray-400 hover:text-white p-2">
+          <button className="text-muted-foreground hover:text-foreground p-2">
             <Image size={20} />
           </button>
           
@@ -217,11 +217,11 @@ export const ChatInterface = () => {
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
               placeholder="Type a message..."
-              className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 px-4 py-2 bg-background border border-border rounded-l-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button 
               onClick={sendMessage}
-              className="px-4 py-2 bg-primary text-white rounded-r-md hover:bg-primary/90 transition-colors"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-r-md hover:bg-primary/90 transition-colors"
             >
               <Send size={20} />
             </button>
