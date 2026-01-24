@@ -84,15 +84,15 @@ export const Assistant = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <header className="p-4 border-b border-gray-800 flex items-center gap-3">
+      <header className="p-4 border-b border-border flex items-center gap-3">
         <Sparkles className="text-primary" size={20} />
-        <h1 className="text-white text-lg font-semibold">AI Shopping Assistant</h1>
+        <h1 className="text-foreground text-lg font-semibold">AI Shopping Assistant</h1>
       </header>
 
       <main ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map(m => (
           <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-xl px-4 py-2 rounded-lg ${m.role === "user" ? "bg-primary text-white" : "bg-gray-800 text-gray-100"}`}>
+            <div className={`max-w-xl px-4 py-2 rounded-lg ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
               <p className="whitespace-pre-wrap">{m.content}</p>
             </div>
           </div>
@@ -104,7 +104,7 @@ export const Assistant = () => {
               <button
                 key={index}
                 onClick={() => onSend(prompt)}
-                className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg border border-gray-700 transition-colors"
+                className="px-3 py-2 text-sm bg-muted hover:bg-accent text-foreground rounded-lg border border-border transition-colors"
               >
                 {prompt}
               </button>
@@ -113,23 +113,23 @@ export const Assistant = () => {
         )}
         
         {loading && (
-          <div className="text-gray-400 text-sm">Thinking…</div>
+          <div className="text-muted-foreground text-sm">Thinking…</div>
         )}
       </main>
 
-      <footer className="p-4 border-t border-gray-800">
+      <footer className="p-4 border-t border-border">
         <div className="flex gap-2">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && onSend()}
             placeholder="Ask about habesha goods, shipping, sizes, or cultural details…"
-            className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="flex-1 px-4 py-2 bg-background border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
             disabled={!canSend}
             onClick={() => onSend()}
-            className="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             <Send size={18} /> Send
           </button>

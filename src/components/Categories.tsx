@@ -10,42 +10,42 @@ const categories = [
     icon: Package,
     count: 248,
     description: "Authentic kemis, habesha dresses, and cultural attire",
-    color: "bg-blue-500"
+    color: "bg-primary"
   },
   {
     name: "Jewelry & Accessories",
     icon: Gem,
     count: 156,
     description: "Traditional jewelry, scarves, and cultural accessories",
-    color: "bg-purple-500"
+    color: "bg-primary/80"
   },
   {
     name: "Home & Decor",
     icon: Coffee,
     count: 89,
     description: "Coffee sets, decorative items, and home furnishings",
-    color: "bg-green-500"
+    color: "bg-primary/90"
   },
   {
     name: "Art & Crafts",
     icon: Brush,
     count: 73,
     description: "Handwoven items, paintings, and traditional crafts",
-    color: "bg-orange-500"
+    color: "bg-primary/70"
   },
   {
     name: "Music & Instruments",
     icon: Music,
     count: 42,
     description: "Traditional instruments and cultural music items",
-    color: "bg-pink-500"
+    color: "bg-primary/85"
   },
   {
     name: "Vintage & Collectibles",
     icon: Palette,
     count: 61,
     description: "Rare finds and vintage cultural items",
-    color: "bg-indigo-500"
+    color: "bg-primary/75"
   }
 ];
 
@@ -67,7 +67,7 @@ export const Categories = () => {
           >
             <div className="flex items-center gap-4 mb-4">
               <div className={`w-12 h-12 ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                <category.icon className="w-6 h-6 text-white" />
+                <category.icon className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold">{category.name}</h3>
