@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import GrailedLayout from "@/components/GrailedLayout";
 import HeroCarousel from "@/components/HeroCarousel";
 import ProductSection from "@/components/ProductSection";
+import TopSellers from "@/components/TopSellers";
 
 const Index = () => {
   const { user } = useAuth();
@@ -12,6 +13,9 @@ const Index = () => {
     <GrailedLayout>
       {/* Hero Carousel */}
       <HeroCarousel />
+      
+      {/* Top Sellers */}
+      <TopSellers />
       
       {/* Product Sections */}
       <ProductSection title="Daily Picks For You" />
