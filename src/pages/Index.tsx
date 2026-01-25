@@ -32,19 +32,17 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={() => navigate('/community')}
+              onClick={() => navigate('/marketplace')}
               className="px-6 py-3 bg-foreground text-background font-medium rounded hover:bg-foreground/90 transition-colors"
             >
-              Explore Community
+              Start Shopping
             </button>
-            {!user && (
-              <button
-                onClick={() => navigate('/auth')}
-                className="px-6 py-3 border border-foreground text-foreground font-medium rounded hover:bg-foreground hover:text-background transition-colors"
-              >
-                Sign Up Free
-              </button>
-            )}
+            <button
+              onClick={() => navigate('/marketplace')}
+              className="px-6 py-3 border border-foreground text-foreground font-medium rounded hover:bg-foreground hover:text-background transition-colors"
+            >
+              Browse Listings
+            </button>
           </div>
         </div>
       </section>
