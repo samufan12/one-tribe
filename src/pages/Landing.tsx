@@ -100,7 +100,7 @@ const Landing = () => {
                 Connect with artisans, discover authentic traditional clothing, and celebrate cultural heritage through fashion.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8">
+                <Button size="lg" onClick={() => navigate('/marketplace')} className="text-lg px-8">
                   Start Shopping
                 </Button>
                 <Button size="lg" variant="outline" onClick={() => navigate('/marketplace')} className="text-lg px-8">
