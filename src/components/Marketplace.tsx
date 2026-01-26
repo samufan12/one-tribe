@@ -42,7 +42,7 @@ export const Marketplace = () => {
     navigate("/messages");
   };
 
-  const categories = ["All", "Traditional Wear", "Home & Decor", "Jewelry", "Art", "Music"];
+  const categories = ["All", "Men", "Women", "Traditional Wear", "Home & Decor", "Jewelry", "Art", "Coffee & Spices"];
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -74,6 +74,23 @@ export const Marketplace = () => {
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 py-6">
+      {/* Category Chips */}
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+              selectedCategory === cat
+                ? 'bg-foreground text-background'
+                : 'bg-muted text-foreground hover:bg-muted/80 border border-border'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
       {/* Filters Bar */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-4 flex-wrap">
