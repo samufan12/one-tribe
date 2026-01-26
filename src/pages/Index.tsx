@@ -25,10 +25,11 @@ const Index = () => {
       {/* Community Banner */}
       <section className="py-12 bg-muted">
         <div className="max-w-[1400px] mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">The East African Marketplace</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">The Global East African Marketplace</h2>
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Connecting the Ethiopian, Eritrean, Somali, and Kenyan diaspora with authentic goods from home. 
-            Shop traditional clothing, handcrafted items, and cultural treasures from trusted sellers.
+            Connecting the Ethiopian, Eritrean, Somali, and Kenyan diaspora across the US and Europe 
+            with authentic goods from home. Shop traditional clothing, handcrafted items, and cultural treasures 
+            from trusted sellers in your community.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
