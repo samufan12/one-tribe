@@ -42,7 +42,7 @@ export const Marketplace = () => {
     navigate("/messages");
   };
 
-  const categories = ["All", "Men", "Women", "Traditional Wear", "Home & Decor", "Jewelry", "Art", "Coffee & Spices"];
+  const categories = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {

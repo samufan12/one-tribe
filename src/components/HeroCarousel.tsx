@@ -17,7 +17,7 @@ interface Slide {
 const slides: Slide[] = [
   {
     id: 1,
-    subtitle: "THE GLOBAL EAST AFRICAN MARKETPLACE",
+    subtitle: "THE GLOBAL HABESHA MARKETPLACE",
     title: "Shop the Diaspora",
     cta: "SHOP NOW",
     href: "/marketplace",
@@ -26,7 +26,7 @@ const slides: Slide[] = [
   {
     id: 2,
     subtitle: "CONNECTING COMMUNITIES WORLDWIDE",
-    title: "Ethiopian • Eritrean • Somali • Kenyan",
+    title: "Ethiopian • Eritrean",
     cta: "EXPLORE",
     href: "/marketplace",
     image: kemis2,
@@ -34,7 +34,7 @@ const slides: Slide[] = [
   {
     id: 3,
     subtitle: "FROM OUR HOMES TO YOURS",
-    title: "Authentic Cultural Goods",
+    title: "Authentic Habesha Goods",
     cta: "DISCOVER",
     href: "/marketplace?category=coffee",
     image: coffeeSet,
