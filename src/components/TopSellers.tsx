@@ -15,6 +15,7 @@ const sellers = [
     reviews: 234,
     items: 48,
     specialty: "Ethiopian Kemis",
+    location: "Washington, DC",
   },
   {
     id: 2,
@@ -24,6 +25,7 @@ const sellers = [
     reviews: 189,
     items: 62,
     specialty: "Eritrean Zuria",
+    location: "London, UK",
   },
   {
     id: 3,
@@ -33,6 +35,7 @@ const sellers = [
     reviews: 312,
     items: 85,
     specialty: "Somali Dirac",
+    location: "Minneapolis, MN",
   },
   {
     id: 4,
@@ -42,6 +45,7 @@ const sellers = [
     reviews: 156,
     items: 37,
     specialty: "Kenyan Kikoy",
+    location: "Atlanta, GA",
   },
   {
     id: 5,
@@ -51,6 +55,7 @@ const sellers = [
     reviews: 201,
     items: 54,
     specialty: "Coffee & Decor",
+    location: "Amsterdam, NL",
   },
 ];
 
@@ -98,6 +103,7 @@ const TopSellers = () => {
               </div>
               
               <p className="text-xs text-muted-foreground">{seller.specialty}</p>
+              <p className="text-xs text-muted-foreground">{seller.location}</p>
               <p className="text-xs text-muted-foreground">{seller.items} items</p>
             </div>
           ))}
