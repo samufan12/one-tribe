@@ -41,7 +41,7 @@ const categories: CategoryItem[] = [
     ]
   },
   { label: "ART", href: "/marketplace?category=art" },
-  { label: "STAFF PICKS", href: "/marketplace?featured=true" },
+  { label: "COMMUNITY PICKS", href: "/marketplace?featured=true" },
   { label: "COLLECTIONS", href: "/categories" },
   { label: "CULTURAL GUIDE", href: "/cultural-guide" },
 ];
