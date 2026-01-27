@@ -52,11 +52,22 @@ const GrailedHeader = () => {
           
           <button 
             onClick={() => navigate('/assistant')}
-            className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
             title="AI Assistant"
           >
-            <Sparkles size={20} />
+            <Sparkles size={18} />
+            <span>AI</span>
           </button>
+          
+          <a 
+            href="https://www.youtube.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+            aria-label="Visit YouTube"
+          >
+            <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-5 h-5" />
+          </a>
           
           <button 
             onClick={() => navigate('/community')}
@@ -112,10 +123,20 @@ const GrailedHeader = () => {
           </Button>
           <button 
             onClick={() => { navigate('/assistant'); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-foreground"
+            className="w-full text-left py-2 text-foreground flex items-center gap-2"
           >
+            <Sparkles size={18} />
             AI Assistant
           </button>
+          <a 
+            href="https://www.youtube.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-full text-left py-2 text-foreground flex items-center gap-2"
+          >
+            <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-5 h-5" />
+            YouTube
+          </a>
           <button 
             onClick={() => { navigate('/community'); setMobileMenuOpen(false); }}
             className="w-full text-left py-2 text-foreground"
