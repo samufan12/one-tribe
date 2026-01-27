@@ -25,7 +25,7 @@ const GrailedHeader = () => {
         </div>
 
         {/* Search Bar - Center */}
-        <div className="flex-1 max-w-md">
+        <div className="flex-1 max-w-sm">
           <div className="relative flex items-center">
             <Search className="absolute left-3 text-muted-foreground" size={18} />
             <input
