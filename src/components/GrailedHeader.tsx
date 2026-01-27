@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MessageSquare, Heart, User, Menu, X } from "lucide-react";
+import { Search, MessageSquare, Heart, User, Menu, X, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,14 @@ const GrailedHeader = () => {
           >
             SELL
           </Button>
+          
+          <button 
+            onClick={() => navigate('/assistant')}
+            className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+            title="AI Assistant"
+          >
+            <Sparkles size={20} />
+          </button>
           
           <button 
             onClick={() => navigate('/community')}
@@ -102,6 +110,12 @@ const GrailedHeader = () => {
           >
             SELL
           </Button>
+          <button 
+            onClick={() => { navigate('/assistant'); setMobileMenuOpen(false); }}
+            className="w-full text-left py-2 text-foreground"
+          >
+            AI Assistant
+          </button>
           <button 
             onClick={() => { navigate('/community'); setMobileMenuOpen(false); }}
             className="w-full text-left py-2 text-foreground"
