@@ -178,7 +178,8 @@ export const Marketplace = () => {
           {products.map((product) => (
             <div
               key={product.id}
-              className={`group bg-background rounded-lg overflow-hidden border border-border hover:border-foreground/20 transition-all ${
+              onClick={() => navigate(`/product/${product.id}`)}
+              className={`group bg-background rounded-lg overflow-hidden border border-border hover:border-foreground/20 transition-all cursor-pointer ${
                 viewMode === 'list' ? 'flex gap-4' : ''
               }`}
             >

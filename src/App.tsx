@@ -23,6 +23,7 @@ import Cart from "./pages/Cart";
 import Support from "./pages/Support";
 import FAQ from "./pages/FAQ";
 import CulturalGuide from "./pages/CulturalGuide";
+import ProductDetail from "./pages/ProductDetail";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/support" element={<Support />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/cultural-guide" element={<CulturalGuide />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
