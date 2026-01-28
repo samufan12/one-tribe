@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Grid, List, Search, Heart, MessageCircle, Lock, ChevronDown } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { format } from "date-fns";
 import kemis1 from "@/assets/kemis-1.jpg";
 import { ProductSkeletonGrid } from "./ProductSkeleton";
@@ -12,8 +12,9 @@ export const Marketplace = () => {
   const { products, loading, fetchProducts, toggleLike } = useProducts();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || "");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
 
@@ -44,9 +45,23 @@ export const Marketplace = () => {
 
   const categories = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
 
+  // Sync URL search param with state
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') || "";
+    if (urlSearch !== searchTerm) {
+      setSearchTerm(urlSearch);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchProducts(searchTerm, selectedCategory);
+      // Update URL when search changes
+      if (searchTerm) {
+        setSearchParams({ search: searchTerm });
+      } else {
+        setSearchParams({});
+      }
     }, 300);
     return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedCategory]);

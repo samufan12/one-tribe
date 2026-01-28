@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Search, MessageSquare, Heart, User, Menu, X, Sparkles } from "lucide-react";
+import { MessageSquare, Heart, User, Menu, X, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import SearchBar from "@/components/SearchBar";
 
 const GrailedHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -25,19 +26,7 @@ const GrailedHeader = () => {
         </div>
 
         {/* Search Bar - Center */}
-        <div className="flex-1 max-w-sm">
-          <div className="relative flex items-center">
-            <Search className="absolute left-3 text-muted-foreground" size={18} />
-            <input
-              type="text"
-              placeholder="Search for anything"
-              className="w-full pl-10 pr-24 py-2.5 border border-border rounded-full bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20"
-            />
-            <button className="absolute right-1 px-4 py-1.5 bg-foreground text-background text-sm font-medium rounded-full hover:bg-foreground/90 transition-colors">
-              SEARCH
-            </button>
-          </div>
-        </div>
+        <SearchBar />
 
         {/* Action Buttons - Right */}
         <div className="hidden md:flex items-center gap-1">
