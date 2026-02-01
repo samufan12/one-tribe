@@ -1,10 +1,19 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, X, Clock, Trash2 } from "lucide-react";
+import { Search, X, Clock, Trash2, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProducts, Product } from "@/hooks/useProducts";
 
 const SEARCH_HISTORY_KEY = "search_history";
 const MAX_HISTORY_ITEMS = 5;
+
+// Popular search terms (could be fetched from backend in the future)
+const TRENDING_SEARCHES = [
+  "Traditional Kemis",
+  "Ethiopian Coffee",
+  "Habesha Dress",
+  "Netela",
+  "Gold Jewelry",
+];
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
@@ -110,8 +119,9 @@ const SearchBar = () => {
     setResults([]);
   };
 
-  const showHistory = isOpen && query.trim() === "" && searchHistory.length > 0;
+  const showHistory = isOpen && query.trim() === "";
   const showResults = isOpen && query.trim() !== "";
+  const hasHistory = searchHistory.length > 0;
 
   return (
     <div ref={wrapperRef} className="relative flex-1 max-w-sm">
@@ -142,36 +152,61 @@ const SearchBar = () => {
         </button>
       </div>
 
-      {/* Search History Dropdown */}
+      {/* Search History & Trending Dropdown */}
       {showHistory && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-            <span className="text-xs font-medium text-muted-foreground">Recent Searches</span>
-            <button
-              onClick={clearHistory}
-              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-            >
-              <Trash2 size={12} />
-              Clear
-            </button>
-          </div>
-          <div className="max-h-64 overflow-y-auto">
-            {searchHistory.map((term) => (
-              <button
-                key={term}
-                onClick={() => handleHistoryClick(term)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-muted/50 transition-colors text-left group"
-              >
-                <Clock size={14} className="text-muted-foreground shrink-0" />
-                <span className="flex-1 text-sm text-foreground truncate">{term}</span>
+          {/* Recent Searches */}
+          {hasHistory && (
+            <>
+              <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+                <span className="text-xs font-medium text-muted-foreground">Recent Searches</span>
                 <button
-                  onClick={(e) => removeHistoryItem(term, e)}
-                  className="p-1 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={clearHistory}
+                  className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                 >
-                  <X size={14} />
+                  <Trash2 size={12} />
+                  Clear
                 </button>
-              </button>
-            ))}
+              </div>
+              <div className="max-h-40 overflow-y-auto">
+                {searchHistory.map((term) => (
+                  <button
+                    key={term}
+                    onClick={() => handleHistoryClick(term)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-muted/50 transition-colors text-left group"
+                  >
+                    <Clock size={14} className="text-muted-foreground shrink-0" />
+                    <span className="flex-1 text-sm text-foreground truncate">{term}</span>
+                    <button
+                      onClick={(e) => removeHistoryItem(term, e)}
+                      className="p-1 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Trending Searches */}
+          <div className={hasHistory ? "border-t border-border" : ""}>
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-border">
+              <TrendingUp size={12} className="text-primary" />
+              <span className="text-xs font-medium text-muted-foreground">Trending Searches</span>
+            </div>
+            <div className="max-h-48 overflow-y-auto">
+              {TRENDING_SEARCHES.map((term) => (
+                <button
+                  key={term}
+                  onClick={() => handleHistoryClick(term)}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-muted/50 transition-colors text-left"
+                >
+                  <TrendingUp size={14} className="text-primary shrink-0" />
+                  <span className="text-sm text-foreground">{term}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

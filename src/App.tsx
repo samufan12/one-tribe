@@ -24,7 +24,7 @@ import Support from "./pages/Support";
 import FAQ from "./pages/FAQ";
 import CulturalGuide from "./pages/CulturalGuide";
 import ProductDetail from "./pages/ProductDetail";
-
+import PaymentSuccess from "./pages/PaymentSuccess";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -54,6 +54,7 @@ const App = () => (
             <Route path="/faq" element={<FAQ />} />
             <Route path="/cultural-guide" element={<CulturalGuide />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

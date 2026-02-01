@@ -1,27 +1,36 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, MessageCircle, Share2, ChevronLeft, ChevronRight, MapPin, Clock, Shield, Truck } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, Share2, ChevronLeft, ChevronRight, MapPin, Clock, Shield, Truck, CreditCard, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import GrailedLayout from "@/components/GrailedLayout";
 import { useProducts, Product } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { products, loading, toggleLike } = useProducts();
   const { user } = useAuth();
+  const { addToRecentlyViewed } = useRecentlyViewed();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   useEffect(() => {
     if (products.length > 0 && id) {
       const found = products.find(p => p.id === id);
       setProduct(found || null);
+      
+      // Track in recently viewed
+      if (found) {
+        addToRecentlyViewed(found);
+      }
       
       // Find related products from the same category
       if (found) {
@@ -31,7 +40,7 @@ const ProductDetail = () => {
         setRelatedProducts(related);
       }
     }
-  }, [products, id]);
+  }, [products, id, addToRecentlyViewed]);
 
   const handleAuthRequired = (action: string) => {
     toast.error(`Please sign in to ${action}`, {
@@ -59,6 +68,32 @@ const ProductDetail = () => {
       return;
     }
     navigate("/messages");
+  };
+
+  const handleBuyNow = async () => {
+    if (!product) return;
+    
+    setIsCheckingOut(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-payment", {
+        body: {
+          productId: product.id,
+          productTitle: product.title,
+          price: product.price,
+          quantity: 1,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Failed to start checkout. Please try again.");
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   const handleShare = async () => {
@@ -223,22 +258,42 @@ const ProductDetail = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3">
-              <Button onClick={handleMessage} className="flex-1" size="lg">
-                <MessageCircle size={18} className="mr-2" />
-                Message Seller
-              </Button>
+            <div className="flex flex-col gap-3">
               <Button 
-                variant="outline" 
-                size="lg"
-                onClick={handleLike}
-                className={product.is_liked ? "text-red-500 border-red-500" : ""}
+                onClick={handleBuyNow} 
+                size="lg" 
+                disabled={isCheckingOut}
+                className="w-full"
               >
-                <Heart size={18} className={product.is_liked ? "fill-red-500" : ""} />
+                {isCheckingOut ? (
+                  <>
+                    <Loader2 size={18} className="mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard size={18} className="mr-2" />
+                    Buy Now · ${product.price}
+                  </>
+                )}
               </Button>
-              <Button variant="outline" size="lg" onClick={handleShare}>
-                <Share2 size={18} />
-              </Button>
+              <div className="flex gap-3">
+                <Button onClick={handleMessage} variant="outline" className="flex-1" size="lg">
+                  <MessageCircle size={18} className="mr-2" />
+                  Message
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={handleLike}
+                  className={product.is_liked ? "text-red-500 border-red-500" : ""}
+                >
+                  <Heart size={18} className={product.is_liked ? "fill-red-500" : ""} />
+                </Button>
+                <Button variant="outline" size="lg" onClick={handleShare}>
+                  <Share2 size={18} />
+                </Button>
+              </div>
             </div>
 
             {/* Stats */}
