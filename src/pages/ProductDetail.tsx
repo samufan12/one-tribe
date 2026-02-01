@@ -15,12 +15,21 @@ const ProductDetail = () => {
   const { products, loading, toggleLike } = useProducts();
   const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (products.length > 0 && id) {
       const found = products.find(p => p.id === id);
       setProduct(found || null);
+      
+      // Find related products from the same category
+      if (found) {
+        const related = products
+          .filter(p => p.category === found.category && p.id !== found.id)
+          .slice(0, 4);
+        setRelatedProducts(related);
+      }
     }
   }, [products, id]);
 
@@ -281,6 +290,40 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
+        {/* Related Products */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-border">
+            <h2 className="text-xl font-bold text-foreground mb-6">More in {product.category}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {relatedProducts.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    navigate(`/product/${item.id}`);
+                    setCurrentImageIndex(0);
+                    window.scrollTo(0, 0);
+                  }}
+                  className="group bg-background rounded-lg overflow-hidden border border-border hover:border-foreground/20 transition-all text-left"
+                >
+                  <div className="relative aspect-square bg-muted overflow-hidden">
+                    <img
+                      src={item.images?.[0] || 'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=300&h=300&fit=crop'}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <span className={`absolute top-2 left-2 px-2 py-0.5 text-xs font-medium rounded ${getConditionColor(item.condition)}`}>
+                      {item.condition}
+                    </span>
+                  </div>
+                  <div className="p-3">
+                    <p className="text-sm font-medium text-foreground line-clamp-1">{item.title}</p>
+                    <p className="font-bold text-foreground mt-1">${item.price}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </GrailedLayout>
   );
