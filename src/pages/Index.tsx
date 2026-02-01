@@ -4,6 +4,7 @@ import GrailedLayout from "@/components/GrailedLayout";
 import HeroCarousel from "@/components/HeroCarousel";
 import ProductSection from "@/components/ProductSection";
 import TopSellers from "@/components/TopSellers";
+import RecentlyViewed from "@/components/RecentlyViewed";
 
 const Index = () => {
   const { user } = useAuth();
@@ -13,6 +14,9 @@ const Index = () => {
     <GrailedLayout>
       {/* Hero Carousel */}
       <HeroCarousel />
+      
+      {/* Recently Viewed */}
+      <RecentlyViewed />
       
       {/* Top Sellers */}
       <TopSellers />
