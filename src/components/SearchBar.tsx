@@ -1,15 +1,49 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, Clock, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProducts, Product } from "@/hooks/useProducts";
+
+const SEARCH_HISTORY_KEY = "search_history";
+const MAX_HISTORY_ITEMS = 5;
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<Product[]>([]);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const { products } = useProducts();
   const navigate = useNavigate();
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Load search history from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(SEARCH_HISTORY_KEY);
+    if (stored) {
+      setSearchHistory(JSON.parse(stored));
+    }
+  }, []);
+
+  // Save search to history
+  const saveToHistory = (term: string) => {
+    if (!term.trim()) return;
+    const updated = [term, ...searchHistory.filter(h => h !== term)].slice(0, MAX_HISTORY_ITEMS);
+    setSearchHistory(updated);
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updated));
+  };
+
+  // Clear search history
+  const clearHistory = () => {
+    setSearchHistory([]);
+    localStorage.removeItem(SEARCH_HISTORY_KEY);
+  };
+
+  // Remove single history item
+  const removeHistoryItem = (term: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = searchHistory.filter(h => h !== term);
+    setSearchHistory(updated);
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updated));
+  };
 
   // Filter products based on search query
   useEffect(() => {
@@ -21,11 +55,9 @@ const SearchBar = () => {
           p.description.toLowerCase().includes(searchLower) ||
           p.category.toLowerCase().includes(searchLower)
       );
-      setResults(filtered.slice(0, 6)); // Limit to 6 results
-      setIsOpen(true);
+      setResults(filtered.slice(0, 6));
     } else {
       setResults([]);
-      setIsOpen(false);
     }
   }, [query, products]);
 
@@ -43,6 +75,7 @@ const SearchBar = () => {
 
   const handleSearch = () => {
     if (query.trim()) {
+      saveToHistory(query.trim());
       navigate(`/marketplace?search=${encodeURIComponent(query.trim())}`);
       setIsOpen(false);
     }
@@ -58,16 +91,27 @@ const SearchBar = () => {
   };
 
   const handleProductClick = (productId: string) => {
+    if (query.trim()) {
+      saveToHistory(query.trim());
+    }
     navigate(`/product/${productId}`);
     setQuery("");
+    setIsOpen(false);
+  };
+
+  const handleHistoryClick = (term: string) => {
+    setQuery(term);
+    navigate(`/marketplace?search=${encodeURIComponent(term)}`);
     setIsOpen(false);
   };
 
   const clearSearch = () => {
     setQuery("");
     setResults([]);
-    setIsOpen(false);
   };
+
+  const showHistory = isOpen && query.trim() === "" && searchHistory.length > 0;
+  const showResults = isOpen && query.trim() !== "";
 
   return (
     <div ref={wrapperRef} className="relative flex-1 max-w-sm">
@@ -78,7 +122,7 @@ const SearchBar = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => query.trim() && setIsOpen(true)}
+          onFocus={() => setIsOpen(true)}
           placeholder="Search for anything"
           className="w-full pl-10 pr-24 py-2.5 border border-border rounded-full bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20"
         />
@@ -98,8 +142,42 @@ const SearchBar = () => {
         </button>
       </div>
 
+      {/* Search History Dropdown */}
+      {showHistory && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+            <span className="text-xs font-medium text-muted-foreground">Recent Searches</span>
+            <button
+              onClick={clearHistory}
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+            >
+              <Trash2 size={12} />
+              Clear
+            </button>
+          </div>
+          <div className="max-h-64 overflow-y-auto">
+            {searchHistory.map((term) => (
+              <button
+                key={term}
+                onClick={() => handleHistoryClick(term)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-muted/50 transition-colors text-left group"
+              >
+                <Clock size={14} className="text-muted-foreground shrink-0" />
+                <span className="flex-1 text-sm text-foreground truncate">{term}</span>
+                <button
+                  onClick={(e) => removeHistoryItem(term, e)}
+                  className="p-1 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X size={14} />
+                </button>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Search Results Dropdown */}
-      {isOpen && (
+      {showResults && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50">
           {results.length > 0 ? (
             <>
