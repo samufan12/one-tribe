@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import landingDress from "@/assets/landing-dress.jpg";
 import landingCoffee from "@/assets/landing-coffee.jpg";
 import landingGabi from "@/assets/landing-gabi.jpg";
+import landingBerbere from "@/assets/landing-berbere.jpg";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -124,21 +125,21 @@ const Landing = () => {
               </div>
             </div>
             <div className="relative">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <div className="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src={landingDress} alt="Traditional Habesha Dress" className="w-full h-64 object-cover" />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-3">
+                  <div className="rounded-2xl overflow-hidden shadow-2xl aspect-[3/4]">
+                    <img src={landingDress} alt="Traditional Habesha Dress" className="w-full h-full object-cover object-top" />
                   </div>
-                  <div className="rounded-2xl overflow-hidden shadow-xl">
-                    <img src={landingCoffee} alt="Ethiopian Coffee Ceremony" className="w-full h-40 object-cover" />
+                  <div className="rounded-2xl overflow-hidden shadow-xl aspect-square">
+                    <img src={landingCoffee} alt="Ethiopian Coffee Ceremony" className="w-full h-full object-cover" />
                   </div>
                 </div>
-                <div className="pt-8 space-y-4">
-                  <div className="rounded-2xl overflow-hidden shadow-xl">
-                    <img src={landingGabi} alt="Traditional Gabi" className="w-full h-40 object-cover" />
+                <div className="pt-8 space-y-3">
+                  <div className="rounded-2xl overflow-hidden shadow-xl aspect-square">
+                    <img src={landingGabi} alt="Traditional Gabi" className="w-full h-full object-cover object-center" />
                   </div>
-                  <div className="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src={landingDress} alt="Habesha Fashion" className="w-full h-64 object-cover object-top" />
+                  <div className="rounded-2xl overflow-hidden shadow-2xl aspect-[3/4]">
+                    <img src={landingBerbere} alt="Berbere Spice" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
