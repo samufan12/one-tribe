@@ -10,6 +10,7 @@ import netelaShawl from '@/assets/netela-shawl.webp';
 import traditionalDress from '@/assets/traditional-dress.jpg';
 import gabiBlanket from '@/assets/gabi-blanket.jpg';
 import traditionalKemis from '@/assets/traditional-kemis.jpg';
+import mesobTable from '@/assets/mesob-table.jpg';
 
 export type Product = {
   id: string;
@@ -91,7 +92,7 @@ const sampleProducts: Product[] = [
     category: 'Home & Decor',
     condition: 'New',
     location: 'Atlanta, GA',
-    images: ['https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=600&fit=crop'],
+    images: [mesobTable],
     likes: 42,
     views: 287,
     created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
