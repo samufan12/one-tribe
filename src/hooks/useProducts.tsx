@@ -9,6 +9,7 @@ import silverEarrings from '@/assets/silver-earrings.webp';
 import netelaShawl from '@/assets/netela-shawl.webp';
 import traditionalDress from '@/assets/traditional-dress.jpg';
 import gabiBlanket from '@/assets/gabi-blanket.jpg';
+import traditionalKemis from '@/assets/traditional-kemis.jpg';
 
 export type Product = {
   id: string;
@@ -49,7 +50,7 @@ const sampleProducts: Product[] = [
     condition: 'New',
     size: 'M',
     location: 'Washington, DC',
-    images: ['https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=600&h=600&fit=crop'],
+    images: [traditionalKemis],
     likes: 24,
     views: 156,
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
