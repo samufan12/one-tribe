@@ -7,6 +7,7 @@ import saintGeorgePainting from '@/assets/saint-george-painting.jpg';
 import telsumNecklace from '@/assets/telsum-necklace.jpg';
 import silverEarrings from '@/assets/silver-earrings.webp';
 import netelaShawl from '@/assets/netela-shawl.webp';
+import traditionalDress from '@/assets/traditional-dress.jpg';
 
 export type Product = {
   id: string;
@@ -61,7 +62,7 @@ const sampleProducts: Product[] = [
     condition: 'New',
     size: 'L',
     location: 'London, UK',
-    images: ['https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=600&fit=crop'],
+    images: [traditionalDress],
     likes: 18,
     views: 98,
     created_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
