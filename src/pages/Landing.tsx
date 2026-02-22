@@ -70,14 +70,9 @@ const Landing = () => {
                   Go to App
                 </Button>
               ) : (
-                <>
-                  <Button variant="ghost" onClick={() => navigate('/auth')}>
-                    Sign In
-                  </Button>
-                  <Button onClick={() => navigate('/auth')}>
-                    Get Started
-                  </Button>
-                </>
+                <Button onClick={() => navigate('/auth')}>
+                  Get Started
+                </Button>
               )}
             </div>
           </div>
@@ -102,9 +97,6 @@ const Landing = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" onClick={() => navigate('/marketplace')} className="text-lg px-8">
                   Start Shopping
-                </Button>
-                <Button size="lg" variant="outline" onClick={() => navigate('/marketplace')} className="text-lg px-8">
-                  Browse Collection
                 </Button>
               </div>
               <div className="flex items-center gap-8 pt-4">
@@ -207,22 +199,14 @@ const Landing = () => {
           <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
             Join thousands of buyers and sellers celebrating cultural heritage through traditional clothing.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button 
               size="lg" 
               variant="secondary" 
               onClick={() => navigate('/auth')}
               className="text-lg px-8"
             >
-              Create Free Account
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              onClick={() => navigate('/marketplace')}
-              className="text-lg px-8 bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              Explore Marketplace
+              Get Started
             </Button>
           </div>
         </div>
