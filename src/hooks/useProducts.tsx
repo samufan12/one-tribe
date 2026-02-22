@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
 import coffeeCeremonySet from '@/assets/coffee-ceremony-set.jpg';
+import saintGeorgePainting from '@/assets/saint-george-painting.jpg';
 
 export type Product = {
   id: string;
@@ -123,7 +124,7 @@ const sampleProducts: Product[] = [
     category: 'Home & Decor',
     condition: 'Like New',
     location: 'Frankfurt, Germany',
-    images: ['https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=600&h=600&fit=crop'],
+    images: [saintGeorgePainting],
     likes: 15,
     views: 89,
     created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
