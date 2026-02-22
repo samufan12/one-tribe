@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import kemis1 from "@/assets/kemis-1.jpg";
-import kemis2 from "@/assets/kemis-2.jpg";
-import coffeeSet from "@/assets/coffee-set.jpg";
+import landingDress from "@/assets/landing-dress.jpg";
+import landingCoffee from "@/assets/landing-coffee.jpg";
+import landingGabi from "@/assets/landing-gabi.jpg";
 
 interface Slide {
   id: number;
@@ -21,7 +21,7 @@ const slides: Slide[] = [
     title: "Shop the Diaspora",
     cta: "SHOP NOW",
     href: "/marketplace",
-    image: kemis1,
+    image: landingDress,
   },
   {
     id: 2,
@@ -29,7 +29,7 @@ const slides: Slide[] = [
     title: "Ethiopian • Eritrean",
     cta: "EXPLORE",
     href: "/marketplace",
-    image: kemis2,
+    image: landingGabi,
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ const slides: Slide[] = [
     title: "Authentic Habesha Goods",
     cta: "DISCOVER",
     href: "/marketplace?category=coffee",
-    image: coffeeSet,
+    image: landingCoffee,
   },
 ];
 

@@ -2,12 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft } from "lucide-react";
-import africanDress1 from "@/assets/african-dress-1.jpg";
-import africanFashion2 from "@/assets/african-fashion-2.jpg";
-import africanFashion3 from "@/assets/african-fashion-3.jpg";
-import ethiopianCoffee from "@/assets/ethiopian-coffee.jpg";
-import person1 from "@/assets/person-1.jpg";
-import person2 from "@/assets/person-2.jpg";
+import landingDress from "@/assets/landing-dress.jpg";
+import landingCoffee from "@/assets/landing-coffee.jpg";
+import landingGabi from "@/assets/landing-gabi.jpg";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -36,19 +33,19 @@ const Landing = () => {
     {
       name: "Makda T.",
       role: "Verified Buyer",
-      image: person1,
+      image: landingDress,
       quote: "Finally found authentic traditional dresses that remind me of home. The quality is exceptional!"
     },
     {
       name: "Yonas K.",
       role: "Seller",
-      image: person2,
+      image: landingCoffee,
       quote: "OneTribe has helped me reach customers worldwide. My handcrafts are now appreciated globally."
     },
     {
       name: "Sara M.",
       role: "Community Member",
-      image: person1,
+      image: landingGabi,
       quote: "The community here is so supportive. I've learned so much about traditional styling."
     }
   ];
@@ -130,18 +127,18 @@ const Landing = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
                   <div className="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src={africanDress1} alt="Traditional African Dress" className="w-full h-64 object-cover" />
+                    <img src={landingDress} alt="Traditional Habesha Dress" className="w-full h-64 object-cover" />
                   </div>
                   <div className="rounded-2xl overflow-hidden shadow-xl">
-                    <img src={ethiopianCoffee} alt="Ethiopian Coffee Ceremony" className="w-full h-40 object-cover" />
+                    <img src={landingCoffee} alt="Ethiopian Coffee Ceremony" className="w-full h-40 object-cover" />
                   </div>
                 </div>
                 <div className="pt-8 space-y-4">
                   <div className="rounded-2xl overflow-hidden shadow-xl">
-                    <img src={africanFashion3} alt="African Fashion" className="w-full h-40 object-cover" />
+                    <img src={landingGabi} alt="Traditional Gabi" className="w-full h-40 object-cover" />
                   </div>
                   <div className="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src={africanFashion2} alt="Traditional Style" className="w-full h-64 object-cover" />
+                    <img src={landingDress} alt="Habesha Fashion" className="w-full h-64 object-cover object-top" />
                   </div>
                 </div>
               </div>
