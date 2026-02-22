@@ -160,6 +160,42 @@ export type Database = {
         }
         Relationships: []
       }
+      storefronts: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -243,6 +279,18 @@ export type Database = {
           verification_status: string
         }[]
       }
+      get_public_storefronts: {
+        Args: never
+        Returns: {
+          cover_image_url: string
+          created_at: string
+          description: string
+          id: string
+          logo_url: string
+          name: string
+          product_count: number
+        }[]
+      }
       get_seller_profiles: {
         Args: never
         Returns: {
@@ -252,6 +300,29 @@ export type Database = {
           display_name: string
           user_id: string
           verification_status: string
+        }[]
+      }
+      get_storefront_with_products: {
+        Args: { p_storefront_id: string }
+        Returns: {
+          product_category: string
+          product_condition: string
+          product_created_at: string
+          product_description: string
+          product_id: string
+          product_images: string[]
+          product_likes: number
+          product_location: string
+          product_price: number
+          product_size: string
+          product_title: string
+          product_views: number
+          storefront_cover_image_url: string
+          storefront_created_at: string
+          storefront_description: string
+          storefront_id: string
+          storefront_logo_url: string
+          storefront_name: string
         }[]
       }
       has_role: {

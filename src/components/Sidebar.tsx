@@ -24,6 +24,8 @@ export const Sidebar = () => {
       if (!isSeller() && !loading) {
         setShowBecomeSellerModal(true);
       }
+    } else if (itemId === 'my-storefront') {
+      navigate('/create-storefront');
     } else if (itemId === 'home') {
       navigate('/');
     } else {
@@ -42,11 +44,13 @@ export const Sidebar = () => {
   // Filter sidebar sections based on user role
   const filteredSections = sidebarDropdownSections.map(section => {
     if (section.title === "Selling") {
-      // Show seller tools only for sellers
+      // Show seller tools and my storefront only for sellers
       return {
         ...section,
         items: section.items.filter(item => 
-          item.id === "sell" || (item.id === "seller-tools" && isSeller())
+          item.id === "sell" || 
+          (item.id === "seller-tools" && isSeller()) ||
+          (item.id === "my-storefront" && isSeller())
         )
       };
     }

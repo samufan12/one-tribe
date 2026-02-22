@@ -56,6 +56,11 @@ export const sidebarDropdownSections = [
         icon: BarChart3,
         id: "seller-tools" as const,
       },
+      {
+        title: "My Storefront",
+        icon: Store,
+        id: "my-storefront" as const,
+      },
     ],
   },
   {
@@ -65,6 +70,11 @@ export const sidebarDropdownSections = [
         title: "Categories",
         icon: Package,
         id: "categories" as const,
+      },
+      {
+        title: "Storefronts",
+        icon: Store,
+        id: "storefronts" as const,
       },
       {
         title: "Watchlist",
