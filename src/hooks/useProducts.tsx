@@ -12,6 +12,7 @@ import gabiBlanket from '@/assets/gabi-blanket.jpg';
 import traditionalKemis from '@/assets/traditional-kemis.jpg';
 import mesobTable from '@/assets/mesob-table.jpg';
 import coffeeBeans from '@/assets/coffee-beans.jpg';
+import berbereSpice from '@/assets/berbere-spice.jpg';
 
 export type Product = {
   id: string;
@@ -176,6 +177,19 @@ const sampleProducts: Product[] = [
     likes: 92,
     views: 567,
     created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'sample-13',
+    title: 'Authentic Berbere Spice Blend - Homemade',
+    description: 'Traditional Ethiopian berbere spice mix made with sun-dried chili peppers, fenugreek, and aromatic spices. Essential for doro wot and kitfo.',
+    price: 18,
+    category: 'Coffee & Spices',
+    condition: 'New',
+    location: 'Chicago, IL',
+    images: [berbereSpice],
+    likes: 74,
+    views: 489,
+    created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
   },
 ];
 
