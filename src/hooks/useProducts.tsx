@@ -4,6 +4,7 @@ import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
 import coffeeCeremonySet from '@/assets/coffee-ceremony-set.jpg';
 import saintGeorgePainting from '@/assets/saint-george-painting.jpg';
+import telsumNecklace from '@/assets/telsum-necklace.jpg';
 
 export type Product = {
   id: string;
@@ -137,7 +138,7 @@ const sampleProducts: Product[] = [
     category: 'Jewelry',
     condition: 'New',
     location: 'Dallas, TX',
-    images: ['https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=600&h=600&fit=crop'],
+    images: [telsumNecklace],
     likes: 67,
     views: 345,
     created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
