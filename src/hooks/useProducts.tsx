@@ -5,6 +5,7 @@ import { useToast } from './use-toast';
 import coffeeCeremonySet from '@/assets/coffee-ceremony-set.jpg';
 import saintGeorgePainting from '@/assets/saint-george-painting.jpg';
 import telsumNecklace from '@/assets/telsum-necklace.jpg';
+import silverEarrings from '@/assets/silver-earrings.webp';
 
 export type Product = {
   id: string;
@@ -112,7 +113,7 @@ const sampleProducts: Product[] = [
     category: 'Jewelry',
     condition: 'New',
     location: 'Amsterdam, NL',
-    images: ['https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&h=600&fit=crop'],
+    images: [silverEarrings],
     likes: 89,
     views: 534,
     created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
