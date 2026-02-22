@@ -6,6 +6,7 @@ import coffeeCeremonySet from '@/assets/coffee-ceremony-set.jpg';
 import saintGeorgePainting from '@/assets/saint-george-painting.jpg';
 import telsumNecklace from '@/assets/telsum-necklace.jpg';
 import silverEarrings from '@/assets/silver-earrings.webp';
+import netelaShawl from '@/assets/netela-shawl.webp';
 
 export type Product = {
   id: string;
@@ -153,7 +154,7 @@ const sampleProducts: Product[] = [
     condition: 'New',
     size: 'One Size',
     location: 'Stockholm, Sweden',
-    images: ['https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=600&fit=crop'],
+    images: [netelaShawl],
     likes: 38,
     views: 223,
     created_at: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
