@@ -8,6 +8,7 @@ import telsumNecklace from '@/assets/telsum-necklace.jpg';
 import silverEarrings from '@/assets/silver-earrings.webp';
 import netelaShawl from '@/assets/netela-shawl.webp';
 import traditionalDress from '@/assets/traditional-dress.jpg';
+import gabiBlanket from '@/assets/gabi-blanket.jpg';
 
 export type Product = {
   id: string;
@@ -76,7 +77,7 @@ const sampleProducts: Product[] = [
     condition: 'New',
     size: 'One Size',
     location: 'Minneapolis, MN',
-    images: ['https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=600&fit=crop'],
+    images: [gabiBlanket],
     likes: 31,
     views: 203,
     created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
