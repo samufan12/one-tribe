@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Mail, Lock, User, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, CheckCircle, X, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 
 // Common weak passwords to check against
@@ -166,7 +166,14 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+      <button
+        onClick={() => navigate('/')}
+        className="absolute top-4 left-4 p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
+        aria-label="Go back"
+      >
+        <ArrowLeft size={20} />
+      </button>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
