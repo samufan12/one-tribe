@@ -90,11 +90,11 @@ const Landing = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                Discover Authentic Culture
+                Discover Habesha Culture
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-                Your Marketplace for
-                <span className="text-primary block mt-2">Traditional Fashion</span>
+                Your Home for
+                <span className="text-primary block mt-2">Cultural Goods</span>
               </h1>
               <p className="text-xl text-muted-foreground max-w-lg">
                 Connect with artisans, discover authentic traditional clothing, and celebrate cultural heritage through fashion.
