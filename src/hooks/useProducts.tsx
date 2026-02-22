@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
+import coffeeCeremonySet from '@/assets/coffee-ceremony-set.jpg';
 
 export type Product = {
   id: string;
@@ -96,7 +97,7 @@ const sampleProducts: Product[] = [
     category: 'Coffee & Spices',
     condition: 'New',
     location: 'Seattle, WA',
-    images: ['https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&h=600&fit=crop'],
+    images: [coffeeCeremonySet],
     likes: 56,
     views: 412,
     created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
