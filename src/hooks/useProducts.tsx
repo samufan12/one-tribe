@@ -11,6 +11,7 @@ import traditionalDress from '@/assets/traditional-dress.jpg';
 import gabiBlanket from '@/assets/gabi-blanket.jpg';
 import traditionalKemis from '@/assets/traditional-kemis.jpg';
 import mesobTable from '@/assets/mesob-table.jpg';
+import coffeeBeans from '@/assets/coffee-beans.jpg';
 
 export type Product = {
   id: string;
@@ -171,7 +172,7 @@ const sampleProducts: Product[] = [
     category: 'Coffee & Spices',
     condition: 'New',
     location: 'Los Angeles, CA',
-    images: ['https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&h=600&fit=crop'],
+    images: [coffeeBeans],
     likes: 92,
     views: 567,
     created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
