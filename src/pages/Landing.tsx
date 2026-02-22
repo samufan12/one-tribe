@@ -102,7 +102,7 @@ const Landing = () => {
                 <span className="text-primary block mt-2">Cultural Goods</span>
               </h1>
               <p className="text-xl text-muted-foreground max-w-lg">
-                Connect with artisans, discover authentic traditional clothing, and celebrate cultural heritage through fashion.
+                Connect with the diaspora — sell items from your home or business to buyers worldwide with ease.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" onClick={() => navigate('/marketplace')} className="text-lg px-8">
