@@ -32,7 +32,6 @@ export const useCommunityFeed = () => {
     const { data, error } = await supabase.rpc("get_community_posts");
     if (error || !data) { setLoading(false); return; }
 
-    // Check which posts current user has liked
     const postsWithLikes = await Promise.all(
       (data as any[]).map(async (post) => {
         let isLiked = false;
@@ -67,5 +66,17 @@ export const useCommunityFeed = () => {
     ));
   };
 
-  return { posts, loading, toggleLike, refetch: fetchPosts };
+  const createPost = async (productId: string, caption: string) => {
+    if (!user) return false;
+    const { error } = await supabase.from("community_posts").insert({
+      user_id: user.id,
+      product_id: productId,
+      caption: caption.trim() || null,
+    });
+    if (error) return false;
+    await fetchPosts();
+    return true;
+  };
+
+  return { posts, loading, toggleLike, createPost, refetch: fetchPosts };
 };
