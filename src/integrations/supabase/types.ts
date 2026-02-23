@@ -32,6 +32,213 @@ export type Database = {
         }
         Relationships: []
       }
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_posts: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          likes_count: number
+          product_id: string | null
+          user_id: string
+          views_count: number
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          likes_count?: number
+          product_id?: string | null
+          user_id: string
+          views_count?: number
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          likes_count?: number
+          product_id?: string | null
+          user_id?: string
+          views_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          participant_1: string
+          participant_2: string
+          product_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          participant_1: string
+          participant_2: string
+          product_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          participant_1?: string
+          participant_2?: string
+          product_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          message_type: string
+          offer_amount: number | null
+          offer_item_name: string | null
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          offer_amount?: number | null
+          offer_item_name?: string | null
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          offer_amount?: number | null
+          offer_item_name?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_likes: {
         Row: {
           created_at: string
@@ -249,6 +456,31 @@ export type Database = {
           verification_status: string
         }[]
       }
+      get_community_posts: {
+        Args: never
+        Returns: {
+          author_avatar_url: string
+          author_display_name: string
+          caption: string
+          comment_count: number
+          created_at: string
+          id: string
+          likes_count: number
+          product_category: string
+          product_condition: string
+          product_id: string
+          product_images: string[]
+          product_price: number
+          product_size: string
+          product_title: string
+          user_id: string
+          views_count: number
+        }[]
+      }
+      get_or_create_conversation: {
+        Args: { p_other_user_id: string; p_product_id?: string }
+        Returns: string
+      }
       get_product_like_count: { Args: { product_id: string }; Returns: number }
       get_public_products: {
         Args: never
@@ -325,6 +557,19 @@ export type Database = {
           storefront_name: string
         }[]
       }
+      get_user_conversations: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          created_at: string
+          last_message_content: string
+          last_message_time: string
+          other_avatar_url: string
+          other_display_name: string
+          other_user_id: string
+          product_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -332,8 +577,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_user_liked_community_post: {
+        Args: { p_post_id: string }
+        Returns: boolean
+      }
       has_user_liked_product: { Args: { product_id: string }; Returns: boolean }
       is_admin: { Args: { check_user_id?: string }; Returns: boolean }
+      is_conversation_participant: {
+        Args: { _conversation_id: string; _user_id: string }
+        Returns: boolean
+      }
       log_ai_usage: { Args: never; Returns: string }
       remove_user_role: {
         Args: {
