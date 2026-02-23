@@ -13,12 +13,10 @@ const logStep = (step: string, details?: unknown) => {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Create Supabase client
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? ""
@@ -29,17 +27,25 @@ serve(async (req) => {
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
-    logStep("Stripe key verified");
 
-    // Parse request body
-    const { productId, productTitle, price, quantity = 1 } = await req.json();
-    logStep("Request body parsed", { productId, productTitle, price, quantity });
+    const body = await req.json();
 
-    if (!productId || !productTitle || !price) {
-      throw new Error("Missing required fields: productId, productTitle, price");
+    // Support both single item (legacy) and multi-item cart
+    let lineItems: { productId: string; productTitle: string; price: number; quantity: number }[];
+
+    if (body.items && Array.isArray(body.items)) {
+      lineItems = body.items;
+    } else {
+      const { productId, productTitle, price, quantity = 1 } = body;
+      if (!productId || !productTitle || !price) {
+        throw new Error("Missing required fields: productId, productTitle, price");
+      }
+      lineItems = [{ productId, productTitle, price, quantity }];
     }
 
-    // Try to get authenticated user (optional for guest checkout)
+    logStep("Line items parsed", { count: lineItems.length });
+
+    // Try to get authenticated user
     let userEmail: string | undefined;
     let customerId: string | undefined;
 
@@ -53,48 +59,44 @@ serve(async (req) => {
       }
     }
 
-    // Initialize Stripe
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Check if customer exists
     if (userEmail) {
       const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
       if (customers.data.length > 0) {
         customerId = customers.data[0].id;
-        logStep("Found existing customer", { customerId });
       }
     }
 
-    // Create a one-time payment session using price_data for dynamic products
+    const stripeLineItems = lineItems.map((item) => ({
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: item.productTitle,
+          metadata: { product_id: item.productId },
+        },
+        unit_amount: Math.round(item.price * 100),
+      },
+      quantity: item.quantity,
+    }));
+
+    const firstProductId = lineItems[0].productId;
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: productTitle,
-              metadata: {
-                product_id: productId,
-              },
-            },
-            unit_amount: Math.round(price * 100), // Convert to cents
-          },
-          quantity,
-        },
-      ],
+      line_items: stripeLineItems,
       mode: "payment",
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/product/${productId}`,
+      cancel_url: `${req.headers.get("origin")}/${lineItems.length > 1 ? "cart" : `product/${firstProductId}`}`,
       metadata: {
-        product_id: productId,
+        product_ids: lineItems.map((i) => i.productId).join(","),
       },
     });
 
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    logStep("Checkout session created", { sessionId: session.id });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

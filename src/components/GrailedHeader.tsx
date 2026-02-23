@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { MessageSquare, Heart, User, Menu, X, Sparkles } from "lucide-react";
+import { MessageSquare, Heart, User, Menu, X, Sparkles, ShoppingCart } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import SearchBar from "@/components/SearchBar";
 const GrailedHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { itemCount } = useCart();
   const navigate = useNavigate();
 
   return (
@@ -83,6 +85,18 @@ const GrailedHeader = () => {
           </button>
           
           <button 
+            onClick={() => navigate('/cart')}
+            className="p-2 text-foreground hover:text-muted-foreground transition-colors relative"
+          >
+            <ShoppingCart size={20} />
+            {itemCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-[10px] font-medium rounded-full w-4 h-4 flex items-center justify-center">
+                {itemCount > 9 ? "9+" : itemCount}
+              </span>
+            )}
+          </button>
+          
+          <button 
             onClick={() => user ? navigate('/profile') : navigate('/auth')}
             className="p-2 text-foreground hover:text-muted-foreground transition-colors"
           >
@@ -143,6 +157,13 @@ const GrailedHeader = () => {
             className="w-full text-left py-2 text-foreground"
           >
             Wishlist
+          </button>
+          <button 
+            onClick={() => { navigate('/cart'); setMobileMenuOpen(false); }}
+            className="w-full text-left py-2 text-foreground flex items-center gap-2"
+          >
+            <ShoppingCart size={18} />
+            Cart {itemCount > 0 && `(${itemCount})`}
           </button>
           <button 
             onClick={() => { navigate(user ? '/profile' : '/auth'); setMobileMenuOpen(false); }}

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, MessageCircle, Share2, ChevronLeft, ChevronRight, MapPin, Clock, Shield, Truck, CreditCard, Loader2 } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, Share2, ChevronLeft, ChevronRight, MapPin, Clock, Shield, Truck, CreditCard, Loader2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import GrailedLayout from "@/components/GrailedLayout";
 import { useProducts, Product } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { useCart } from "@/hooks/useCart";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,7 @@ const ProductDetail = () => {
   const { products, loading, toggleLike } = useProducts();
   const { user } = useAuth();
   const { addToRecentlyViewed } = useRecentlyViewed();
+  const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -259,24 +261,44 @@ const ProductDetail = () => {
 
             {/* Actions */}
             <div className="flex flex-col gap-3">
-              <Button 
-                onClick={handleBuyNow} 
-                size="lg" 
-                disabled={isCheckingOut}
-                className="w-full"
-              >
-                {isCheckingOut ? (
-                  <>
-                    <Loader2 size={18} className="mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard size={18} className="mr-2" />
-                    Buy Now · ${product.price}
-                  </>
-                )}
-              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleBuyNow} 
+                  size="lg" 
+                  disabled={isCheckingOut}
+                  className="flex-1"
+                >
+                  {isCheckingOut ? (
+                    <>
+                      <Loader2 size={18} className="mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard size={18} className="mr-2" />
+                      Buy Now · ${product.price}
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    addItem({
+                      id: product.id,
+                      title: product.title,
+                      price: product.price,
+                      image: images[0],
+                      category: product.category,
+                      condition: product.condition,
+                      size: product.size || undefined,
+                    });
+                    toast.success("Added to cart");
+                  }}
+                >
+                  <ShoppingCart size={18} />
+                </Button>
+              </div>
               <div className="flex gap-3">
                 <Button onClick={handleMessage} variant="outline" className="flex-1" size="lg">
                   <MessageCircle size={18} className="mr-2" />
