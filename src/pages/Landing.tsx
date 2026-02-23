@@ -108,19 +108,19 @@ const Landing = () => {
                 </Button>
               </div>
               <div className="flex items-center gap-8 pt-4">
-                <div>
-                  <p className="text-3xl font-bold">500+</p>
-                  <p className="text-muted-foreground text-sm">Verified Sellers</p>
+              <div>
+                  <p className="text-3xl font-bold">100%</p>
+                  <p className="text-muted-foreground text-sm">Authentic Goods</p>
                 </div>
                 <div className="w-px h-12 bg-border" />
                 <div>
-                  <p className="text-3xl font-bold">10K+</p>
-                  <p className="text-muted-foreground text-sm">Happy Customers</p>
-                </div>
-                <div className="w-px h-12 bg-border" />
-                <div>
-                  <p className="text-3xl font-bold">50+</p>
+                  <p className="text-3xl font-bold">6</p>
                   <p className="text-muted-foreground text-sm">Categories</p>
+                </div>
+                <div className="w-px h-12 bg-border" />
+                <div>
+                  <p className="text-3xl font-bold">Global</p>
+                  <p className="text-muted-foreground text-sm">Shipping</p>
                 </div>
               </div>
             </div>
@@ -182,11 +182,11 @@ const Landing = () => {
               <div key={index} className="bg-card rounded-2xl p-6 border">
                 <p className="text-muted-foreground mb-6">"{testimonial.quote}"</p>
                 <div className="flex items-center gap-3">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name} 
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                    <span className="text-primary-foreground font-semibold text-sm">
+                      {testimonial.name.split(" ").map(w => w[0]).join("")}
+                    </span>
+                  </div>
                   <div>
                     <p className="font-semibold text-sm">{testimonial.name}</p>
                     <p className="text-muted-foreground text-xs">{testimonial.role}</p>
@@ -231,7 +231,7 @@ const Landing = () => {
               <span className="font-bold text-xl">OneTribe</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              © 2024 OneTribe. Celebrating cultural heritage through fashion.
+              © 2025 OneTribe. Celebrating cultural heritage through fashion.
             </p>
           </div>
         </div>
