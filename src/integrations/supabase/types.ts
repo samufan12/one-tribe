@@ -482,6 +482,7 @@ export type Database = {
         Returns: string
       }
       get_product_like_count: { Args: { product_id: string }; Returns: number }
+      get_product_seller_id: { Args: { p_product_id: string }; Returns: string }
       get_public_products: {
         Args: never
         Returns: {

@@ -64,12 +64,45 @@ const ProductDetail = () => {
     }
   };
 
-  const handleMessage = () => {
+  const [isMessaging, setIsMessaging] = useState(false);
+
+  const handleMessage = async () => {
     if (!user) {
       handleAuthRequired("contact sellers");
       return;
     }
-    navigate("/messages");
+    if (!product || product.id.startsWith("sample-")) {
+      toast.error("Messaging is not available for sample products");
+      return;
+    }
+
+    setIsMessaging(true);
+    try {
+      // Get the seller's user_id
+      const { data: sellerId, error: sellerError } = await supabase.rpc("get_product_seller_id", {
+        p_product_id: product.id,
+      });
+      if (sellerError || !sellerId) throw new Error("Could not find seller");
+
+      if (sellerId === user.id) {
+        toast.error("You can't message yourself!");
+        return;
+      }
+
+      // Get or create conversation
+      const { data: conversationId, error: convError } = await supabase.rpc("get_or_create_conversation", {
+        p_other_user_id: sellerId,
+        p_product_id: product.id,
+      });
+      if (convError || !conversationId) throw new Error("Could not start conversation");
+
+      navigate(`/messages?conversation=${conversationId}`);
+    } catch (error: any) {
+      console.error("Message error:", error);
+      toast.error("Failed to start conversation. Please try again.");
+    } finally {
+      setIsMessaging(false);
+    }
   };
 
   const handleBuyNow = async () => {
@@ -300,9 +333,13 @@ const ProductDetail = () => {
                 </Button>
               </div>
               <div className="flex gap-3">
-                <Button onClick={handleMessage} variant="outline" className="flex-1" size="lg">
-                  <MessageCircle size={18} className="mr-2" />
-                  Message
+                <Button onClick={handleMessage} variant="outline" className="flex-1" size="lg" disabled={isMessaging}>
+                  {isMessaging ? (
+                    <Loader2 size={18} className="mr-2 animate-spin" />
+                  ) : (
+                    <MessageCircle size={18} className="mr-2" />
+                  )}
+                  Message Seller
                 </Button>
                 <Button 
                   variant="outline" 

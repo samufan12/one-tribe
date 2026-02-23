@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send, ArrowLeft, MoreVertical, Paperclip } from "lucide-react";
 import { useConversations, useMessages } from "@/hooks/useMessages";
 import { useAuth } from "@/hooks/useAuth";
+import { useSearchParams } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
 export const ChatInterface = () => {
   const { user } = useAuth();
   const { conversations, loading: convsLoading } = useConversations();
-  const [selectedConvId, setSelectedConvId] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const conversationParam = searchParams.get("conversation");
+  const [selectedConvId, setSelectedConvId] = useState<string | null>(conversationParam);
   const { messages, loading: msgsLoading, sendMessage } = useMessages(selectedConvId);
   const [newMessage, setNewMessage] = useState("");
+
+  // Update selected conversation if URL param changes
+  useEffect(() => {
+    if (conversationParam) setSelectedConvId(conversationParam);
+  }, [conversationParam]);
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;
