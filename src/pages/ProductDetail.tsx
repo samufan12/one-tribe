@@ -290,6 +290,9 @@ const ProductDetail = () => {
             <div>
               <h1 className="text-2xl font-bold text-foreground mb-2">{product.title}</h1>
               <p className="text-3xl font-bold text-foreground">${product.price}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                + ${(product.price * 0.05).toFixed(2)} platform fee (5%)
+              </p>
             </div>
 
             {/* Actions */}
@@ -309,7 +312,7 @@ const ProductDetail = () => {
                   ) : (
                     <>
                       <CreditCard size={18} className="mr-2" />
-                      Buy Now · ${product.price}
+                      Buy Now · ${(product.price * 1.05).toFixed(2)}
                     </>
                   )}
                 </Button>

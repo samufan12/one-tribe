@@ -126,10 +126,18 @@ const CartPage = () => {
         </div>
 
         {/* Summary */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <div className="flex justify-between text-lg font-bold">
-            <span>Total</span>
+        <div className="bg-card border rounded-lg p-6 space-y-3">
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>Subtotal</span>
             <span>${total.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>Platform Fee (5%)</span>
+            <span>${(total * 0.05).toFixed(2)}</span>
+          </div>
+          <div className="border-t border-border pt-3 flex justify-between text-lg font-bold">
+            <span>Total</span>
+            <span>${(total * 1.05).toFixed(2)}</span>
           </div>
           <Button
             onClick={handleCheckout}
@@ -143,7 +151,7 @@ const CartPage = () => {
                 Processing...
               </>
             ) : (
-              `Checkout · $${total.toFixed(2)}`
+              `Checkout · $${(total * 1.05).toFixed(2)}`
             )}
           </Button>
         </div>
