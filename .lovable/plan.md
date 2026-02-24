@@ -1,157 +1,105 @@
 
 
-# Supabase Backend for Messages, Community Feed, and Cart Sync
+# Platform Fee Implementation (5% Cut)
 
-This plan adds real database backing to all three features that currently use mock/local data.
+## Overview
+Add a 5% platform fee to every transaction using **Stripe Connect** with destination charges. This is the industry-standard way to collect a platform cut -- Stripe splits the payment automatically so you receive your fee and the seller gets the rest.
 
----
+## How It Works
 
-## 1. Database Tables (Migration)
+The current checkout flow sends the full payment amount to your Stripe account. To split payments between you (the platform) and sellers, we need to use **Stripe Connect**. However, Stripe Connect requires each seller to have a connected Stripe account, which adds significant onboarding complexity.
 
-### Messages System
-- **conversations** table: tracks buyer-seller conversations, linked to a product
-- **messages** table: stores individual messages with sender, content, type (text/offer), and timestamps
+**Simpler alternative (recommended for now):** Since all payments currently go to your single Stripe account, the simplest approach is to:
+1. Add a visible **platform fee line item** or display it in the order summary so buyers see the breakdown
+2. Calculate the 5% fee in the `create-payment` edge function
+3. Show the fee transparently in the Cart and Product Detail pages
+4. Track the seller payout amounts in your database for manual settlement
 
-### Community Feed
-- **community_posts** table: stores posts linked to a product, with caption, likes count, views count
-- **community_comments** table: stores comments on posts
-- **community_post_likes** table: tracks which users liked which posts (prevents double-liking)
+This avoids Stripe Connect complexity while still tracking your cut.
 
-### Cart Sync
-- **cart_items** table: stores cart items per user with product_id, quantity
+## Changes
 
-All tables will have proper RLS policies so users can only access their own data (messages they're part of, their own cart, etc.), while community posts are publicly readable.
+### 1. Edge Function: `create-payment` (update)
+- Calculate a 5% platform fee from the subtotal
+- Add the fee as a separate Stripe Checkout line item so it appears transparently on the Stripe receipt
+- Store fee metadata in the Stripe session for record-keeping
 
----
+### 2. Cart Page: `src/pages/Cart.tsx` (update)
+- Show a fee breakdown in the order summary section:
+  - Subtotal
+  - Platform fee (5%)
+  - Total
+- Update the checkout button label to reflect the final total
 
-## 2. RLS Policies Summary
+### 3. Product Detail Page: `src/pages/ProductDetail.tsx` (update)
+- Show the 5% fee in the "Buy Now" flow price display so buyers aren't surprised at checkout
 
-| Table | SELECT | INSERT | UPDATE | DELETE |
-|-------|--------|--------|--------|--------|
-| conversations | Participants only | Authenticated users | No | No |
-| messages | Conversation participants | Conversation participants | No | No |
-| community_posts | Anyone (public) | Authenticated users (own) | Owner only | Owner only |
-| community_post_likes | Anyone | Authenticated | No | Own likes only |
-| community_comments | Anyone | Authenticated | Own only | Own only |
-| cart_items | Own items | Authenticated (own) | Own items | Own items |
+### 4. Database: `orders` table (new migration)
+- Create an `orders` table to record completed purchases with:
+  - `id`, `user_id` (buyer), `seller_id`, `product_ids`, `subtotal`, `platform_fee`, `total`, `stripe_session_id`, `status`, `created_at`
+- Add RLS policies so buyers can see their own orders and sellers can see orders for their products
 
----
-
-## 3. Component Updates
-
-### ChatInterface.tsx
-- Replace mock data with Supabase queries
-- Fetch conversations for the logged-in user
-- Real-time message sending/receiving using Supabase inserts
-- Display actual user profiles (display_name, avatar) from the profiles table via a security definer function
-
-### CommunityFeed.tsx
-- Replace mock posts with Supabase queries joining community_posts with products and profiles
-- Real like/unlike functionality using community_post_likes table
-- Display real comment counts
-- Add ability to create new posts (sellers can post their products to the feed)
-
-### useCart.tsx
-- When user is logged in: sync cart to/from Supabase cart_items table
-- When user is not logged in: keep localStorage fallback
-- On login: merge localStorage cart with Supabase cart
-- On logout: clear local state
+### 5. Payment Success Page: `src/pages/PaymentSuccess.tsx` (update)
+- Optionally verify the session and record the order in the `orders` table
 
 ---
 
-## 4. New Security Definer Functions
+## Technical Details
 
-- **get_conversation_participants(conversation_id)**: safely check if a user is part of a conversation (used in RLS)
-- **get_community_posts()**: return posts with author info without exposing sensitive profile data
-- **get_or_create_conversation(other_user_id, product_id)**: create a conversation between two users about a product
-
----
-
-## 5. Technical Details
-
-### Database Migration SQL (key tables)
-
-```text
--- Conversations
-conversations (
-  id uuid PK,
-  participant_1 uuid NOT NULL,  -- references auth.users
-  participant_2 uuid NOT NULL,
-  product_id uuid REFERENCES products(id),
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-)
-
--- Messages  
-messages (
-  id uuid PK,
-  conversation_id uuid REFERENCES conversations(id),
-  sender_id uuid NOT NULL,
-  content text NOT NULL,
-  message_type text DEFAULT 'text',  -- text, offer, image
-  offer_amount numeric,
-  offer_item_name text,
-  created_at timestamptz DEFAULT now()
-)
-
--- Community Posts
-community_posts (
-  id uuid PK,
-  user_id uuid NOT NULL,
-  product_id uuid REFERENCES products(id),
-  caption text,
-  likes_count integer DEFAULT 0,
-  views_count integer DEFAULT 0,
-  created_at timestamptz DEFAULT now()
-)
-
--- Community Post Likes
-community_post_likes (
-  id uuid PK,
-  post_id uuid REFERENCES community_posts(id) ON DELETE CASCADE,
-  user_id uuid NOT NULL,
-  created_at timestamptz DEFAULT now(),
-  UNIQUE(post_id, user_id)
-)
-
--- Community Comments
-community_comments (
-  id uuid PK,
-  post_id uuid REFERENCES community_posts(id) ON DELETE CASCADE,
-  user_id uuid NOT NULL,
-  content text NOT NULL,
-  created_at timestamptz DEFAULT now()
-)
-
--- Cart Items
-cart_items (
-  id uuid PK,
-  user_id uuid NOT NULL,
-  product_id uuid REFERENCES products(id) ON DELETE CASCADE,
-  quantity integer DEFAULT 1,
-  created_at timestamptz DEFAULT now(),
-  UNIQUE(user_id, product_id)
-)
+### Fee Calculation (Edge Function)
+```
+subtotal = sum of (item.price * item.quantity)
+platform_fee = subtotal * 0.05
+total = subtotal + platform_fee
 ```
 
-### Files to Create/Modify
+The fee is added as a separate line item in Stripe Checkout:
+```typescript
+stripeLineItems.push({
+  price_data: {
+    currency: "usd",
+    product_data: { name: "Platform Fee (5%)" },
+    unit_amount: Math.round(subtotal * 100 * 0.05),
+  },
+  quantity: 1,
+});
+```
 
-| File | Action |
-|------|--------|
-| Migration SQL | Create all tables, RLS policies, and security definer functions |
-| `src/components/ChatInterface.tsx` | Rewrite to use Supabase queries |
-| `src/components/CommunityFeed.tsx` | Rewrite to use Supabase queries |
-| `src/hooks/useCart.tsx` | Add Supabase sync for logged-in users |
-| `src/hooks/useMessages.tsx` | New hook for messaging queries |
-| `src/hooks/useCommunityFeed.tsx` | New hook for community feed queries |
+### Orders Table Schema
+```sql
+CREATE TABLE public.orders (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  buyer_id uuid NOT NULL,
+  stripe_session_id text,
+  subtotal numeric NOT NULL,
+  platform_fee numeric NOT NULL,
+  total numeric NOT NULL,
+  product_ids text[] NOT NULL DEFAULT '{}',
+  status text NOT NULL DEFAULT 'completed',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
 
----
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 
-## 6. Implementation Order
+CREATE POLICY "Buyers can view their own orders"
+  ON public.orders FOR SELECT
+  USING (auth.uid() = buyer_id);
+```
 
-1. Run database migration (tables, RLS, functions)
-2. Create `useMessages` hook and update `ChatInterface`
-3. Create `useCommunityFeed` hook and update `CommunityFeed`
-4. Update `useCart` with Supabase sync logic
-5. Test all three features end-to-end
+### Cart UI Breakdown
+The cart summary section will show:
+```text
+Subtotal:       $100.00
+Platform Fee:    $5.00
+-----------------------
+Total:         $105.00
+```
+
+### Files Modified
+| File | Change |
+|---|---|
+| `supabase/functions/create-payment/index.ts` | Add 5% fee line item to Stripe Checkout |
+| `src/pages/Cart.tsx` | Show subtotal, fee, and total breakdown |
+| `src/pages/ProductDetail.tsx` | Show fee info near Buy Now button |
+| New migration | Create `orders` table with RLS |
 
