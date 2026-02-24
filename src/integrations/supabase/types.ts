@@ -239,6 +239,42 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          id: string
+          platform_fee: number
+          product_ids: string[]
+          status: string
+          stripe_session_id: string | null
+          subtotal: number
+          total: number
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          id?: string
+          platform_fee: number
+          product_ids?: string[]
+          status?: string
+          stripe_session_id?: string | null
+          subtotal: number
+          total: number
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          platform_fee?: number
+          product_ids?: string[]
+          status?: string
+          stripe_session_id?: string | null
+          subtotal?: number
+          total?: number
+        }
+        Relationships: []
+      }
       product_likes: {
         Row: {
           created_at: string

@@ -7,6 +7,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const PLATFORM_FEE_RATE = 0.05; // 5%
+
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-PAYMENT] ${step}${detailsStr}`);
@@ -45,9 +47,17 @@ serve(async (req) => {
 
     logStep("Line items parsed", { count: lineItems.length });
 
+    // Calculate subtotal and platform fee
+    const subtotal = lineItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const platformFee = subtotal * PLATFORM_FEE_RATE;
+    const total = subtotal + platformFee;
+
+    logStep("Fee calculated", { subtotal, platformFee, total });
+
     // Try to get authenticated user
     let userEmail: string | undefined;
     let customerId: string | undefined;
+    let userId: string | undefined;
 
     const authHeader = req.headers.get("Authorization");
     if (authHeader) {
@@ -55,6 +65,7 @@ serve(async (req) => {
       const { data } = await supabaseClient.auth.getUser(token);
       if (data.user?.email) {
         userEmail = data.user.email;
+        userId = data.user.id;
         logStep("User authenticated", { email: userEmail });
       }
     }
@@ -70,6 +81,7 @@ serve(async (req) => {
       }
     }
 
+    // Build Stripe line items for products
     const stripeLineItems = lineItems.map((item) => ({
       price_data: {
         currency: "usd",
@@ -82,6 +94,19 @@ serve(async (req) => {
       quantity: item.quantity,
     }));
 
+    // Add platform fee as a separate line item
+    stripeLineItems.push({
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: "Platform Fee (5%)",
+          metadata: { type: "platform_fee" },
+        },
+        unit_amount: Math.round(platformFee * 100),
+      },
+      quantity: 1,
+    });
+
     const firstProductId = lineItems[0].productId;
 
     const session = await stripe.checkout.sessions.create({
@@ -93,6 +118,10 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin")}/${lineItems.length > 1 ? "cart" : `product/${firstProductId}`}`,
       metadata: {
         product_ids: lineItems.map((i) => i.productId).join(","),
+        subtotal: subtotal.toFixed(2),
+        platform_fee: platformFee.toFixed(2),
+        total: total.toFixed(2),
+        buyer_id: userId || "",
       },
     });
 
