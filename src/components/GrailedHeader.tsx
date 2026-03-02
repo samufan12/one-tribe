@@ -50,15 +50,6 @@ const GrailedHeader = () => {
             <span>AI</span>
           </button>
           
-          <a 
-            href="https://www.youtube.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="p-2 text-foreground hover:text-muted-foreground transition-colors"
-            aria-label="Visit YouTube"
-          >
-            <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-5 h-5" />
-          </a>
           
           <button 
             onClick={() => navigate('/community')}
@@ -131,15 +122,6 @@ const GrailedHeader = () => {
             <Sparkles size={18} />
             AI Assistant
           </button>
-          <a 
-            href="https://www.youtube.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="w-full text-left py-2 text-foreground flex items-center gap-2"
-          >
-            <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-5 h-5" />
-            YouTube
-          </a>
           <button 
             onClick={() => { navigate('/community'); setMobileMenuOpen(false); }}
             className="w-full text-left py-2 text-foreground"

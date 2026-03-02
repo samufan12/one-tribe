@@ -71,7 +71,7 @@ const StorefrontDetail = () => {
 
   if (loading) {
     return (
-      <GrailedLayout showCategoryNav={false}>
+      <GrailedLayout>
         <div className="max-w-[1400px] mx-auto px-4 py-8">
           <Skeleton className="w-full h-56 rounded-lg mb-6" />
           <Skeleton className="w-48 h-8 mb-4" />
@@ -87,7 +87,7 @@ const StorefrontDetail = () => {
 
   if (!storefront) {
     return (
-      <GrailedLayout showCategoryNav={false}>
+      <GrailedLayout>
         <div className="text-center py-20">
           <Store size={48} className="mx-auto mb-4 text-muted-foreground" />
           <p className="text-lg text-muted-foreground">Storefront not found</p>
@@ -97,7 +97,7 @@ const StorefrontDetail = () => {
   }
 
   return (
-    <GrailedLayout showCategoryNav={false}>
+    <GrailedLayout>
       <div className="max-w-[1400px] mx-auto">
         {/* Cover */}
         <div className="h-56 md:h-72 bg-muted overflow-hidden">

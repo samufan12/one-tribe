@@ -3,7 +3,7 @@ import { Marketplace as MarketplaceComponent } from "@/components/Marketplace";
 
 const MarketplacePage = () => {
   return (
-    <GrailedLayout showCategoryNav={false}>
+    <GrailedLayout>
       <MarketplaceComponent />
     </GrailedLayout>
   );

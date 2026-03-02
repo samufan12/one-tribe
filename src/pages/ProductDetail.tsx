@@ -178,7 +178,7 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <GrailedLayout showCategoryNav={false}>
+      <GrailedLayout>
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 w-24 bg-muted rounded mb-6" />
@@ -198,7 +198,7 @@ const ProductDetail = () => {
 
   if (!product) {
     return (
-      <GrailedLayout showCategoryNav={false}>
+      <GrailedLayout>
         <div className="max-w-6xl mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Product Not Found</h1>
           <p className="text-muted-foreground mb-6">The item you're looking for doesn't exist or has been removed.</p>
@@ -214,7 +214,7 @@ const ProductDetail = () => {
   const images = product.images.length > 0 ? product.images : ['https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=600&h=600&fit=crop'];
 
   return (
-    <GrailedLayout showCategoryNav={false}>
+    <GrailedLayout>
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Back Button */}
         <button 
