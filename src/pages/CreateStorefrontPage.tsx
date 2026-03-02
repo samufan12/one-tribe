@@ -25,7 +25,7 @@ const CreateStorefrontPage = () => {
 
   if (loading) {
     return (
-      <GrailedLayout showCategoryNav={false} requireAuth>
+      <GrailedLayout requireAuth>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground" />
         </div>
@@ -34,7 +34,7 @@ const CreateStorefrontPage = () => {
   }
 
   return (
-    <GrailedLayout showCategoryNav={false} requireAuth>
+    <GrailedLayout requireAuth>
       <CreateStorefront existingStorefront={existingStorefront} />
     </GrailedLayout>
   );

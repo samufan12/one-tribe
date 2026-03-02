@@ -17,7 +17,7 @@ const PaymentSuccess = () => {
   }, []);
 
   return (
-    <GrailedLayout showCategoryNav={false}>
+    <GrailedLayout>
       <div className="min-h-[70vh] flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
           {/* Success Icon */}

@@ -30,7 +30,7 @@ const Storefronts = () => {
   }, []);
 
   return (
-    <GrailedLayout showCategoryNav={false}>
+    <GrailedLayout>
       <div className="max-w-[1400px] mx-auto px-4 py-8">
         <div className="flex items-center gap-3 mb-8">
           <Store className="text-primary" size={28} />

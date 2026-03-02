@@ -1,17 +1,15 @@
 import { ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import GrailedHeader from "./GrailedHeader";
-import CategoryNav from "./CategoryNav";
+
 
 interface GrailedLayoutProps {
   children: ReactNode;
-  showCategoryNav?: boolean;
   requireAuth?: boolean;
 }
 
 export const GrailedLayout = ({ 
   children, 
-  showCategoryNav = true,
   requireAuth = false 
 }: GrailedLayoutProps) => {
   const { user, loading } = useAuth();
@@ -34,7 +32,7 @@ export const GrailedLayout = ({
   return (
     <div className="min-h-screen bg-background">
       <GrailedHeader />
-      {showCategoryNav && <CategoryNav />}
+      
       <main>
         {children}
       </main>
