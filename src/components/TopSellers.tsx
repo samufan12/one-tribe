@@ -1,16 +1,12 @@
 import { Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import seller1 from "@/assets/seller-1.jpg";
-import seller2 from "@/assets/seller-2.jpg";
-import seller3 from "@/assets/seller-3.jpg";
-import person1 from "@/assets/person-1.jpg";
-import person2 from "@/assets/person-2.jpg";
 
 const sellers = [
   {
     id: 1,
     name: "Abeba's Boutique",
-    image: seller1,
+    initials: "AB",
+    bg: "bg-primary",
     rating: 4.9,
     reviews: 234,
     items: 48,
@@ -20,7 +16,8 @@ const sellers = [
   {
     id: 2,
     name: "Asmara Threads",
-    image: seller2,
+    initials: "AT",
+    bg: "bg-accent",
     rating: 4.8,
     reviews: 189,
     items: 62,
@@ -30,7 +27,8 @@ const sellers = [
   {
     id: 3,
     name: "Tigray Textiles",
-    image: seller3,
+    initials: "TT",
+    bg: "bg-secondary",
     rating: 4.9,
     reviews: 312,
     items: 85,
@@ -40,7 +38,8 @@ const sellers = [
   {
     id: 4,
     name: "Addis Collections",
-    image: person1,
+    initials: "AC",
+    bg: "bg-muted-foreground",
     rating: 4.7,
     reviews: 156,
     items: 37,
@@ -50,7 +49,8 @@ const sellers = [
   {
     id: 5,
     name: "Habesha Home",
-    image: person2,
+    initials: "HH",
+    bg: "bg-primary",
     rating: 4.8,
     reviews: 201,
     items: 54,
@@ -83,12 +83,8 @@ const TopSellers = () => {
               className="group cursor-pointer text-center"
             >
               <div className="relative mb-3">
-                <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-border group-hover:border-primary transition-colors">
-                  <img
-                    src={seller.image}
-                    alt={seller.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className={`w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-border group-hover:border-primary transition-colors flex items-center justify-center ${seller.bg}`}>
+                  <span className="text-primary-foreground font-bold text-2xl">{seller.initials}</span>
                 </div>
               </div>
               
