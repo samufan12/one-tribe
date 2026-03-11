@@ -1,0 +1,9 @@
+{
+  "appId": "app.lovable.d36ce46a05d342cc848ccd44c50a2487",
+  "appName": "one-tribe",
+  "webDir": "dist",
+  "server": {
+    "url": "https://d36ce46a-05d3-42cc-848c-cd44c50a2487.lovableproject.com?forceHideBadge=true",
+    "cleartext": true
+  }
+}
