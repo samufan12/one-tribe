@@ -63,7 +63,6 @@
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-}
 
 .feature-card {
   transition: transform 0.2s ease-in-out;
