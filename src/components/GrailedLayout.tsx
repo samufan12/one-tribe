@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import GrailedHeader from "./GrailedHeader";
-
+import { MobileBottomNav } from "./MobileBottomNav";
 
 interface GrailedLayoutProps {
   children: ReactNode;
@@ -33,12 +33,12 @@ export const GrailedLayout = ({
     <div className="min-h-screen bg-background">
       <GrailedHeader />
       
-      <main>
+      <main className="pb-16 md:pb-0">
         {children}
       </main>
       
-      {/* Footer */}
-      <footer className="border-t border-border py-8 mt-12">
+      {/* Footer - hidden on mobile */}
+      <footer className="hidden md:block border-t border-border py-8 mt-12">
         <div className="max-w-[1400px] mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
@@ -53,6 +53,8 @@ export const GrailedLayout = ({
           </div>
         </div>
       </footer>
+
+      <MobileBottomNav />
     </div>
   );
 };

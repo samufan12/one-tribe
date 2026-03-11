@@ -55,7 +55,14 @@
   }
   body {
     @apply bg-background text-foreground overflow-x-hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
   }
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
 }
 
 .feature-card {
