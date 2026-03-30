@@ -268,12 +268,37 @@ export const useProducts = () => {
       return false;
     }
 
+    // Validate input with Zod
+    const productSchema = z.object({
+      title: z.string().trim().min(3, "Title must be at least 3 characters").max(200, "Title must be under 200 characters"),
+      description: z.string().trim().min(10, "Description must be at least 10 characters").max(2000, "Description must be under 2000 characters"),
+      price: z.number().positive("Price must be positive").max(999999, "Price must be under 1,000,000"),
+      category: z.string().trim().min(1, "Category is required").max(100),
+      condition: z.string().trim().min(1, "Condition is required").max(50),
+      size: z.string().trim().max(50).optional(),
+      location: z.string().trim().min(2, "Location must be at least 2 characters").max(200, "Location must be under 200 characters"),
+      images: z.array(z.instanceof(File)).max(10, "Maximum 10 images allowed"),
+      status: z.enum(['active', 'draft']).optional(),
+    });
+
+    const validation = productSchema.safeParse(productData);
+    if (!validation.success) {
+      toast({
+        title: "Invalid product data",
+        description: validation.error.errors[0]?.message || "Please check your input",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    const validatedData = validation.data;
+
     try {
       setLoading(true);
 
       // Upload images first
       const imageUrls: string[] = [];
-      for (const file of productData.images) {
+      for (const file of validatedData.images) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
@@ -290,14 +315,20 @@ export const useProducts = () => {
         imageUrls.push(publicUrl);
       }
 
-      // Create product
+      // Create product with validated data
       const { error } = await supabase
         .from('products')
         .insert({
-          ...productData,
+          title: validatedData.title,
+          description: validatedData.description,
+          price: validatedData.price,
+          category: validatedData.category,
+          condition: validatedData.condition,
+          size: validatedData.size,
+          location: validatedData.location,
           user_id: user.id,
           images: imageUrls,
-          status: productData.status || 'active'
+          status: validatedData.status || 'active'
         });
 
       if (error) throw error;
