@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
+import { z } from 'zod';
 import coffeeCeremonySet from '@/assets/coffee-ceremony-set.jpg';
 import saintGeorgePainting from '@/assets/saint-george-painting.jpg';
 import telsumNecklace from '@/assets/telsum-necklace.jpg';
