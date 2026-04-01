@@ -68,12 +68,23 @@ export const useCommunityFeed = () => {
     ));
   };
 
+  const postSchema = z.object({
+    productId: z.string().uuid("Invalid product ID"),
+    caption: z.string().max(500, "Caption too long").optional(),
+  });
+
   const createPost = async (productId: string, caption: string) => {
     if (!user) return false;
+
+    const validation = postSchema.safeParse({ productId, caption: caption || undefined });
+    if (!validation.success) return false;
+
+    const sanitizedCaption = validation.data.caption ? sanitizeString(validation.data.caption) : null;
+
     const { error } = await supabase.from("community_posts").insert({
       user_id: user.id,
-      product_id: productId,
-      caption: caption.trim() || null,
+      product_id: validation.data.productId,
+      caption: sanitizedCaption,
     });
     if (error) return false;
     await fetchPosts();

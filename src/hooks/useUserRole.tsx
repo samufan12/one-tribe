@@ -116,17 +116,43 @@ export const useUserRole = () => {
     }
   };
 
+  const profileUpdateSchema = z.object({
+    display_name: z.string().trim().max(100).nullable().optional(),
+    phone: z.string().trim().max(20).regex(/^[+\d\s()-]*$/, "Invalid phone").nullable().optional(),
+    bio: z.string().trim().max(500).nullable().optional(),
+    avatar_url: z.string().url().max(2000).nullable().optional(),
+  });
+
   const updateProfile = async (profileData: Partial<UserProfile>) => {
     if (!user) return;
+
+    // Only allow safe fields
+    const safeData = {
+      display_name: profileData.display_name,
+      phone: profileData.phone,
+      bio: profileData.bio,
+      avatar_url: profileData.avatar_url,
+    };
+
+    const validation = profileUpdateSchema.safeParse(safeData);
+    if (!validation.success) {
+      throw new Error(validation.error.errors[0]?.message || "Invalid profile data");
+    }
+
+    // Sanitize string fields
+    const sanitized: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(validation.data)) {
+      if (value === undefined) continue;
+      sanitized[key] = typeof value === 'string' ? sanitizeString(value) : value;
+    }
 
     try {
       const { error } = await supabase
         .from('profiles')
-        .update(profileData)
+        .update(sanitized)
         .eq('user_id', user.id);
 
       if (error) throw error;
-
       await fetchUserData();
     } catch (error) {
       console.error('Error updating profile:', error);
