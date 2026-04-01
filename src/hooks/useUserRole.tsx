@@ -77,6 +77,12 @@ export const useUserRole = () => {
   const isBuyer = (): boolean => hasRole('buyer');
   const isAdmin = (): boolean => hasRole('admin');
 
+  const businessSchema = z.object({
+    business_name: z.string().trim().min(2, "Business name too short").max(200),
+    business_address: z.string().trim().min(5, "Address too short").max(500),
+    business_phone: z.string().trim().min(7, "Phone too short").max(20).regex(/^[+\d\s()-]+$/, "Invalid phone format"),
+  });
+
   const becomeSeller = async (businessData: {
     business_name: string;
     business_address: string;
@@ -84,29 +90,26 @@ export const useUserRole = () => {
   }) => {
     if (!user) return;
 
-    try {
-      // Request seller status (will need admin approval)
-      const { error: requestError } = await supabase.rpc('request_seller_status');
+    const validation = businessSchema.safeParse(businessData);
+    if (!validation.success) {
+      throw new Error(validation.error.errors[0]?.message || "Invalid business data");
+    }
 
+    try {
+      const { error: requestError } = await supabase.rpc('request_seller_status');
       if (requestError) throw requestError;
 
-      // Update profile with business information
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
-          business_name: businessData.business_name,
-          business_address: businessData.business_address,
-          business_phone: businessData.business_phone,
+          business_name: sanitizeString(validation.data.business_name),
+          business_address: sanitizeString(validation.data.business_address),
+          business_phone: validation.data.business_phone,
         })
         .eq('user_id', user.id);
 
       if (profileError) throw profileError;
-
-      // Refresh data
       await fetchUserData();
-      
-      // Note: User will receive 'seller' role after admin approval
-      // For now, they can add business info but won't have seller privileges yet
     } catch (error) {
       console.error('Error requesting seller status:', error);
       throw error;
