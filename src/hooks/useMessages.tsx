@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { z } from "zod";
+import { sanitizeString } from "@/lib/sanitize";
 
 export interface Conversation {
   conversation_id: string;
