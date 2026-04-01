@@ -403,6 +403,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       storefronts: {
         Row: {
           cover_image_url: string | null
@@ -474,6 +495,15 @@ export type Database = {
       }
       check_ai_rate_limit: {
         Args: {
+          p_max_requests?: number
+          p_user_id: string
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
+      check_rate_limit: {
+        Args: {
+          p_action: string
           p_max_requests?: number
           p_user_id: string
           p_window_minutes?: number
@@ -625,6 +655,10 @@ export type Database = {
         Returns: boolean
       }
       log_ai_usage: { Args: never; Returns: string }
+      log_rate_limited_action: {
+        Args: { p_action: string }
+        Returns: undefined
+      }
       remove_user_role: {
         Args: {
           role_to_remove: Database["public"]["Enums"]["app_role"]

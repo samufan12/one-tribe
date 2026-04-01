@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,6 +14,22 @@ const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-PAYMENT] ${step}${detailsStr}`);
 };
+
+// Input validation schemas
+const lineItemSchema = z.object({
+  productId: z.string().uuid("Invalid product ID"),
+  productTitle: z.string().trim().min(1).max(200),
+  price: z.number().positive().max(999999),
+  quantity: z.number().int().positive().max(100).default(1),
+});
+
+const bodySchema = z.object({
+  items: z.array(lineItemSchema).min(1).max(50).optional(),
+  productId: z.string().uuid().optional(),
+  productTitle: z.string().trim().min(1).max(200).optional(),
+  price: z.number().positive().max(999999).optional(),
+  quantity: z.number().int().positive().max(100).optional(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -30,19 +47,69 @@ serve(async (req) => {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
 
-    const body = await req.json();
+    // Authenticate user
+    let userId: string | undefined;
+    let userEmail: string | undefined;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data } = await supabaseClient.auth.getUser(token);
+      if (data.user) {
+        userId = data.user.id;
+        userEmail = data.user.email;
+        logStep("User authenticated", { email: userEmail });
+      }
+    }
 
-    // Support both single item (legacy) and multi-item cart
+    // Rate limiting for authenticated users
+    if (userId) {
+      const { data: withinLimit, error: rlError } = await supabaseClient
+        .rpc('check_rate_limit', {
+          p_user_id: userId,
+          p_action: 'create_payment',
+          p_window_minutes: 15,
+          p_max_requests: 10,
+        });
+
+      if (rlError) {
+        console.error('Rate limit check error:', rlError);
+      } else if (!withinLimit) {
+        logStep("Rate limit exceeded", { userId });
+        return new Response(
+          JSON.stringify({ error: "Too many payment requests. Please try again later." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Log the action
+      await supabaseClient.rpc('log_rate_limited_action', { p_action: 'create_payment' });
+    }
+
+    // Validate input
+    const rawBody = await req.json();
+    const validation = bodySchema.safeParse(rawBody);
+    if (!validation.success) {
+      logStep("Validation failed", { errors: validation.error.errors });
+      return new Response(
+        JSON.stringify({ error: "Invalid request data", details: validation.error.errors[0]?.message }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const body = validation.data;
+
+    // Build line items from validated data
     let lineItems: { productId: string; productTitle: string; price: number; quantity: number }[];
 
-    if (body.items && Array.isArray(body.items)) {
+    if (body.items && body.items.length > 0) {
       lineItems = body.items;
+    } else if (body.productId && body.productTitle && body.price) {
+      lineItems = [{ productId: body.productId, productTitle: body.productTitle, price: body.price, quantity: body.quantity || 1 }];
     } else {
-      const { productId, productTitle, price, quantity = 1 } = body;
-      if (!productId || !productTitle || !price) {
-        throw new Error("Missing required fields: productId, productTitle, price");
-      }
-      lineItems = [{ productId, productTitle, price, quantity }];
+      return new Response(
+        JSON.stringify({ error: "Missing required fields: provide items array or productId, productTitle, price" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     logStep("Line items parsed", { count: lineItems.length });
@@ -54,22 +121,7 @@ serve(async (req) => {
 
     logStep("Fee calculated", { subtotal, platformFee, total });
 
-    // Try to get authenticated user
-    let userEmail: string | undefined;
     let customerId: string | undefined;
-    let userId: string | undefined;
-
-    const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      const { data } = await supabaseClient.auth.getUser(token);
-      if (data.user?.email) {
-        userEmail = data.user.email;
-        userId = data.user.id;
-        logStep("User authenticated", { email: userEmail });
-      }
-    }
-
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
     });
@@ -81,7 +133,7 @@ serve(async (req) => {
       }
     }
 
-    // Build Stripe line items for products
+    // Build Stripe line items
     const stripeLineItems = lineItems.map((item) => ({
       price_data: {
         currency: "usd",

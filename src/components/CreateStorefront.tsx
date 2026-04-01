@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Upload, Store, ImageIcon } from "lucide-react";
+import { z } from "zod";
+import { sanitizeString } from "@/lib/sanitize";
 
 interface CreateStorefrontProps {
   existingStorefront?: {
@@ -57,9 +59,20 @@ export const CreateStorefront = ({ existingStorefront }: CreateStorefrontProps) 
     return urlData.publicUrl;
   };
 
+  const storefrontSchema = z.object({
+    name: z.string().trim().min(2, "Store name must be at least 2 characters").max(100, "Store name too long"),
+    description: z.string().trim().max(1000, "Description too long").optional(),
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !name.trim()) return;
+    if (!user) return;
+
+    const validation = storefrontSchema.safeParse({ name, description: description || undefined });
+    if (!validation.success) {
+      toast.error(validation.error.errors[0]?.message || "Invalid input");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -77,8 +90,8 @@ export const CreateStorefront = ({ existingStorefront }: CreateStorefrontProps) 
         const { error } = await supabase
           .from("storefronts")
           .update({
-            name: name.trim(),
-            description: description.trim() || null,
+            name: sanitizeString(validation.data.name),
+            description: validation.data.description ? sanitizeString(validation.data.description) : null,
             logo_url: logoUrl,
             cover_image_url: coverUrl,
           })
@@ -90,8 +103,8 @@ export const CreateStorefront = ({ existingStorefront }: CreateStorefrontProps) 
           .from("storefronts")
           .insert({
             user_id: user.id,
-            name: name.trim(),
-            description: description.trim() || null,
+            name: sanitizeString(validation.data.name),
+            description: validation.data.description ? sanitizeString(validation.data.description) : null,
             logo_url: logoUrl,
             cover_image_url: coverUrl,
           });

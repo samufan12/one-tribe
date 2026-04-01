@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
+import { z } from "zod";
+import { sanitizeString } from "@/lib/sanitize";
 
 export interface Conversation {
   conversation_id: string;
@@ -79,15 +81,29 @@ export const useMessages = (conversationId: string | null) => {
     return () => { supabase.removeChannel(channel); };
   }, [conversationId, user]);
 
+  const messageSchema = z.object({
+    content: z.string().trim().min(1, "Message cannot be empty").max(2000, "Message too long"),
+    type: z.enum(["text", "offer", "trade"]).default("text"),
+    offerAmount: z.number().positive().max(999999).optional(),
+    offerItemName: z.string().trim().max(200).optional(),
+  });
+
   const sendMessage = async (content: string, type = "text", offerAmount?: number, offerItemName?: string) => {
     if (!user || !conversationId) return;
+
+    const validation = messageSchema.safeParse({ content, type, offerAmount, offerItemName });
+    if (!validation.success) return;
+
+    const sanitizedContent = sanitizeString(validation.data.content);
+    const sanitizedItemName = validation.data.offerItemName ? sanitizeString(validation.data.offerItemName) : null;
+
     await supabase.from("messages").insert({
       conversation_id: conversationId,
       sender_id: user.id,
-      content,
-      message_type: type,
-      offer_amount: offerAmount ?? null,
-      offer_item_name: offerItemName ?? null,
+      content: sanitizedContent,
+      message_type: validation.data.type,
+      offer_amount: validation.data.offerAmount ?? null,
+      offer_item_name: sanitizedItemName,
     });
   };
 
