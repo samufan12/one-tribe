@@ -59,9 +59,20 @@ export const CreateStorefront = ({ existingStorefront }: CreateStorefrontProps) 
     return urlData.publicUrl;
   };
 
+  const storefrontSchema = z.object({
+    name: z.string().trim().min(2, "Store name must be at least 2 characters").max(100, "Store name too long"),
+    description: z.string().trim().max(1000, "Description too long").optional(),
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !name.trim()) return;
+    if (!user) return;
+
+    const validation = storefrontSchema.safeParse({ name, description: description || undefined });
+    if (!validation.success) {
+      toast.error(validation.error.errors[0]?.message || "Invalid input");
+      return;
+    }
 
     setSaving(true);
     try {
