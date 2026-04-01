@@ -90,8 +90,8 @@ export const CreateStorefront = ({ existingStorefront }: CreateStorefrontProps) 
         const { error } = await supabase
           .from("storefronts")
           .update({
-            name: name.trim(),
-            description: description.trim() || null,
+            name: sanitizeString(validation.data.name),
+            description: validation.data.description ? sanitizeString(validation.data.description) : null,
             logo_url: logoUrl,
             cover_image_url: coverUrl,
           })
