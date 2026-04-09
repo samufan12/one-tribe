@@ -1,29 +1,32 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { featureFlags } from "@/config/featureFlags";
 
 interface CategoryItem {
   label: string;
   href: string;
   hasDropdown?: boolean;
-  items?: { label: string; href: string }[];
+  items?: { label: string; href: string; flag?: boolean }[];
+  flag?: boolean;
 }
 
-const categories: CategoryItem[] = [
+const allCategories: CategoryItem[] = [
   { 
     label: "TRADITIONAL WEAR", 
     href: "/marketplace?category=traditional",
     hasDropdown: true,
     items: [
-      { label: "Kemis & Dresses", href: "/marketplace?category=kemis" },
-      { label: "Netela & Shawls", href: "/marketplace?category=netela" },
-      { label: "Men's Traditional", href: "/marketplace?category=mens" },
+      { label: "Kemis & Dresses", href: "/marketplace?category=kemis", flag: featureFlags.showTraditionalWearKemis },
+      { label: "Netela & Shawls", href: "/marketplace?category=netela", flag: featureFlags.showTraditionalWearNetela },
+      { label: "Men's Traditional", href: "/marketplace?category=mens", flag: featureFlags.showTraditionalWearMens },
     ]
   },
   { 
     label: "HOME & DECOR", 
     href: "/marketplace?category=home",
     hasDropdown: true,
+    flag: featureFlags.showCategoryHomeDecor,
     items: [
       { label: "Coffee Sets", href: "/marketplace?category=coffee" },
       { label: "Baskets", href: "/marketplace?category=baskets" },
@@ -34,17 +37,25 @@ const categories: CategoryItem[] = [
     label: "JEWELRY", 
     href: "/marketplace?category=jewelry",
     hasDropdown: true,
+    flag: featureFlags.showCategoryJewelry,
     items: [
       { label: "Necklaces", href: "/marketplace?category=necklaces" },
       { label: "Bracelets", href: "/marketplace?category=bracelets" },
       { label: "Earrings", href: "/marketplace?category=earrings" },
     ]
   },
-  { label: "ART", href: "/marketplace?category=art" },
-  { label: "COMMUNITY PICKS", href: "/marketplace?featured=true" },
-  { label: "COLLECTIONS", href: "/categories" },
-  { label: "CULTURAL GUIDE", href: "/cultural-guide" },
+  { label: "ART", href: "/marketplace?category=art", flag: featureFlags.showCategoryArt },
+  { label: "COMMUNITY PICKS", href: "/marketplace?featured=true", flag: featureFlags.showCategoryCommunityPicks },
+  { label: "COLLECTIONS", href: "/categories", flag: featureFlags.showCategoryCollections },
+  { label: "CULTURAL GUIDE", href: "/cultural-guide", flag: featureFlags.showCategoryCulturalGuide },
 ];
+
+const categories = allCategories
+  .filter((c) => c.flag !== false)
+  .map((c) => ({
+    ...c,
+    items: c.items?.filter((i) => i.flag !== false),
+  }));
 
 const CategoryNav = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);

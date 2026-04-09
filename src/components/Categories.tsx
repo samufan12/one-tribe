@@ -1,53 +1,62 @@
 import { Package, Palette, Coffee, Gem, Music, Brush } from "lucide-react";
+import { featureFlags } from "@/config/featureFlags";
 import kemis1 from "@/assets/kemis-1.jpg";
 import kemis2 from "@/assets/kemis-2.jpg";
 import coffeeSet from "@/assets/coffee-set.jpg";
 import seller1 from "@/assets/seller-1.jpg";
 
-const categories = [
+const allCategories = [
   {
     name: "Traditional Wear",
     icon: Package,
     count: 248,
     description: "Authentic kemis, habesha dresses, and cultural attire",
-    color: "bg-primary"
+    color: "bg-primary",
+    flag: true,
   },
   {
     name: "Jewelry & Accessories",
     icon: Gem,
     count: 156,
     description: "Traditional jewelry, scarves, and cultural accessories",
-    color: "bg-primary/80"
+    color: "bg-primary/80",
+    flag: featureFlags.showCategoryCardJewelry,
   },
   {
     name: "Home & Decor",
     icon: Coffee,
     count: 89,
     description: "Coffee sets, decorative items, and home furnishings",
-    color: "bg-primary/90"
+    color: "bg-primary/90",
+    flag: featureFlags.showCategoryCardHomeDecor,
   },
   {
     name: "Art & Crafts",
     icon: Brush,
     count: 73,
     description: "Handwoven items, paintings, and traditional crafts",
-    color: "bg-primary/70"
+    color: "bg-primary/70",
+    flag: featureFlags.showCategoryCardArtCrafts,
   },
   {
     name: "Music & Instruments",
     icon: Music,
     count: 42,
     description: "Traditional instruments and cultural music items",
-    color: "bg-primary/85"
+    color: "bg-primary/85",
+    flag: featureFlags.showCategoryCardMusicInstruments,
   },
   {
     name: "Vintage & Collectibles",
     icon: Palette,
     count: 61,
     description: "Rare finds and vintage cultural items",
-    color: "bg-primary/75"
+    color: "bg-primary/75",
+    flag: featureFlags.showCategoryCardVintage,
   }
 ];
+
+const categories = allCategories.filter((c) => c.flag !== false);
 
 export const Categories = () => {
   return (
