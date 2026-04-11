@@ -3,6 +3,7 @@ import { Grid, List, Search, Heart, MessageCircle, Lock, ChevronDown } from "luc
 import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { featureFlags } from "@/config/featureFlags";
 import { format } from "date-fns";
 import kemis1 from "@/assets/kemis-1.jpg";
 import { ProductSkeletonGrid } from "./ProductSkeleton";
