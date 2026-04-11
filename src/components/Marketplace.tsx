@@ -3,6 +3,7 @@ import { Grid, List, Search, Heart, MessageCircle, Lock, ChevronDown } from "luc
 import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { featureFlags } from "@/config/featureFlags";
 import { format } from "date-fns";
 import kemis1 from "@/assets/kemis-1.jpg";
 import { ProductSkeletonGrid } from "./ProductSkeleton";
@@ -43,7 +44,14 @@ export const Marketplace = () => {
     navigate("/messages");
   };
 
-  const categories = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
+  const allMarketplaceCategories = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
+  const categories = allMarketplaceCategories.filter((c) => {
+    if (c === "Home & Decor" && !featureFlags.showCategoryHomeDecor) return false;
+    if (c === "Jewelry" && !featureFlags.showCategoryJewelry) return false;
+    if (c === "Men" && !featureFlags.showTraditionalWearMens) return false;
+    if (c === "Kemis & Zuria" && !featureFlags.showTraditionalWearKemis) return false;
+    return true;
+  });
 
   // Sync URL search param with state
   useEffect(() => {
