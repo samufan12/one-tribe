@@ -43,7 +43,14 @@ export const Marketplace = () => {
     navigate("/messages");
   };
 
-  const categories = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
+  const allMarketplaceCategories = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
+  const categories = allMarketplaceCategories.filter((c) => {
+    if (c === "Home & Decor" && !featureFlags.showCategoryHomeDecor) return false;
+    if (c === "Jewelry" && !featureFlags.showCategoryJewelry) return false;
+    if (c === "Men" && !featureFlags.showTraditionalWearMens) return false;
+    if (c === "Kemis & Zuria" && !featureFlags.showTraditionalWearKemis) return false;
+    return true;
+  });
 
   // Sync URL search param with state
   useEffect(() => {
