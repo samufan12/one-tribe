@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import SearchBar from "@/components/SearchBar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const GrailedHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -60,6 +61,8 @@ const GrailedHeader = () => {
           >
             Feed
           </button>
+
+          <ThemeToggle />
 
           <button
             onClick={() => user ? navigate('/messages') : navigate('/auth')}
