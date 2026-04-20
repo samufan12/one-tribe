@@ -1,4 +1,3 @@
-import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import GrailedLayout from "@/components/GrailedLayout";
 import HeroCarousel from "@/components/HeroCarousel";
@@ -7,46 +6,39 @@ import TopSellers from "@/components/TopSellers";
 import RecentlyViewed from "@/components/RecentlyViewed";
 
 const Index = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   return (
     <GrailedLayout>
-      {/* Hero Carousel */}
       <HeroCarousel />
-      
-      {/* Recently Viewed */}
       <RecentlyViewed />
-      
-      {/* Top Sellers */}
       <TopSellers />
-      
-      {/* Product Sections */}
-      <ProductSection title="Daily Picks For You" />
-      <ProductSection title="Trending Now" seeMoreHref="/marketplace?sort=trending" />
-      <ProductSection title="New Arrivals" seeMoreHref="/marketplace?sort=newest" />
-      
-      {/* Community Banner */}
-      <section className="py-12 bg-muted">
-        <div className="max-w-[1400px] mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">The Global Habesha Marketplace</h2>
-          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Connecting the Ethiopian and Eritrean diaspora across the US and Europe 
-            with authentic goods from home. Shop traditional clothing, handcrafted items, and cultural treasures 
-            from trusted sellers in your community.
+      <ProductSection title="Daily picks for you" />
+      <ProductSection title="Trending now" seeMoreHref="/marketplace?sort=trending" />
+      <ProductSection title="New arrivals" seeMoreHref="/marketplace?sort=newest" />
+
+      {/* Editorial CTA */}
+      <section className="py-20 px-4 sm:px-6">
+        <div className="max-w-[1400px] mx-auto bg-foreground text-background rounded-[28px] px-8 py-16 md:py-24 text-center shadow-soft-xl">
+          <p className="text-eyebrow text-background/60 mb-4">The Global Habesha Marketplace</p>
+          <h2 className="text-display mb-5 max-w-3xl mx-auto">
+            Home, delivered.
+          </h2>
+          <p className="text-base md:text-lg text-background/70 mb-10 max-w-xl mx-auto">
+            Connecting the Ethiopian and Eritrean diaspora with authentic goods from trusted sellers across the world.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={() => navigate('/marketplace')}
-              className="px-6 py-3 bg-foreground text-background font-medium rounded hover:bg-foreground/90 transition-colors"
+              className="px-7 py-3 bg-background text-foreground font-medium text-sm rounded-full hover:bg-background/90 active:scale-[0.98] transition-all duration-200 ease-spring"
             >
-              Start Shopping
+              Start shopping
             </button>
             <button
               onClick={() => navigate('/marketplace')}
-              className="px-6 py-3 border border-foreground text-foreground font-medium rounded hover:bg-foreground hover:text-background transition-colors"
+              className="px-7 py-3 border border-background/30 text-background font-medium text-sm rounded-full hover:bg-background/10 active:scale-[0.98] transition-all duration-200 ease-spring"
             >
-              Browse Listings
+              Browse listings
             </button>
           </div>
         </div>

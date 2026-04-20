@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Clock, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 
 const RecentlyViewed = () => {
@@ -8,29 +8,13 @@ const RecentlyViewed = () => {
 
   if (recentlyViewed.length === 0) return null;
 
-  const getConditionColor = (condition: string) => {
-    switch (condition?.toLowerCase()) {
-      case "new":
-        return "bg-green-100 text-green-800";
-      case "like new":
-        return "bg-blue-100 text-blue-800";
-      case "good":
-        return "bg-yellow-100 text-yellow-800";
-      case "fair":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
-
   return (
-    <section className="py-8">
-      <div className="max-w-[1400px] mx-auto px-4">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <Clock size={20} className="text-muted-foreground" />
-            <h2 className="text-xl font-bold text-foreground">Recently Viewed</h2>
-          </div>
+    <section className="py-12">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="flex items-end justify-between mb-8">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+            Recently viewed
+          </h2>
           <button
             onClick={clearRecentlyViewed}
             className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
@@ -40,29 +24,23 @@ const RecentlyViewed = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
           {recentlyViewed.map((product) => (
             <button
               key={product.id}
               onClick={() => navigate(`/product/${product.id}`)}
-              className="group bg-background rounded-lg overflow-hidden border border-border hover:border-foreground/20 transition-all text-left"
+              className="group text-left"
             >
-              <div className="relative aspect-square bg-muted overflow-hidden">
+              <div className="relative aspect-square bg-secondary overflow-hidden rounded-2xl mb-2">
                 <img
                   src={product.image || "https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=200&h=200&fit=crop"}
                   alt={product.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-spring"
+                  loading="lazy"
                 />
-                <span
-                  className={`absolute top-1 left-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${getConditionColor(product.condition)}`}
-                >
-                  {product.condition}
-                </span>
               </div>
-              <div className="p-2">
-                <p className="text-xs font-medium text-foreground line-clamp-1">{product.title}</p>
-                <p className="font-bold text-sm text-foreground">${product.price}</p>
-              </div>
+              <p className="text-xs font-medium text-foreground line-clamp-1">{product.title}</p>
+              <p className="font-semibold text-sm text-foreground mt-0.5">${product.price}</p>
             </button>
           ))}
         </div>
