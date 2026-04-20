@@ -5,35 +5,46 @@
 
 @layer base {
   :root {
-    --background: 60 20% 98%;
-    --foreground: 150 15% 8%;
+    /* Apple-inspired neutral-first palette */
+    --background: 0 0% 99%;
+    --foreground: 240 6% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 150 15% 8%;
+    --card-foreground: 240 6% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 150 15% 8%;
+    --popover-foreground: 240 6% 10%;
 
+    /* Habesha green retained but used sparingly as accent */
     --primary: 138 91% 28%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 50 60% 94%;
-    --secondary-foreground: 150 15% 15%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
 
-    --muted: 60 10% 94%;
-    --muted-foreground: 150 8% 42%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
 
-    --accent: 0 78% 48%;
+    --accent: 138 91% 28%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 78% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 60 10% 87%;
-    --input: 60 10% 87%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
     --ring: 138 91% 28%;
 
-    --radius: 0.5rem;
+    --radius: 0.875rem;
+
+    /* Apple-style premium shadows: low alpha, large blur */
+    --shadow-sm: 0 1px 2px 0 hsl(240 6% 10% / 0.04);
+    --shadow-md: 0 4px 16px -2px hsl(240 6% 10% / 0.06), 0 2px 6px -1px hsl(240 6% 10% / 0.04);
+    --shadow-lg: 0 16px 48px -12px hsl(240 6% 10% / 0.12), 0 4px 12px -2px hsl(240 6% 10% / 0.05);
+    --shadow-xl: 0 32px 80px -16px hsl(240 6% 10% / 0.18);
+
+    /* Motion */
+    --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
     
     --sidebar-background: 60 10% 96%;
     --sidebar-foreground: 150 15% 8%;
@@ -53,11 +64,44 @@
   * {
     @apply border-border;
   }
+  html {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+  }
   body {
     @apply bg-background text-foreground overflow-x-hidden;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
+
+  /* Apple-style display typography */
+  .text-display {
+    font-size: clamp(2.75rem, 6vw, 4.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+  }
+  .text-headline {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+  }
+  .text-eyebrow {
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+}
+
+@layer utilities {
+  .shadow-soft { box-shadow: var(--shadow-md); }
+  .shadow-soft-lg { box-shadow: var(--shadow-lg); }
+  .shadow-soft-xl { box-shadow: var(--shadow-xl); }
+  .ease-spring { transition-timing-function: var(--ease-spring); }
 }
 
 #lovable-badge {
