@@ -12,153 +12,139 @@ const GrailedHeader = () => {
   const { itemCount } = useCart();
   const navigate = useNavigate();
 
+  const iconBtn =
+    "p-2 rounded-full text-foreground/80 hover:text-foreground hover:bg-secondary transition-all duration-200 ease-spring";
+
   return (
-    <header className="bg-background border-b border-border sticky top-0 z-50">
+    <header className="sticky top-0 z-50 bg-background/75 backdrop-blur-xl border-b border-border/60">
       {/* Main Header */}
-      <div className="max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         {/* Logo */}
-        <div 
-          className="flex items-center gap-2 cursor-pointer shrink-0"
+        <button
+          className="flex items-center gap-2 shrink-0 group"
           onClick={() => navigate('/')}
+          aria-label="OneTribe home"
         >
-          <div className="w-8 h-8 bg-foreground rounded flex items-center justify-center">
-            <span className="text-background font-bold text-sm">OT</span>
-          </div>
-          <span className="font-bold text-xl hidden sm:block">OneTribe</span>
-        </div>
+          <span className="font-semibold text-[17px] tracking-tight text-foreground group-hover:opacity-80 transition-opacity">
+            OneTribe
+          </span>
+        </button>
 
         {/* Search Bar - Center */}
-        <SearchBar />
+        <div className="flex-1 flex justify-center">
+          <SearchBar />
+        </div>
 
         {/* Action Buttons - Right */}
         <div className="hidden md:flex items-center gap-1">
           <Button
-            variant="outline"
+            variant="default"
             size="sm"
             onClick={() => user ? navigate('/sell') : navigate('/auth')}
-            className="font-medium border-foreground text-foreground hover:bg-foreground hover:text-background"
+            className="rounded-full px-4 h-8 text-xs font-medium tracking-wide"
           >
-            SELL
+            Sell
           </Button>
-          
-          <button 
+
+          <button
             onClick={() => navigate('/assistant')}
-            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
+            className={`${iconBtn} flex items-center gap-1.5 px-3 text-sm font-medium`}
             title="AI Assistant"
           >
-            <Sparkles size={18} />
-            <span>AI</span>
+            <Sparkles size={16} />
           </button>
-          
-          
-          <button 
+
+          <button
             onClick={() => navigate('/community')}
-            className="px-3 py-2 text-sm font-medium text-foreground hover:text-muted-foreground transition-colors"
+            className="px-3 py-1.5 text-[13px] font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-secondary"
           >
-            MY FEED
+            Feed
           </button>
-          
-          <button 
+
+          <button
             onClick={() => user ? navigate('/messages') : navigate('/auth')}
-            className="p-2 text-foreground hover:text-muted-foreground transition-colors relative"
+            className={`${iconBtn} relative`}
+            aria-label="Messages"
           >
-            <MessageSquare size={20} />
-            <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-[10px] font-medium rounded-full w-4 h-4 flex items-center justify-center">
+            <MessageSquare size={18} strokeWidth={1.75} />
+            <span className="absolute top-1 right-1 bg-primary text-primary-foreground text-[9px] font-semibold rounded-full w-3.5 h-3.5 flex items-center justify-center ring-2 ring-background">
               1
             </span>
           </button>
-          
-          <button 
+
+          <button
             onClick={() => user ? navigate('/watchlist') : navigate('/auth')}
-            className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+            className={iconBtn}
+            aria-label="Watchlist"
           >
-            <Heart size={20} />
+            <Heart size={18} strokeWidth={1.75} />
           </button>
-          
-          <button 
+
+          <button
             onClick={() => navigate('/cart')}
-            className="p-2 text-foreground hover:text-muted-foreground transition-colors relative"
+            className={`${iconBtn} relative`}
+            aria-label="Cart"
           >
-            <ShoppingCart size={20} />
+            <ShoppingCart size={18} strokeWidth={1.75} />
             {itemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-[10px] font-medium rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="absolute top-1 right-1 bg-primary text-primary-foreground text-[9px] font-semibold rounded-full w-3.5 h-3.5 flex items-center justify-center ring-2 ring-background">
                 {itemCount > 9 ? "9+" : itemCount}
               </span>
             )}
           </button>
-          
-          <button 
+
+          <button
             onClick={() => user ? navigate('/profile') : navigate('/auth')}
-            className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+            className={iconBtn}
+            aria-label="Profile"
           >
-            <User size={20} />
+            <User size={18} strokeWidth={1.75} />
           </button>
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button 
-          className="md:hidden p-2"
+        <button
+          className="md:hidden p-2 rounded-full hover:bg-secondary transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Menu"
         >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-background px-4 py-4 space-y-3">
+        <div className="md:hidden border-t border-border/60 bg-background/95 backdrop-blur-xl px-4 py-4 space-y-1 animate-fade-in">
           <Button
-            variant="outline"
             size="sm"
             onClick={() => { navigate(user ? '/sell' : '/auth'); setMobileMenuOpen(false); }}
-            className="w-full font-medium"
+            className="w-full rounded-full font-medium"
           >
-            SELL
+            Sell
           </Button>
-          <button 
-            onClick={() => { navigate('/assistant'); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-foreground flex items-center gap-2"
-          >
-            <Sparkles size={18} />
-            AI Assistant
-          </button>
-          <button 
-            onClick={() => { navigate('/community'); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-foreground"
-          >
-            My Feed
-          </button>
-          <button 
-            onClick={() => { navigate(user ? '/messages' : '/auth'); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-foreground"
-          >
-            Messages
-          </button>
-          <button 
-            onClick={() => { navigate(user ? '/watchlist' : '/auth'); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-foreground"
-          >
-            Wishlist
-          </button>
-          <button 
-            onClick={() => { navigate('/cart'); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-foreground flex items-center gap-2"
-          >
-            <ShoppingCart size={18} />
-            Cart {itemCount > 0 && `(${itemCount})`}
-          </button>
-          <button 
-            onClick={() => { navigate(user ? '/profile' : '/auth'); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-foreground"
-          >
-            Profile
-          </button>
+          {[
+            { label: 'AI Assistant', icon: Sparkles, path: '/assistant', auth: false },
+            { label: 'Feed', icon: null, path: '/community', auth: false },
+            { label: 'Messages', icon: MessageSquare, path: '/messages', auth: true },
+            { label: 'Wishlist', icon: Heart, path: '/watchlist', auth: true },
+            { label: `Cart${itemCount > 0 ? ` (${itemCount})` : ''}`, icon: ShoppingCart, path: '/cart', auth: false },
+            { label: 'Profile', icon: User, path: '/profile', auth: true },
+          ].map(({ label, icon: Icon, path, auth }) => (
+            <button
+              key={label}
+              onClick={() => { navigate(auth && !user ? '/auth' : path); setMobileMenuOpen(false); }}
+              className="w-full text-left py-2.5 px-3 rounded-lg text-foreground hover:bg-secondary flex items-center gap-3 transition-colors"
+            >
+              {Icon && <Icon size={18} strokeWidth={1.75} />}
+              <span className="text-sm font-medium">{label}</span>
+            </button>
+          ))}
           {user ? (
-            <Button variant="destructive" size="sm" onClick={signOut} className="w-full">
+            <Button variant="outline" size="sm" onClick={signOut} className="w-full rounded-full mt-2">
               Sign Out
             </Button>
           ) : (
-            <Button size="sm" onClick={() => { navigate('/auth'); setMobileMenuOpen(false); }} className="w-full">
+            <Button size="sm" onClick={() => { navigate('/auth'); setMobileMenuOpen(false); }} className="w-full rounded-full mt-2">
               Sign In
             </Button>
           )}

@@ -215,60 +215,58 @@ const ProductDetail = () => {
 
   return (
     <GrailedLayout>
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
         {/* Back Button */}
-        <button 
+        <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={16} />
           <span>Back</span>
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Image Gallery */}
-          <div className="space-y-4">
-            <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
+          <div className="space-y-3">
+            <div className="relative aspect-square bg-secondary rounded-3xl overflow-hidden">
               <img
                 src={images[currentImageIndex]}
                 alt={product.title}
                 className="w-full h-full object-cover"
               />
-              
+
               {images.length > 1 && (
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background transition-colors"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-md rounded-full hover:bg-background transition-all shadow-soft"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={18} />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-md rounded-full hover:bg-background transition-all shadow-soft"
                   >
-                    <ChevronRight size={20} />
+                    <ChevronRight size={18} />
                   </button>
                 </>
               )}
 
-              {/* Image Counter */}
               {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-background/80 backdrop-blur-sm rounded-full text-sm">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-background/80 backdrop-blur-md rounded-full text-xs font-medium">
                   {currentImageIndex + 1} / {images.length}
                 </div>
               )}
             </div>
 
-            {/* Thumbnail Strip */}
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2">
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 {images.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-20 h-20 rounded-md overflow-hidden shrink-0 border-2 transition-colors ${
-                      index === currentImageIndex ? 'border-foreground' : 'border-transparent'
+                    className={`w-16 h-16 rounded-xl overflow-hidden shrink-0 ring-2 transition-all ${
+                      index === currentImageIndex ? 'ring-foreground' : 'ring-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
@@ -278,25 +276,22 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* Product Info */}
           <div className="space-y-6">
-            {/* Category & Condition */}
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">{product.category}</Badge>
-              <Badge className={getConditionColor(product.condition)}>{product.condition}</Badge>
+              <span className="text-eyebrow text-muted-foreground">{product.category}</span>
+              <span className="text-muted-foreground/50">·</span>
+              <span className="text-eyebrow text-muted-foreground">{product.condition}</span>
             </div>
 
-            {/* Title & Price */}
             <div>
-              <h1 className="text-2xl font-bold text-foreground mb-2">{product.title}</h1>
-              <p className="text-3xl font-bold text-foreground">${product.price}</p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-3">{product.title}</h1>
+              <p className="text-3xl font-semibold text-foreground tracking-tight">${product.price}</p>
+              <p className="text-xs text-muted-foreground mt-1.5">
                 + ${(product.price * 0.05).toFixed(2)} platform fee (5%)
               </p>
             </div>
 
-            {/* Actions */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 pt-2">
               <div className="flex gap-3">
                 <Button 
                   onClick={handleBuyNow} 

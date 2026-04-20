@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,10 +18,7 @@ const ProductSection = ({ title, seeMoreHref = "/marketplace" }: ProductSectionP
   const handleLike = (productId: string) => {
     if (!user) {
       toast.error("Please sign in to like items", {
-        action: {
-          label: "Sign In",
-          onClick: () => navigate("/auth"),
-        },
+        action: { label: "Sign In", onClick: () => navigate("/auth") },
       });
       return;
     }
@@ -32,17 +29,17 @@ const ProductSection = ({ title, seeMoreHref = "/marketplace" }: ProductSectionP
 
   if (loading) {
     return (
-      <section className="py-8">
-        <div className="max-w-[1400px] mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-foreground">{title}</h2>
+      <section className="py-12">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+          <div className="flex items-end justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">{title}</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-square bg-muted rounded-md mb-2" />
-                <div className="h-4 bg-muted rounded w-3/4 mb-1" />
-                <div className="h-4 bg-muted rounded w-1/2" />
+                <div className="aspect-square bg-secondary rounded-2xl mb-3" />
+                <div className="h-3 bg-secondary rounded w-3/4 mb-1.5" />
+                <div className="h-3 bg-secondary rounded w-1/2" />
               </div>
             ))}
           </div>
@@ -52,58 +49,59 @@ const ProductSection = ({ title, seeMoreHref = "/marketplace" }: ProductSectionP
   }
 
   return (
-    <section className="py-8">
-      <div className="max-w-[1400px] mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-foreground">{title}</h2>
+    <section className="py-12">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+        <div className="flex items-end justify-between mb-8">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+            {title}
+          </h2>
           <button
             onClick={() => navigate(seeMoreHref)}
-            className="flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
+            className="flex items-center gap-1 text-sm font-medium text-primary hover:gap-1.5 transition-all duration-200 ease-spring"
           >
-            SEE MORE <ChevronRight size={16} />
+            See all <ArrowRight size={15} />
           </button>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
           {displayProducts.map((product) => (
-            <div 
-              key={product.id} 
-              className="group cursor-pointer"
+            <button
+              key={product.id}
+              className="group text-left"
               onClick={() => navigate(`/marketplace`)}
             >
-              <div className="aspect-square overflow-hidden rounded-md mb-2 bg-muted">
+              <div className="aspect-square overflow-hidden rounded-2xl mb-3 bg-secondary">
                 <img
                   src={product.images?.[0] || kemis1}
                   alt={product.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-spring"
+                  loading="lazy"
                 />
               </div>
-              <p className="text-sm text-muted-foreground truncate">{product.category}</p>
-              <p className="text-sm font-medium text-foreground truncate">{product.title}</p>
-              <p className="text-sm font-bold text-foreground">${product.price}</p>
-            </div>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide truncate">{product.category}</p>
+              <p className="text-sm font-medium text-foreground truncate mt-0.5">{product.title}</p>
+              <p className="text-sm font-semibold text-foreground mt-0.5">${product.price}</p>
+            </button>
           ))}
-          
-          {/* Fill with placeholders if not enough products */}
+
           {displayProducts.length < 6 && [...Array(6 - displayProducts.length)].map((_, i) => (
-            <div 
-              key={`placeholder-${i}`} 
-              className="group cursor-pointer"
+            <button
+              key={`placeholder-${i}`}
+              className="group text-left"
               onClick={() => navigate('/marketplace')}
             >
-              <div className="aspect-square overflow-hidden rounded-md mb-2 bg-muted">
+              <div className="aspect-square overflow-hidden rounded-2xl mb-3 bg-secondary">
                 <img
                   src={kemis1}
                   alt="Featured item"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-spring"
+                  loading="lazy"
                 />
               </div>
-              <p className="text-sm text-muted-foreground">Traditional Wear</p>
-              <p className="text-sm font-medium text-foreground">Sample Item</p>
-              <p className="text-sm font-bold text-foreground">$99</p>
-            </div>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Traditional Wear</p>
+              <p className="text-sm font-medium text-foreground mt-0.5">Sample Item</p>
+              <p className="text-sm font-semibold text-foreground mt-0.5">$99</p>
+            </button>
           ))}
         </div>
       </div>

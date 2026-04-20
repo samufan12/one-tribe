@@ -38,17 +38,12 @@ export const GrailedLayout = ({
       </main>
       
       {/* Footer - hidden on mobile */}
-      <footer className="hidden md:block border-t border-border py-8 mt-12">
-        <div className="max-w-[1400px] mx-auto px-4">
+      <footer className="hidden md:block border-t border-border/60 py-12 mt-12">
+        <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-foreground rounded flex items-center justify-center">
-                <span className="text-background font-bold text-xs">OT</span>
-              </div>
-              <span className="font-bold">OneTribe</span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} OneTribe. All rights reserved.
+            <span className="font-semibold text-[15px] tracking-tight">OneTribe</span>
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} OneTribe. The Global Habesha Marketplace.
             </p>
           </div>
         </div>

@@ -96,17 +96,23 @@ export const Marketplace = () => {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 py-6">
-      {/* Category Chips */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
+      {/* Page header */}
+      <div className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Marketplace</h1>
+        <p className="text-sm text-muted-foreground mt-1">Curated finds from the global Habesha community.</p>
+      </div>
+
+      {/* Category Pills - segmented control feel */}
+      <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+            className={`px-4 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-all duration-200 ease-spring ${
               selectedCategory === cat
-                ? 'bg-foreground text-background'
-                : 'bg-muted text-foreground hover:bg-muted/80 border border-border'
+                ? 'bg-foreground text-background shadow-soft'
+                : 'bg-secondary text-foreground/80 hover:text-foreground hover:bg-secondary/70'
             }`}
           >
             {cat}
@@ -202,55 +208,51 @@ export const Marketplace = () => {
             <div
               key={product.id}
               onClick={() => navigate(`/product/${product.id}`)}
-              className={`group bg-background rounded-lg overflow-hidden border border-border hover:border-foreground/20 transition-all cursor-pointer ${
-                viewMode === 'list' ? 'flex gap-4' : ''
+              className={`group cursor-pointer ${
+                viewMode === 'list' ? 'flex gap-4 p-3 rounded-2xl hover:bg-secondary/50 transition-colors' : ''
               }`}
             >
               {/* Image */}
-              <div className={`relative overflow-hidden bg-muted ${
-                viewMode === 'list' ? 'w-40 h-40 shrink-0' : 'aspect-square'
+              <div className={`relative overflow-hidden bg-secondary rounded-2xl ${
+                viewMode === 'list' ? 'w-40 h-40 shrink-0' : 'aspect-square mb-3'
               }`}>
                 <img
                   src={product.images?.[0] || kemis1}
                   alt={product.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-spring"
+                  loading="lazy"
                 />
-                
+
                 {/* Like Button */}
-                <button 
+                <button
                   onClick={(e) => { e.stopPropagation(); handleLike(product.id); }}
-                  className="absolute top-2 right-2 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background transition-colors"
+                  className="absolute top-2.5 right-2.5 p-2 bg-background/80 backdrop-blur-md rounded-full hover:bg-background transition-all opacity-0 group-hover:opacity-100"
                 >
-                  <Heart 
-                    size={16} 
-                    className={product.is_liked ? "fill-red-500 text-red-500" : "text-foreground"} 
+                  <Heart
+                    size={15}
+                    className={product.is_liked ? "fill-primary text-primary" : "text-foreground"}
                   />
                 </button>
-
-                {/* Condition Badge */}
-                <span className={`absolute top-2 left-2 px-2 py-0.5 text-xs font-medium rounded ${getConditionColor(product.condition)}`}>
-                  {product.condition}
-                </span>
               </div>
 
               {/* Info */}
-              <div className="p-3 flex-1">
-                <p className="text-xs text-muted-foreground mb-1">{product.category}</p>
-                <h3 className="font-medium text-foreground text-sm line-clamp-2 mb-2">
+              <div className={viewMode === 'list' ? 'flex-1' : ''}>
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wide truncate">{product.category}</p>
+                <h3 className="font-medium text-foreground text-sm line-clamp-1 mt-0.5">
                   {product.title}
                 </h3>
-                <div className="flex items-center justify-between">
-                  <p className="font-bold text-foreground">${product.price}</p>
-                  <button 
-                    onClick={handleMessage}
-                    className="p-1.5 text-muted-foreground hover:text-foreground transition-colors relative"
+                <div className="flex items-center justify-between mt-1">
+                  <p className="font-semibold text-foreground text-sm">${product.price}</p>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleMessage(); }}
+                    className="p-1 text-muted-foreground hover:text-foreground transition-colors relative"
                     title={user ? "Message seller" : "Sign in to message"}
                   >
-                    <MessageCircle size={16} />
-                    {!user && <Lock size={10} className="absolute -bottom-0.5 -right-0.5" />}
+                    <MessageCircle size={14} />
+                    {!user && <Lock size={9} className="absolute -bottom-0.5 -right-0.5" />}
                   </button>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className="text-[11px] text-muted-foreground mt-1">
                   {product.location} · {getTimeAgo(product.created_at)}
                 </p>
               </div>
