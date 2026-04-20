@@ -124,31 +124,31 @@ const SearchBar = () => {
   const hasHistory = searchHistory.length > 0;
 
   return (
-    <div ref={wrapperRef} className="relative flex-1 max-w-sm">
-      <div className="relative flex items-center">
-        <Search className="absolute left-3 text-muted-foreground" size={18} />
+    <div ref={wrapperRef} className="relative w-full max-w-md">
+      <div className="relative flex items-center group">
+        <Search className="absolute left-3.5 text-muted-foreground group-focus-within:text-foreground transition-colors" size={16} />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => setIsOpen(true)}
-          placeholder="Search for anything"
-          className="w-full pl-10 pr-24 py-2.5 border border-border rounded-full bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20"
+          placeholder="Search OneTribe"
+          className="w-full pl-10 pr-20 h-9 border border-border/60 rounded-full bg-secondary/60 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-background focus:border-foreground/20 focus:ring-4 focus:ring-foreground/5 transition-all"
         />
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-20 p-1 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-16 p-1 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X size={16} />
+            <X size={14} />
           </button>
         )}
         <button
           onClick={handleSearch}
-          className="absolute right-1 px-4 py-1.5 bg-foreground text-background text-sm font-medium rounded-full hover:bg-foreground/90 transition-colors"
+          className="absolute right-1 px-3 h-7 bg-foreground text-background text-[12px] font-medium rounded-full hover:bg-foreground/90 transition-all"
         >
-          SEARCH
+          Search
         </button>
       </div>
 
