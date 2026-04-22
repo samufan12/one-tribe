@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import GrailedLayout from "@/components/GrailedLayout";
 import { useCart } from "@/hooks/useCart";
-import { Button } from "@/components/ui/button";
-import { Minus, Plus, Trash2, ShoppingBag, Loader2, ArrowLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -17,40 +16,30 @@ const CartPage = () => {
     setIsCheckingOut(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-payment", {
-        body: {
-          items: items.map((i) => ({
-            productId: i.id,
-            productTitle: i.title,
-            price: i.price,
-            quantity: i.quantity,
-          })),
-        },
+        body: { items: items.map((i) => ({ productId: i.id, productTitle: i.title, price: i.price, quantity: i.quantity })) },
       });
       if (error) throw error;
-      if (data?.url) {
-        clearCart();
-        window.open(data.url, "_blank");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast.error("Failed to start checkout. Please try again.");
-    } finally {
-      setIsCheckingOut(false);
-    }
+      if (data?.url) { clearCart(); window.open(data.url, "_blank"); }
+    } catch {
+      toast.error("Failed to start checkout.");
+    } finally { setIsCheckingOut(false); }
   };
 
   if (items.length === 0) {
     return (
       <GrailedLayout>
-        <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-          <ShoppingBag className="mx-auto h-16 w-16 text-muted-foreground/40 mb-4" />
-          <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
-          <p className="text-muted-foreground mb-6">
-            Browse our marketplace to find authentic cultural goods.
-          </p>
-          <Button onClick={() => navigate("/marketplace")}>
-            Start Shopping
-          </Button>
+        <div className="max-w-3xl mx-auto px-6 py-32 text-center">
+          <p className="text-eyebrow text-muted-foreground mb-3">Empty</p>
+          <h1
+            className="font-semibold tracking-[-0.03em] leading-[1] mb-6"
+            style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
+          >
+            Your bag awaits<br />
+            <span className="italic font-light text-muted-foreground">a story.</span>
+          </h1>
+          <button onClick={() => navigate("/marketplace")} className="px-8 h-12 bg-foreground text-background text-sm font-medium rounded-full hover:bg-foreground/90 transition-all">
+            Begin browsing
+          </button>
         </div>
       </GrailedLayout>
     );
@@ -58,103 +47,76 @@ const CartPage = () => {
 
   return (
     <GrailedLayout>
-      <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft size={18} />
-          <span>Continue Shopping</span>
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-12 pb-6">
+        <button onClick={() => navigate(-1)} className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors">
+          ← Continue browsing
         </button>
+        <div className="mt-6 flex items-baseline justify-between">
+          <h1 className="font-semibold tracking-[-0.03em]" style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)" }}>
+            Your bag
+          </h1>
+          <p className="text-sm text-muted-foreground">{itemCount} {itemCount === 1 ? "piece" : "pieces"}</p>
+        </div>
+      </div>
 
-        <h1 className="text-2xl font-bold">Shopping Cart ({itemCount})</h1>
-
-        <div className="space-y-4">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Items as editorial list */}
+        <div className="lg:col-span-8 divide-y divide-border border-y border-border">
           {items.map((item) => (
-            <div
-              key={item.id}
-              className="flex gap-4 bg-card border rounded-lg p-4"
-            >
-              <button
-                onClick={() => navigate(`/product/${item.id}`)}
-                className="w-24 h-24 rounded-md overflow-hidden shrink-0 bg-muted"
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
+            <div key={item.id} className="py-8 grid grid-cols-12 gap-6 items-start">
+              <button onClick={() => navigate(`/product/${item.id}`)} className="col-span-4 sm:col-span-3 aspect-[4/5] overflow-hidden bg-secondary rounded-sm group">
+                <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 ease-spring group-hover:scale-105" />
               </button>
-              <div className="flex-1 min-w-0">
-                <button
-                  onClick={() => navigate(`/product/${item.id}`)}
-                  className="font-semibold text-foreground hover:underline text-left line-clamp-1"
-                >
-                  {item.title}
-                </button>
-                <p className="text-sm text-muted-foreground">{item.category} · {item.condition}</p>
-                <p className="font-bold mt-1">${item.price}</p>
-                <div className="flex items-center gap-3 mt-2">
-                  <div className="flex items-center border rounded-md">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="p-1.5 hover:bg-accent transition-colors"
-                    >
-                      <Minus size={14} />
-                    </button>
-                    <span className="px-3 text-sm font-medium">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="p-1.5 hover:bg-accent transition-colors"
-                    >
-                      <Plus size={14} />
+              <div className="col-span-8 sm:col-span-9 flex flex-col h-full">
+                <div className="flex items-start justify-between gap-6">
+                  <div>
+                    <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">{item.category} · {item.condition}</p>
+                    <button onClick={() => navigate(`/product/${item.id}`)} className="text-lg sm:text-xl font-medium tracking-tight text-left hover:underline underline-offset-4">
+                      {item.title}
                     </button>
                   </div>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    <Trash2 size={16} />
+                  <p className="text-lg font-medium tabular-nums tracking-tight shrink-0">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </p>
+                </div>
+                <div className="mt-auto pt-6 flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-sm">
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-7 h-7 rounded-full border border-border hover:border-foreground transition-colors">−</button>
+                    <span className="tabular-nums w-4 text-center">{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-7 h-7 rounded-full border border-border hover:border-foreground transition-colors">+</button>
+                  </div>
+                  <button onClick={() => removeItem(item.id)} className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
+                    Remove
                   </button>
                 </div>
               </div>
-              <p className="font-bold shrink-0">
-                ${(item.price * item.quantity).toFixed(2)}
-              </p>
             </div>
           ))}
         </div>
 
-        {/* Summary */}
-        <div className="bg-card border rounded-lg p-6 space-y-3">
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Subtotal</span>
-            <span>${total.toFixed(2)}</span>
+        {/* Summary — minimal */}
+        <aside className="lg:col-span-4 lg:sticky lg:top-24 lg:self-start">
+          <p className="text-eyebrow text-muted-foreground mb-6">Summary</p>
+          <dl className="space-y-3 text-sm">
+            <div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd className="tabular-nums">${total.toFixed(2)}</dd></div>
+            <div className="flex justify-between"><dt className="text-muted-foreground">Platform fee (5%)</dt><dd className="tabular-nums">${(total * 0.05).toFixed(2)}</dd></div>
+            <div className="flex justify-between"><dt className="text-muted-foreground">Shipping</dt><dd className="text-muted-foreground">Calculated next</dd></div>
+          </dl>
+          <div className="border-t border-border mt-6 pt-6 flex items-baseline justify-between">
+            <span className="text-eyebrow text-muted-foreground">Total</span>
+            <span className="text-2xl font-medium tabular-nums tracking-tight">${(total * 1.05).toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Platform Fee (5%)</span>
-            <span>${(total * 0.05).toFixed(2)}</span>
-          </div>
-          <div className="border-t border-border pt-3 flex justify-between text-lg font-bold">
-            <span>Total</span>
-            <span>${(total * 1.05).toFixed(2)}</span>
-          </div>
-          <Button
+          <button
             onClick={handleCheckout}
             disabled={isCheckingOut}
-            size="lg"
-            className="w-full"
+            className="mt-8 w-full h-14 bg-foreground text-background text-sm font-medium rounded-full hover:bg-foreground/90 active:scale-[0.99] transition-all duration-200 ease-spring disabled:opacity-60 inline-flex items-center justify-center"
           >
-            {isCheckingOut ? (
-              <>
-                <Loader2 size={18} className="mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              `Checkout · $${(total * 1.05).toFixed(2)}`
-            )}
-          </Button>
-        </div>
+            {isCheckingOut ? <Loader2 size={16} className="animate-spin" /> : `Checkout · $${(total * 1.05).toFixed(2)}`}
+          </button>
+          <p className="mt-4 text-[11px] text-muted-foreground text-center leading-relaxed">
+            Secure payment · Buyer protection on every order
+          </p>
+        </aside>
       </div>
     </GrailedLayout>
   );

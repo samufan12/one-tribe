@@ -1,324 +1,191 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Mail, Lock, User, AlertCircle, CheckCircle, X, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
+import landingDress from "@/assets/landing-dress.jpg";
 
-// Common weak passwords to check against
-const COMMON_PASSWORDS = [
-  'password', '123456', '12345678', 'qwerty', 'abc123', 'monkey', 
-  '1234567', 'letmein', 'trustno1', 'dragon', 'baseball', 'iloveyou',
-  'master', 'sunshine', 'ashley', 'bailey', 'passw0rd', 'shadow', '123123'
-];
+const COMMON_PASSWORDS = ['password','123456','12345678','qwerty','abc123','monkey','1234567','letmein','trustno1','dragon','baseball','iloveyou','master','sunshine','ashley','bailey','passw0rd','shadow','123123'];
 
 const passwordSchema = z.string()
-  .min(8, "Password must be at least 8 characters")
-  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-  .regex(/[0-9]/, "Password must contain at least one number")
-  .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
-  .refine((pwd) => !COMMON_PASSWORDS.includes(pwd.toLowerCase()), "This password is too common");
+  .min(8).regex(/[A-Z]/).regex(/[a-z]/).regex(/[0-9]/).regex(/[^A-Za-z0-9]/)
+  .refine((p) => !COMMON_PASSWORDS.includes(p.toLowerCase()));
 
 const Auth = () => {
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
-  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [pwdErrors, setPwdErrors] = useState<string[]>([]);
+  const [pwdTouched, setPwdTouched] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const validatePassword = (pwd: string) => {
-    if (!pwd) {
-      setPasswordErrors([]);
-      return;
-    }
-    
-    const errors: string[] = [];
-    
-    if (pwd.length < 8) errors.push("At least 8 characters");
-    if (!/[A-Z]/.test(pwd)) errors.push("One uppercase letter");
-    if (!/[a-z]/.test(pwd)) errors.push("One lowercase letter");
-    if (!/[0-9]/.test(pwd)) errors.push("One number");
-    if (!/[^A-Za-z0-9]/.test(pwd)) errors.push("One special character");
-    if (COMMON_PASSWORDS.includes(pwd.toLowerCase())) errors.push("Password is too common");
-    
-    setPasswordErrors(errors);
-  };
-
-  const handlePasswordChange = (value: string) => {
-    setPassword(value);
-    if (passwordTouched) {
-      validatePassword(value);
-    }
-  };
-
-  const handlePasswordBlur = () => {
-    setPasswordTouched(true);
-    validatePassword(password);
+  const validate = (pwd: string) => {
+    if (!pwd) return setPwdErrors([]);
+    const errs: string[] = [];
+    if (pwd.length < 8) errs.push("8+ characters");
+    if (!/[A-Z]/.test(pwd)) errs.push("One uppercase");
+    if (!/[a-z]/.test(pwd)) errs.push("One lowercase");
+    if (!/[0-9]/.test(pwd)) errs.push("One number");
+    if (!/[^A-Za-z0-9]/.test(pwd)) errs.push("One symbol");
+    if (COMMON_PASSWORDS.includes(pwd.toLowerCase())) errs.push("Too common");
+    setPwdErrors(errs);
   };
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate('/home');
-      }
-    };
-    checkUser();
+    supabase.auth.getSession().then(({ data: { session } }) => { if (session) navigate('/home'); });
   }, [navigate]);
 
-  const cleanupAuthState = () => {
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        localStorage.removeItem(key);
-      }
-    });
-    Object.keys(sessionStorage || {}).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        sessionStorage.removeItem(key);
-      }
-    });
+  const cleanup = () => {
+    Object.keys(localStorage).forEach((k) => { if (k.startsWith('supabase.auth.') || k.includes('sb-')) localStorage.removeItem(k); });
+    Object.keys(sessionStorage || {}).forEach((k) => { if (k.startsWith('supabase.auth.') || k.includes('sb-')) sessionStorage.removeItem(k); });
   };
 
-  const handleEmailAuth = async (isSignUp: boolean) => {
+  const handleAuth = async () => {
     setLoading(true);
     try {
-      cleanupAuthState();
-      
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        // Continue even if this fails
-      }
-
+      cleanup();
+      try { await supabase.auth.signOut({ scope: 'global' }); } catch {}
       const redirectUrl = `${window.location.origin}/home`;
-
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: redirectUrl
-          }
-        });
-        
+      if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectUrl } });
         if (error) throw error;
-        
-        toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link to complete your signup.",
-        });
+        toast({ title: "Check your email", description: "We've sent you a confirmation link." });
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        
-        if (data.user) {
-          window.location.href = '/home';
-        }
+        if (data.user) window.location.href = '/home';
       }
-    } catch (error: any) {
-      toast({
-        title: "Authentication Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+    } catch (e: any) {
+      toast({ title: "Authentication error", description: e.message, variant: "destructive" });
+    } finally { setLoading(false); }
   };
 
-  const handleGoogleAuth = async () => {
+  const handleGoogle = async () => {
     setLoading(true);
     try {
-      cleanupAuthState();
-      
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        // Continue even if this fails
-      }
-
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google'
-      });
-      
+      cleanup();
+      try { await supabase.auth.signOut({ scope: 'global' }); } catch {}
+      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
       if (error) throw error;
-    } catch (error: any) {
-      toast({
-        title: "Authentication Error",
-        description: error.message,
-        variant: "destructive",
-      });
+    } catch (e: any) {
+      toast({ title: "Authentication error", description: e.message, variant: "destructive" });
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
-      <button
-        onClick={() => navigate('/')}
-        className="absolute top-4 left-4 p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
-        aria-label="Go back"
-      >
-        <ArrowLeft size={20} />
-      </button>
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
-          <CardDescription>
-            Sign in to your account or create a new one
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="signin" className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background">
+      {/* Editorial visual side */}
+      <div className="hidden lg:block relative overflow-hidden bg-secondary">
+        <img src={landingDress} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-black/70" />
+        <button onClick={() => navigate('/')} className="absolute top-8 left-8 text-[11px] tracking-[0.2em] uppercase text-white/80 hover:text-white transition-colors">
+          ← OneTribe
+        </button>
+        <div className="absolute bottom-12 left-12 right-12 text-white">
+          <p className="text-eyebrow text-white/70 mb-4">Vol. 03 — Welcome</p>
+          <h2
+            className="font-semibold tracking-[-0.03em] leading-[1]"
+            style={{ fontSize: "clamp(2.5rem, 4.5vw, 4rem)" }}
+          >
+            Home,<br />
+            <span className="italic font-light">delivered.</span>
+          </h2>
+          <p className="mt-6 text-white/70 max-w-sm leading-relaxed text-[15px]">
+            Join the global Habesha marketplace. Discover authentic goods, curated by the community.
+          </p>
+        </div>
+      </div>
+
+      {/* Form side */}
+      <div className="flex flex-col justify-center p-8 sm:p-16 relative">
+        <button onClick={() => navigate('/')} className="lg:hidden absolute top-6 left-6 text-[11px] tracking-[0.2em] uppercase text-muted-foreground hover:text-foreground">
+          ← Back
+        </button>
+
+        <div className="max-w-sm w-full mx-auto">
+          <p className="text-eyebrow text-muted-foreground mb-3">{mode === 'signup' ? "New account" : "Welcome back"}</p>
+          <h1 className="text-4xl font-semibold tracking-[-0.03em] leading-[1.05] mb-2">
+            {mode === 'signup' ? <>Begin your <span className="italic font-light text-muted-foreground">story.</span></> : <>Sign in to <span className="italic font-light text-muted-foreground">continue.</span></>}
+          </h1>
+          <p className="text-sm text-muted-foreground mb-10">
+            {mode === 'signup' ? "Already have an account?" : "New here?"}{' '}
+            <button onClick={() => { setMode(mode === 'signup' ? 'signin' : 'signup'); setPwdErrors([]); setPwdTouched(false); }} className="text-foreground underline underline-offset-4 hover:no-underline">
+              {mode === 'signup' ? "Sign in" : "Create an account"}
+            </button>
+          </p>
+
+          <div className="space-y-5">
+            <label className="block">
+              <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">Email</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="mt-1.5 w-full bg-transparent border-b border-border focus:border-foreground transition-colors py-2.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+              />
+            </label>
+            <label className="block">
+              <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">Password</span>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); if (mode === 'signup' && pwdTouched) validate(e.target.value); }}
+                onBlur={() => { if (mode === 'signup') { setPwdTouched(true); validate(password); } }}
+                placeholder="••••••••"
+                className="mt-1.5 w-full bg-transparent border-b border-border focus:border-foreground transition-colors py-2.5 text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+              />
+              {mode === 'signup' && password && pwdTouched && (
+                <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5">
+                  {["8+ characters","One uppercase","One lowercase","One number","One symbol"].map((req) => {
+                    const failed = pwdErrors.includes(req);
+                    return (
+                      <span key={req} className={`text-[11px] tracking-tight ${failed ? "text-muted-foreground" : "text-foreground"}`}>
+                        {failed ? "○" : "●"} {req}
+                      </span>
+                    );
+                  })}
                 </div>
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <Button 
-                  onClick={() => handleEmailAuth(false)}
-                  disabled={loading || !email || !password}
-                  className="w-full"
-                >
-                  {loading ? 'Signing in...' : 'Sign In'}
-                </Button>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="signup" className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => handlePasswordChange(e.target.value)}
-                      onBlur={handlePasswordBlur}
-                      className="pl-10"
-                    />
-                  </div>
-                  
-                  {password && passwordTouched && (
-                    <div className="space-y-2 mt-2">
-                      {passwordErrors.length > 0 ? (
-                        <Alert variant="destructive" className="py-2">
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertDescription className="ml-2">
-                            <p className="text-sm font-medium mb-1">Password requirements:</p>
-                            <ul className="text-xs space-y-1">
-                              {passwordErrors.map((error, idx) => (
-                                <li key={idx} className="flex items-center gap-1">
-                                  <X className="h-3 w-3" />
-                                  {error}
-                                </li>
-                              ))}
-                            </ul>
-                          </AlertDescription>
-                        </Alert>
-                      ) : (
-                        <Alert className="py-2 border-green-500 bg-green-500/10">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                          <AlertDescription className="ml-2 text-green-500 text-sm">
-                            Password meets all requirements
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <Button 
-                  onClick={() => handleEmailAuth(true)}
-                  disabled={loading || !email || !password || passwordErrors.length > 0}
-                  className="w-full"
-                >
-                  {loading ? 'Creating account...' : 'Sign Up'}
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
-          
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-muted" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-            
-            <Button 
-              variant="outline" 
-              onClick={handleGoogleAuth}
-              disabled={loading}
-              className="w-full mt-4"
+              )}
+            </label>
+
+            <button
+              onClick={handleAuth}
+              disabled={loading || !email || !password || (mode === 'signup' && pwdErrors.length > 0)}
+              className="w-full h-12 bg-foreground text-background text-sm font-medium rounded-full hover:bg-foreground/90 active:scale-[0.99] transition-all duration-200 ease-spring disabled:opacity-50 mt-4"
             >
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+              {loading ? "…" : (mode === 'signup' ? "Create account" : "Sign in")}
+            </button>
+
+            <div className="flex items-center gap-4 my-2">
+              <span className="flex-1 h-px bg-border" />
+              <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Or</span>
+              <span className="flex-1 h-px bg-border" />
+            </div>
+
+            <button
+              onClick={handleGoogle}
+              disabled={loading}
+              className="w-full h-12 border border-border text-sm font-medium rounded-full hover:border-foreground transition-colors flex items-center justify-center gap-3"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              {loading ? 'Loading...' : 'Continue with Google'}
-            </Button>
+              Continue with Google
+            </button>
           </div>
-        </CardContent>
-      </Card>
+
+          <p className="mt-10 text-[11px] text-muted-foreground leading-relaxed text-center">
+            By continuing, you agree to our terms and privacy policy.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

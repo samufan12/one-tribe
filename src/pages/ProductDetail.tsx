@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, MessageCircle, Share2, ChevronLeft, ChevronRight, MapPin, Clock, Shield, Truck, CreditCard, Loader2, ShoppingCart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
 import GrailedLayout from "@/components/GrailedLayout";
 import { useProducts, Product } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,423 +18,235 @@ const ProductDetail = () => {
   const { addToRecentlyViewed } = useRecentlyViewed();
   const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [related, setRelated] = useState<Product[]>([]);
+  const [imgIdx, setImgIdx] = useState(0);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isMessaging, setIsMessaging] = useState(false);
 
   useEffect(() => {
     if (products.length > 0 && id) {
       const found = products.find(p => p.id === id);
       setProduct(found || null);
-      
-      // Track in recently viewed
       if (found) {
         addToRecentlyViewed(found);
-      }
-      
-      // Find related products from the same category
-      if (found) {
-        const related = products
-          .filter(p => p.category === found.category && p.id !== found.id)
-          .slice(0, 4);
-        setRelatedProducts(related);
+        setRelated(products.filter(p => p.category === found.category && p.id !== found.id).slice(0, 4));
       }
     }
   }, [products, id, addToRecentlyViewed]);
 
-  const handleAuthRequired = (action: string) => {
+  const requireAuth = (action: string) => {
     toast.error(`Please sign in to ${action}`, {
-      action: {
-        label: "Sign In",
-        onClick: () => navigate("/auth"),
-      },
+      action: { label: "Sign In", onClick: () => navigate("/auth") },
     });
   };
 
   const handleLike = () => {
-    if (!user) {
-      handleAuthRequired("like items");
-      return;
-    }
+    if (!user) return requireAuth("save items");
     if (product) {
       toggleLike(product.id);
-      setProduct(prev => prev ? { ...prev, is_liked: !prev.is_liked, likes: prev.is_liked ? prev.likes - 1 : prev.likes + 1 } : null);
+      setProduct(p => p ? { ...p, is_liked: !p.is_liked, likes: p.is_liked ? p.likes - 1 : p.likes + 1 } : null);
     }
   };
 
-  const [isMessaging, setIsMessaging] = useState(false);
-
   const handleMessage = async () => {
-    if (!user) {
-      handleAuthRequired("contact sellers");
-      return;
-    }
-    if (!product || product.id.startsWith("sample-")) {
-      toast.error("Messaging is not available for sample products");
-      return;
-    }
-
+    if (!user) return requireAuth("contact sellers");
+    if (!product || product.id.startsWith("sample-")) return toast.error("Messaging unavailable for samples");
     setIsMessaging(true);
     try {
-      // Get the seller's user_id
-      const { data: sellerId, error: sellerError } = await supabase.rpc("get_product_seller_id", {
-        p_product_id: product.id,
-      });
-      if (sellerError || !sellerId) throw new Error("Could not find seller");
-
-      if (sellerId === user.id) {
-        toast.error("You can't message yourself!");
-        return;
-      }
-
-      // Get or create conversation
-      const { data: conversationId, error: convError } = await supabase.rpc("get_or_create_conversation", {
-        p_other_user_id: sellerId,
-        p_product_id: product.id,
-      });
-      if (convError || !conversationId) throw new Error("Could not start conversation");
-
-      navigate(`/messages?conversation=${conversationId}`);
-    } catch (error: any) {
-      console.error("Message error:", error);
-      toast.error("Failed to start conversation. Please try again.");
-    } finally {
-      setIsMessaging(false);
-    }
+      const { data: sellerId, error: e1 } = await supabase.rpc("get_product_seller_id", { p_product_id: product.id });
+      if (e1 || !sellerId) throw new Error();
+      if (sellerId === user.id) return toast.error("You can't message yourself!");
+      const { data: convId, error: e2 } = await supabase.rpc("get_or_create_conversation", { p_other_user_id: sellerId, p_product_id: product.id });
+      if (e2 || !convId) throw new Error();
+      navigate(`/messages?conversation=${convId}`);
+    } catch {
+      toast.error("Failed to start conversation.");
+    } finally { setIsMessaging(false); }
   };
 
   const handleBuyNow = async () => {
     if (!product) return;
-    
     setIsCheckingOut(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-payment", {
-        body: {
-          productId: product.id,
-          productTitle: product.title,
-          price: product.price,
-          quantity: 1,
-        },
+        body: { productId: product.id, productTitle: product.title, price: product.price, quantity: 1 },
       });
-
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast.error("Failed to start checkout. Please try again.");
-    } finally {
-      setIsCheckingOut(false);
-    }
+      if (data?.url) window.open(data.url, "_blank");
+    } catch {
+      toast.error("Failed to start checkout.");
+    } finally { setIsCheckingOut(false); }
   };
 
   const handleShare = async () => {
-    try {
-      await navigator.share({
-        title: product?.title,
-        url: window.location.href,
-      });
-    } catch {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard");
-    }
-  };
-
-  const nextImage = () => {
-    if (product && product.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
-    }
-  };
-
-  const prevImage = () => {
-    if (product && product.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
-    }
-  };
-
-  const getConditionColor = (condition: string) => {
-    switch (condition?.toLowerCase()) {
-      case 'new': return 'bg-green-100 text-green-800';
-      case 'like new': return 'bg-blue-100 text-blue-800';
-      case 'good': return 'bg-yellow-100 text-yellow-800';
-      case 'fair': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-muted text-muted-foreground';
-    }
-  };
-
-  const getTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
-    return format(date, 'MMM d, yyyy');
+    try { await navigator.share({ title: product?.title, url: window.location.href }); }
+    catch { navigator.clipboard.writeText(window.location.href); toast.success("Link copied"); }
   };
 
   if (loading) {
-    return (
-      <GrailedLayout>
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 w-24 bg-muted rounded mb-6" />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="aspect-square bg-muted rounded-lg" />
-              <div className="space-y-4">
-                <div className="h-8 bg-muted rounded w-3/4" />
-                <div className="h-6 bg-muted rounded w-1/4" />
-                <div className="h-24 bg-muted rounded" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </GrailedLayout>
-    );
+    return <GrailedLayout><div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div></GrailedLayout>;
   }
 
   if (!product) {
     return (
       <GrailedLayout>
-        <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Product Not Found</h1>
-          <p className="text-muted-foreground mb-6">The item you're looking for doesn't exist or has been removed.</p>
-          <Button onClick={() => navigate("/marketplace")}>
-            <ArrowLeft size={16} className="mr-2" />
-            Back to Marketplace
-          </Button>
+        <div className="max-w-3xl mx-auto px-6 py-32 text-center">
+          <p className="text-eyebrow text-muted-foreground mb-3">404</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-4">This piece has moved on.</h1>
+          <button onClick={() => navigate("/marketplace")} className="text-sm underline underline-offset-4 hover:no-underline">
+            Return to the marketplace
+          </button>
         </div>
       </GrailedLayout>
     );
   }
 
-  const images = product.images.length > 0 ? product.images : ['https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=600&h=600&fit=crop'];
+  const images = product.images.length > 0 ? product.images : ['https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=1200&h=1200&fit=crop'];
 
   return (
     <GrailedLayout>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
-        >
-          <ArrowLeft size={16} />
-          <span>Back</span>
+      {/* Editorial breadcrumb */}
+      <div className="max-w-[1600px] mx-auto px-6 sm:px-10 pt-8">
+        <button onClick={() => navigate(-1)} className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors">
+          ← Back to the collection
         </button>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* Image Gallery */}
-          <div className="space-y-3">
-            <div className="relative aspect-square bg-secondary rounded-3xl overflow-hidden">
-              <img
-                src={images[currentImageIndex]}
-                alt={product.title}
-                className="w-full h-full object-cover"
-              />
-
-              {images.length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-md rounded-full hover:bg-background transition-all shadow-soft"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-md rounded-full hover:bg-background transition-all shadow-soft"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </>
-              )}
-
-              {images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-background/80 backdrop-blur-md rounded-full text-xs font-medium">
-                  {currentImageIndex + 1} / {images.length}
-                </div>
-              )}
-            </div>
-
+      <div className="max-w-[1600px] mx-auto px-6 sm:px-10 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+        {/* Gallery — full bleed feel, vertical thumbnails */}
+        <div className="lg:col-span-7 lg:sticky lg:top-24 lg:self-start">
+          <div className="relative aspect-[4/5] bg-secondary overflow-hidden rounded-sm">
+            <img src={images[imgIdx]} alt={product.title} className="w-full h-full object-cover" />
             {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {images.map((img, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`w-16 h-16 rounded-xl overflow-hidden shrink-0 ring-2 transition-all ${
-                      index === currentImageIndex ? 'ring-foreground' : 'ring-transparent opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
-                  </button>
-                ))}
+              <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
+                <span className="text-[11px] tracking-widest uppercase text-white bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full">
+                  {String(imgIdx + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
+                </span>
+                <div className="flex gap-2">
+                  <button onClick={() => setImgIdx((imgIdx - 1 + images.length) % images.length)} className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition text-sm">←</button>
+                  <button onClick={() => setImgIdx((imgIdx + 1) % images.length)} className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition text-sm">→</button>
+                </div>
               </div>
             )}
           </div>
-
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <span className="text-eyebrow text-muted-foreground">{product.category}</span>
-              <span className="text-muted-foreground/50">·</span>
-              <span className="text-eyebrow text-muted-foreground">{product.condition}</span>
-            </div>
-
-            <div>
-              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-3">{product.title}</h1>
-              <p className="text-3xl font-semibold text-foreground tracking-tight">${product.price}</p>
-              <p className="text-xs text-muted-foreground mt-1.5">
-                + ${(product.price * 0.05).toFixed(2)} platform fee (5%)
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 pt-2">
-              <div className="flex gap-3">
-                <Button 
-                  onClick={handleBuyNow} 
-                  size="lg" 
-                  disabled={isCheckingOut}
-                  className="flex-1"
-                >
-                  {isCheckingOut ? (
-                    <>
-                      <Loader2 size={18} className="mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard size={18} className="mr-2" />
-                      Buy Now · ${(product.price * 1.05).toFixed(2)}
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    addItem({
-                      id: product.id,
-                      title: product.title,
-                      price: product.price,
-                      image: images[0],
-                      category: product.category,
-                      condition: product.condition,
-                      size: product.size || undefined,
-                    });
-                    toast.success("Added to cart");
-                  }}
-                >
-                  <ShoppingCart size={18} />
-                </Button>
-              </div>
-              <div className="flex gap-3">
-                <Button onClick={handleMessage} variant="outline" className="flex-1" size="lg" disabled={isMessaging}>
-                  {isMessaging ? (
-                    <Loader2 size={18} className="mr-2 animate-spin" />
-                  ) : (
-                    <MessageCircle size={18} className="mr-2" />
-                  )}
-                  Message Seller
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  onClick={handleLike}
-                  className={product.is_liked ? "text-red-500 border-red-500" : ""}
-                >
-                  <Heart size={18} className={product.is_liked ? "fill-red-500" : ""} />
-                </Button>
-                <Button variant="outline" size="lg" onClick={handleShare}>
-                  <Share2 size={18} />
-                </Button>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="flex items-center gap-6 text-sm text-muted-foreground py-4 border-y border-border">
-              <div className="flex items-center gap-2">
-                <Heart size={16} />
-                <span>{product.likes} likes</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock size={16} />
-                <span>Listed {getTimeAgo(product.created_at)}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin size={16} />
-                <span>{product.location}</span>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <h2 className="font-semibold text-foreground mb-2">Description</h2>
-              <p className="text-muted-foreground leading-relaxed">{product.description}</p>
-            </div>
-
-            {/* Size */}
-            {product.size && (
-              <div>
-                <h2 className="font-semibold text-foreground mb-2">Size</h2>
-                <Badge variant="outline" className="text-base px-4 py-1">{product.size}</Badge>
-              </div>
-            )}
-
-            {/* Trust Badges */}
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                <Shield className="text-primary" size={24} />
-                <div>
-                  <p className="font-medium text-sm">Buyer Protection</p>
-                  <p className="text-xs text-muted-foreground">Money-back guarantee</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                <Truck className="text-primary" size={24} />
-                <div>
-                  <p className="font-medium text-sm">Secure Shipping</p>
-                  <p className="text-xs text-muted-foreground">Tracked delivery</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
-          <div className="mt-12 pt-8 border-t border-border">
-            <h2 className="text-xl font-bold text-foreground mb-6">More in {product.category}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {relatedProducts.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    navigate(`/product/${item.id}`);
-                    setCurrentImageIndex(0);
-                    window.scrollTo(0, 0);
-                  }}
-                  className="group bg-background rounded-lg overflow-hidden border border-border hover:border-foreground/20 transition-all text-left"
-                >
-                  <div className="relative aspect-square bg-muted overflow-hidden">
-                    <img
-                      src={item.images?.[0] || 'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=300&h=300&fit=crop'}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <span className={`absolute top-2 left-2 px-2 py-0.5 text-xs font-medium rounded ${getConditionColor(item.condition)}`}>
-                      {item.condition}
-                    </span>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-sm font-medium text-foreground line-clamp-1">{item.title}</p>
-                    <p className="font-bold text-foreground mt-1">${item.price}</p>
-                  </div>
+          {images.length > 1 && (
+            <div className="mt-4 grid grid-cols-5 gap-2">
+              {images.slice(0, 5).map((img, i) => (
+                <button key={i} onClick={() => setImgIdx(i)} className={`aspect-square overflow-hidden rounded-sm transition-opacity ${i === imgIdx ? "opacity-100 ring-1 ring-foreground" : "opacity-50 hover:opacity-100"}`}>
+                  <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
+          )}
+        </div>
+
+        {/* Editorial info */}
+        <div className="lg:col-span-5 space-y-10">
+          <div>
+            <p className="text-eyebrow text-muted-foreground mb-4">{product.category} · {product.condition}</p>
+            <h1
+              className="font-semibold tracking-[-0.03em] leading-[1.05] text-foreground"
+              style={{ fontSize: "clamp(2.25rem, 4vw, 3.5rem)" }}
+            >
+              {product.title}
+            </h1>
+            <div className="mt-8 flex items-baseline gap-3">
+              <span className="text-3xl font-medium tracking-tight tabular-nums">${product.price}</span>
+              <span className="text-xs text-muted-foreground">+ ${(product.price * 0.05).toFixed(2)} fee</span>
+            </div>
           </div>
-        )}
+
+          <div className="space-y-3">
+            <button
+              onClick={handleBuyNow}
+              disabled={isCheckingOut}
+              className="w-full h-14 bg-foreground text-background text-sm font-medium tracking-tight rounded-full hover:bg-foreground/90 active:scale-[0.99] transition-all duration-200 ease-spring disabled:opacity-60"
+            >
+              {isCheckingOut ? "Processing…" : `Buy now · $${(product.price * 1.05).toFixed(2)}`}
+            </button>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                onClick={() => { addItem({ id: product.id, title: product.title, price: product.price, image: images[0], category: product.category, condition: product.condition, size: product.size || undefined }); toast.success("Added to cart"); }}
+                className="h-12 border border-border text-sm font-medium rounded-full hover:border-foreground transition-colors"
+              >
+                Add to cart
+              </button>
+              <button onClick={handleMessage} disabled={isMessaging} className="h-12 border border-border text-sm font-medium rounded-full hover:border-foreground transition-colors">
+                {isMessaging ? "…" : "Message"}
+              </button>
+              <button onClick={handleLike} className="h-12 border border-border text-sm font-medium rounded-full hover:border-foreground transition-colors">
+                {product.is_liked ? "Saved ♥" : "Save"}
+              </button>
+            </div>
+            <button onClick={handleShare} className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-2 underline underline-offset-4">
+              Share this piece
+            </button>
+          </div>
+
+          {/* Editorial details — definition list */}
+          <dl className="border-t border-border pt-8 space-y-4">
+            {[
+              ["Condition", product.condition],
+              ...(product.size ? [["Size", product.size]] as [string, string][] : []),
+              ["Location", product.location],
+              ["Listed", format(new Date(product.created_at), 'MMMM d, yyyy')],
+              ["Saved by", `${product.likes} ${product.likes === 1 ? "person" : "people"}`],
+            ].map(([k, v]) => (
+              <div key={k as string} className="flex items-baseline justify-between gap-6 text-sm border-b border-border/40 pb-3">
+                <dt className="text-muted-foreground tracking-tight">{k}</dt>
+                <dd className="text-foreground font-medium tracking-tight text-right">{v}</dd>
+              </div>
+            ))}
+          </dl>
+
+          {/* Description as long-form */}
+          <div className="border-t border-border pt-8">
+            <p className="text-eyebrow text-muted-foreground mb-4">About this piece</p>
+            <p className="text-[17px] leading-[1.7] text-foreground/90 font-light">{product.description}</p>
+          </div>
+
+          {/* Trust — typographic, no boxes */}
+          <div className="border-t border-border pt-8 grid grid-cols-2 gap-8 text-sm">
+            <div>
+              <p className="text-foreground font-medium tracking-tight">Buyer protection</p>
+              <p className="text-muted-foreground text-xs mt-1 leading-relaxed">Money-back guarantee on every order.</p>
+            </div>
+            <div>
+              <p className="text-foreground font-medium tracking-tight">Tracked shipping</p>
+              <p className="text-muted-foreground text-xs mt-1 leading-relaxed">From the seller, to your door.</p>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Related — editorial */}
+      {related.length > 0 && (
+        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 py-20 border-t border-border">
+          <div className="flex items-baseline justify-between mb-10">
+            <h2 className="text-3xl font-semibold tracking-tight">More from the {product.category} chapter</h2>
+            <button onClick={() => navigate(`/marketplace`)} className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors">
+              See all →
+            </button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+            {related.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => { navigate(`/product/${item.id}`); setImgIdx(0); window.scrollTo(0, 0); }}
+                className="group text-left"
+              >
+                <div className="aspect-[4/5] overflow-hidden bg-secondary rounded-sm">
+                  <img src={item.images?.[0] || images[0]} alt={item.title} className="w-full h-full object-cover transition-transform duration-[1.2s] ease-spring group-hover:scale-[1.06]" />
+                </div>
+                <div className="mt-3 flex items-start justify-between gap-3">
+                  <h3 className="text-sm tracking-tight truncate">{item.title}</h3>
+                  <p className="text-sm font-medium tabular-nums shrink-0">${item.price}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
     </GrailedLayout>
   );
 };

@@ -3,14 +3,8 @@ import { useNavigate } from "react-router-dom";
 import GrailedLayout from "@/components/GrailedLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { LogOut, Save, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -22,12 +16,7 @@ const ProfilePage = () => {
   const [bio, setBio] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/auth");
-    }
-  }, [user, authLoading, navigate]);
-
+  useEffect(() => { if (!authLoading && !user) navigate("/auth"); }, [user, authLoading, navigate]);
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || "");
@@ -37,96 +26,85 @@ const ProfilePage = () => {
   }, [profile]);
 
   if (authLoading || profileLoading) {
-    return (
-      <GrailedLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      </GrailedLayout>
-    );
+    return <GrailedLayout><div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div></GrailedLayout>;
   }
-
   if (!user) return null;
 
-  const initials = (displayName || user.email || "U")
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+  const initials = (displayName || user.email || "U").split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateProfile({
-        display_name: displayName || null,
-        phone: phone || null,
-        bio: bio || null,
-      });
-      toast({ title: "Profile updated", description: "Your changes have been saved." });
+      await updateProfile({ display_name: displayName || null, phone: phone || null, bio: bio || null });
+      toast({ title: "Saved", description: "Your profile is up to date." });
     } catch {
-      toast({ title: "Error", description: "Failed to save changes.", variant: "destructive" });
-    } finally {
-      setSaving(false);
-    }
+      toast({ title: "Error", description: "Failed to save.", variant: "destructive" });
+    } finally { setSaving(false); }
   };
+
+  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+    <label className="block border-b border-border pb-5">
+      <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">{label}</span>
+      <div className="mt-2">{children}</div>
+    </label>
+  );
+
+  const inputCls = "w-full bg-transparent text-foreground placeholder:text-muted-foreground/50 focus:outline-none text-lg tracking-tight";
 
   return (
     <GrailedLayout>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
-        <Card>
-          <CardHeader className="items-center text-center pb-2">
-            <Avatar className="h-20 w-20 mb-3">
-              <AvatarImage src={profile?.avatar_url || undefined} />
-              <AvatarFallback className="text-xl font-semibold bg-primary text-primary-foreground">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <CardTitle className="text-2xl">{displayName || "Your Profile"}</CardTitle>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
-          </CardHeader>
-          <CardContent className="space-y-5 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Enter your name"
-              />
+      {/* Editorial header */}
+      <section className="border-b border-border/60">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-16 pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
+          <div className="md:col-span-4">
+            <div className="w-32 h-32 rounded-full bg-foreground text-background flex items-center justify-center text-4xl font-light tracking-tight">
+              {initials}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter your phone number"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Tell us about yourself"
-                rows={4}
-              />
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <Button onClick={handleSave} disabled={saving} className="flex-1">
-                {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-                Save Changes
-              </Button>
-              <Button variant="outline" onClick={signOut} className="flex-1">
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="md:col-span-8">
+            <p className="text-eyebrow text-muted-foreground mb-3">Your account</p>
+            <h1
+              className="font-semibold tracking-[-0.03em] leading-[1]"
+              style={{ fontSize: "clamp(2.25rem, 5vw, 4rem)" }}
+            >
+              {displayName || "Welcome back."}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-3">{user.email}</p>
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-16 grid grid-cols-1 md:grid-cols-12 gap-12">
+        <div className="md:col-span-4">
+          <p className="text-eyebrow text-muted-foreground mb-3">Profile</p>
+          <h2 className="text-2xl font-semibold tracking-tight">How you appear<br /><span className="italic font-light text-muted-foreground">to the tribe.</span></h2>
+        </div>
+
+        <div className="md:col-span-8 space-y-7">
+          <Field label="Display name">
+            <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" className={inputCls} />
+          </Field>
+          <Field label="Phone">
+            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 ___ ___ ____" className={inputCls} />
+          </Field>
+          <Field label="Bio">
+            <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="A short note about yourself" rows={3} className={`${inputCls} resize-none`} />
+          </Field>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="h-12 px-8 bg-foreground text-background text-sm font-medium rounded-full hover:bg-foreground/90 active:scale-[0.99] transition-all duration-200 ease-spring disabled:opacity-60 inline-flex items-center justify-center gap-2"
+            >
+              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+              Save changes
+            </button>
+            <button onClick={signOut} className="h-12 px-8 border border-border text-sm font-medium rounded-full hover:border-foreground transition-colors">
+              Sign out
+            </button>
+          </div>
+        </div>
       </div>
     </GrailedLayout>
   );
