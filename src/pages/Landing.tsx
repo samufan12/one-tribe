@@ -1,290 +1,452 @@
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, ArrowRight, ShieldCheck, Globe2, Sparkles, Users } from "lucide-react";
 import landingDress from "@/assets/landing-dress.jpg";
 import landingCoffee from "@/assets/landing-coffee.jpg";
 import landingGabi from "@/assets/landing-gabi.jpg";
 import landingBerbere from "@/assets/landing-berbere.jpg";
+import telsum from "@/assets/telsum-necklace.jpg";
+import netela from "@/assets/netela-shawl.webp";
+import mesob from "@/assets/mesob-table.jpg";
+import saintGeorge from "@/assets/saint-george-painting.jpg";
+import kemis from "@/assets/kemis-1.jpg";
+
+/* ----- tiny scroll-reveal hook (no deps) ----- */
+const useReveal = <T extends HTMLElement>() => {
+  const ref = useRef<T | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setVisible(true),
+      { threshold: 0.15 }
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+  return { ref, visible };
+};
+
+const Reveal = ({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) => {
+  const { ref, visible } = useReveal<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-all duration-[900ms] ease-spring ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+};
 
 const Landing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const features = [
-    {
-      icon: ShieldCheck,
-      title: "Authentic, verified",
-      description: "Every seller is reviewed. Every item, the real thing.",
-    },
-    {
-      icon: Users,
-      title: "A global community",
-      description: "Habesha households and businesses, on every continent.",
-    },
-    {
-      icon: Globe2,
-      title: "Worldwide shipping",
-      description: "From Addis to Atlanta, tracked end-to-end.",
-    },
-    {
-      icon: Sparkles,
-      title: "Curated with care",
-      description: "Personalised picks tuned to your taste.",
-    },
-  ];
+  /* parallax for hero */
+  const [scrollY, setScrollY] = useState(0);
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-  const testimonials = [
+  const chapters = [
     {
-      name: "Makda T.",
-      role: "Verified Buyer",
-      quote: "Finally found authentic traditional dresses that remind me of home. The quality is exceptional.",
+      n: "01",
+      eyebrow: "The Cloth",
+      title: "Hand-loomed, generation after generation.",
+      copy: "Habesha kemis, netela, gabi — woven on wooden looms in Shiro Meda, then carried across oceans by the women who wear them.",
+      image: kemis,
+      tag: "Textiles",
     },
     {
-      name: "Yonas K.",
-      role: "Seller",
-      quote: "OneTribe has helped me reach customers worldwide. My handcrafts are now appreciated globally.",
+      n: "02",
+      eyebrow: "The Cup",
+      title: "Where coffee was born.",
+      copy: "From the highlands of Yirgacheffe to a jebena pouring slow in your kitchen. The ceremony, intact.",
+      image: landingCoffee,
+      tag: "Coffee",
     },
     {
-      name: "Sara M.",
-      role: "Community Member",
-      quote: "The community here is so supportive. I've learned so much about traditional styling.",
+      n: "03",
+      eyebrow: "The Spice",
+      title: "Heat, measured in memory.",
+      copy: "Berbere, mitmita, shiro — blended by hand, sun-dried, never standardised. Tastes like your grandmother's kitchen, because it is.",
+      image: landingBerbere,
+      tag: "Pantry",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/60">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-12">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate(-1)}
-                className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors rounded-full"
-                aria-label="Go back"
-              >
-                <ArrowLeft size={18} />
-              </button>
-              <span className="font-semibold text-[17px] tracking-tight">OneTribe</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {user ? (
-                <Button
-                  size="sm"
-                  onClick={() => navigate('/home')}
-                  className="rounded-full px-5 h-8 text-[13px] font-medium"
-                >
-                  Open app
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  onClick={() => navigate('/auth')}
-                  className="rounded-full px-5 h-8 text-[13px] font-medium"
-                >
-                  Get started
-                </Button>
-              )}
-            </div>
+    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+      {/* ============ NAV ============ */}
+      <nav className="fixed top-0 inset-x-0 z-50 bg-background/60 backdrop-blur-2xl border-b border-border/40">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-14 flex items-center justify-between">
+          <span className="font-semibold text-[15px] tracking-tight">
+            OneTribe<span className="text-primary">.</span>
+          </span>
+          <div className="hidden md:flex items-center gap-8 text-[13px] text-muted-foreground">
+            <button onClick={() => navigate("/marketplace")} className="hover:text-foreground transition-colors">Shop</button>
+            <button onClick={() => navigate("/storefronts")} className="hover:text-foreground transition-colors">Storefronts</button>
+            <button onClick={() => navigate("/community")} className="hover:text-foreground transition-colors">Community</button>
+            <button onClick={() => navigate("/cultural-guide")} className="hover:text-foreground transition-colors">Journal</button>
           </div>
+          <button
+            onClick={() => navigate(user ? "/home" : "/auth")}
+            className="text-[13px] font-medium px-4 h-8 rounded-full bg-foreground text-background hover:opacity-90 active:scale-[0.97] transition-all ease-spring"
+          >
+            {user ? "Open app" : "Get started"}
+          </button>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="pt-28 md:pt-36 pb-20 md:pb-28">
-        <div className="max-w-[1080px] mx-auto px-6 lg:px-8 text-center">
-          <p className="text-eyebrow text-primary mb-5">The global Habesha marketplace</p>
-          <h1 className="text-display mb-6">
-            Home, in every<br className="hidden sm:block" /> corner of the world.
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-            Authentic clothing, coffee, jewelry and craft from Ethiopian and Eritrean
-            makers — delivered to wherever you call home.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button
-              size="lg"
-              onClick={() => navigate('/marketplace')}
-              className="rounded-full px-7 h-12 text-[15px] font-medium gap-1.5 shadow-soft"
-            >
-              Start shopping
-              <ArrowRight size={16} />
-            </Button>
-            <button
-              onClick={() => navigate('/cultural-guide')}
-              className="text-[15px] font-medium text-primary hover:underline underline-offset-4 px-4 h-12 inline-flex items-center gap-1"
-            >
-              Learn more <ArrowRight size={14} />
-            </button>
-          </div>
+      {/* ============ HERO — full-bleed editorial ============ */}
+      <section className="relative h-[100svh] min-h-[680px] w-full overflow-hidden">
+        {/* parallax image */}
+        <div
+          className="absolute inset-0 will-change-transform"
+          style={{ transform: `translate3d(0, ${scrollY * 0.3}px, 0) scale(1.08)` }}
+        >
+          <img
+            src={landingDress}
+            alt="A woman in a traditional Habesha kemis"
+            className="w-full h-full object-cover object-[center_20%]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
         </div>
 
-        {/* Hero image mosaic */}
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-8 mt-16 md:mt-24">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-muted shadow-soft">
-              <img src={landingDress} alt="Traditional Habesha Dress" className="w-full h-full object-cover object-top" />
-            </div>
-            <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-muted shadow-soft md:translate-y-8">
-              <img src={landingCoffee} alt="Ethiopian Coffee Ceremony" className="w-full h-full object-cover" />
-            </div>
-            <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-muted shadow-soft">
-              <img src={landingGabi} alt="Traditional Gabi" className="w-full h-full object-cover" />
-            </div>
-            <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-muted shadow-soft md:translate-y-8">
-              <img src={landingBerbere} alt="Berbere Spice" className="w-full h-full object-cover" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats strip */}
-      <section className="border-y border-border/60 bg-muted/40">
-        <div className="max-w-[1080px] mx-auto px-6 lg:px-8 py-10 md:py-14">
-          <div className="grid grid-cols-3 gap-6 md:gap-12 text-center">
-            <div>
-              <p className="text-3xl md:text-4xl font-semibold tracking-tight">100%</p>
-              <p className="text-sm text-muted-foreground mt-1">Authentic</p>
-            </div>
-            <div className="border-x border-border/60">
-              <p className="text-3xl md:text-4xl font-semibold tracking-tight">6</p>
-              <p className="text-sm text-muted-foreground mt-1">Categories</p>
-            </div>
-            <div>
-              <p className="text-3xl md:text-4xl font-semibold tracking-tight">Global</p>
-              <p className="text-sm text-muted-foreground mt-1">Shipping</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-[1080px] mx-auto px-6 lg:px-8">
-          <div className="text-center mb-16 md:mb-20">
-            <p className="text-eyebrow text-primary mb-4">Why OneTribe</p>
-            <h2 className="text-headline mb-4">Built for the diaspora.</h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              More than a marketplace — a community keeping heritage alive, one item at a time.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {features.map((feature) => (
-              <div
-                key={feature.title}
-                className="group bg-card rounded-3xl p-7 border border-border/60 hover:border-border hover:shadow-soft-lg transition-all duration-500 ease-spring"
-              >
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-5">
-                  <feature.icon size={18} />
-                </div>
-                <h3 className="text-[17px] font-semibold mb-2 tracking-tight">{feature.title}</h3>
-                <p className="text-[14px] text-muted-foreground leading-relaxed">{feature.description}</p>
+        {/* hero content */}
+        <div className="relative z-10 h-full flex flex-col">
+          {/* eyebrow row */}
+          <div className="pt-24 px-6 lg:px-10 max-w-[1400px] mx-auto w-full">
+            <Reveal>
+              <div className="flex items-center gap-3 text-white/80">
+                <span className="h-px w-10 bg-white/60" />
+                <span className="text-eyebrow">Vol. 01 — The Diaspora Issue</span>
               </div>
-            ))}
+            </Reveal>
+          </div>
+
+          {/* big title */}
+          <div className="flex-1 flex items-end px-6 lg:px-10 pb-16 md:pb-24">
+            <div className="max-w-[1400px] mx-auto w-full grid md:grid-cols-12 gap-8 items-end">
+              <div className="md:col-span-8">
+                <Reveal delay={120}>
+                  <h1
+                    className="text-white font-semibold tracking-[-0.04em] leading-[0.95]"
+                    style={{ fontSize: "clamp(3.5rem, 9vw, 8.5rem)" }}
+                  >
+                    Home,<br />
+                    <span className="italic font-light">delivered</span>
+                    <span className="text-primary">.</span>
+                  </h1>
+                </Reveal>
+              </div>
+              <div className="md:col-span-4 md:pb-4">
+                <Reveal delay={280}>
+                  <p className="text-white/85 text-[15px] md:text-base leading-relaxed mb-6 max-w-sm">
+                    A marketplace for the global Habesha — built by the diaspora, stocked by the makers who keep it alive.
+                  </p>
+                  <div className="flex items-center gap-5">
+                    <button
+                      onClick={() => navigate("/marketplace")}
+                      className="group inline-flex items-center gap-2 px-6 h-12 rounded-full bg-white text-foreground text-[14px] font-medium hover:bg-white/90 active:scale-[0.97] transition-all ease-spring"
+                    >
+                      Enter the marketplace
+                      <span className="inline-block transition-transform group-hover:translate-x-0.5">→</span>
+                    </button>
+                  </div>
+                </Reveal>
+              </div>
+            </div>
+          </div>
+
+          {/* bottom meta strip */}
+          <div className="border-t border-white/15 backdrop-blur-md bg-black/10">
+            <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-4 flex items-center justify-between text-[11px] tracking-[0.15em] uppercase text-white/70">
+              <span>Addis · Asmara · Atlanta · London · Dubai</span>
+              <span className="hidden md:inline">Scroll to begin ↓</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Editorial split */}
-      <section className="pb-24 md:pb-32">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
-          <div className="rounded-[2rem] bg-muted/60 overflow-hidden grid md:grid-cols-2 items-stretch">
-            <div className="aspect-[4/3] md:aspect-auto bg-muted">
-              <img src={landingDress} alt="Habesha craftsmanship" className="w-full h-full object-cover object-top" />
+      {/* ============ MARQUEE ============ */}
+      <section className="border-y border-border/60 bg-background py-6 overflow-hidden">
+        <div className="flex gap-12 whitespace-nowrap animate-[marquee_38s_linear_infinite]">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-12 shrink-0">
+              {[
+                "Habesha Kemis",
+                "Yirgacheffe Coffee",
+                "Hand-blended Berbere",
+                "Netela Shawls",
+                "Telsum Jewelry",
+                "Jebena & Sini",
+                "Eritrean Zuria",
+                "Shiro & Mitmita",
+              ].map((w) => (
+                <span key={w + i} className="flex items-center gap-12 text-[clamp(2rem,5vw,3.75rem)] font-semibold tracking-[-0.03em]">
+                  {w}
+                  <span className="text-primary">●</span>
+                </span>
+              ))}
             </div>
-            <div className="p-10 md:p-16 flex flex-col justify-center">
-              <p className="text-eyebrow text-primary mb-4">Made by hand</p>
-              <h2 className="text-headline mb-5">Every thread tells a story.</h2>
-              <p className="text-[15px] md:text-base text-muted-foreground leading-relaxed mb-8 max-w-md">
-                From hand-loomed netela to small-batch berbere, OneTribe puts artisans
-                first — so the craft, and the people behind it, are never lost in translation.
+          ))}
+        </div>
+        <style>{`@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
+      </section>
+
+      {/* ============ MANIFESTO ============ */}
+      <section className="py-32 md:py-44 px-6 lg:px-10">
+        <div className="max-w-[1200px] mx-auto grid md:grid-cols-12 gap-10">
+          <div className="md:col-span-3">
+            <Reveal>
+              <p className="text-eyebrow text-muted-foreground sticky top-28">A Note</p>
+            </Reveal>
+          </div>
+          <div className="md:col-span-9">
+            <Reveal delay={120}>
+              <p
+                className="font-light tracking-[-0.025em] leading-[1.15]"
+                style={{ fontSize: "clamp(1.75rem, 3.6vw, 3.25rem)" }}
+              >
+                We started OneTribe because the things that make us
+                <span className="text-muted-foreground"> — the cloth, the coffee, the way a kitchen smells on a Sunday — </span>
+                shouldn't disappear because we moved.
               </p>
-              <div>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/marketplace')}
-                  className="rounded-full px-6 h-11 text-[14px] font-medium"
-                >
-                  Explore the collection
-                  <ArrowRight size={14} className="ml-1" />
-                </Button>
+            </Reveal>
+            <Reveal delay={260}>
+              <div className="mt-10 flex items-center gap-4 text-[13px] text-muted-foreground">
+                <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center text-[12px] font-semibold">OT</div>
+                <div>
+                  <p className="text-foreground font-medium">The OneTribe team</p>
+                  <p>Founded between Addis Ababa & Washington, D.C.</p>
+                </div>
               </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ CHAPTER SECTIONS ============ */}
+      {chapters.map((c, idx) => (
+        <section key={c.n} className="py-20 md:py-28 px-6 lg:px-10">
+          <div className="max-w-[1400px] mx-auto">
+            <div
+              className={`grid md:grid-cols-12 gap-8 md:gap-14 items-center ${
+                idx % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""
+              }`}
+            >
+              {/* image */}
+              <Reveal className="md:col-span-7">
+                <div className="relative group">
+                  <div className="aspect-[4/5] md:aspect-[5/4] overflow-hidden rounded-[2rem] bg-muted">
+                    <img
+                      src={c.image}
+                      alt={c.title}
+                      className="w-full h-full object-cover transition-transform duration-[1400ms] ease-spring group-hover:scale-[1.04]"
+                    />
+                  </div>
+                  <div className="absolute -top-4 -left-4 bg-background text-foreground text-[11px] tracking-[0.2em] uppercase px-4 py-2 rounded-full border border-border shadow-soft">
+                    {c.tag}
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* text */}
+              <Reveal delay={150} className="md:col-span-5">
+                <div className="flex items-baseline gap-4 mb-6">
+                  <span className="text-[clamp(3rem,6vw,5rem)] font-light text-primary tracking-tighter leading-none">
+                    {c.n}
+                  </span>
+                  <span className="text-eyebrow text-muted-foreground">{c.eyebrow}</span>
+                </div>
+                <h3
+                  className="font-semibold tracking-[-0.03em] leading-[1.05] mb-6"
+                  style={{ fontSize: "clamp(1.875rem, 3.4vw, 3rem)" }}
+                >
+                  {c.title}
+                </h3>
+                <p className="text-[15px] md:text-base text-muted-foreground leading-relaxed mb-8 max-w-md">
+                  {c.copy}
+                </p>
+                <button
+                  onClick={() => navigate("/marketplace")}
+                  className="group inline-flex items-center gap-2 text-[14px] font-medium border-b border-foreground/30 hover:border-foreground pb-1 transition-colors"
+                >
+                  Shop the chapter
+                  <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+                </button>
+              </Reveal>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ))}
 
-      {/* Testimonials */}
-      <section className="pb-24 md:pb-32">
-        <div className="max-w-[1080px] mx-auto px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-eyebrow text-primary mb-4">Loved by the community</p>
-            <h2 className="text-headline">Real stories. Real homes.</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-4">
-            {testimonials.map((t) => (
-              <figure
-                key={t.name}
-                className="bg-card rounded-3xl p-7 border border-border/60"
-              >
-                <blockquote className="text-[15px] leading-relaxed text-foreground mb-6">
-                  "{t.quote}"
-                </blockquote>
-                <figcaption className="flex items-center gap-3 pt-5 border-t border-border/60">
-                  <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center">
-                    <span className="text-[13px] font-semibold text-foreground">
-                      {t.name.split(" ").map(w => w[0]).join("")}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-medium text-[14px]">{t.name}</p>
-                    <p className="text-muted-foreground text-[12px]">{t.role}</p>
-                  </div>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="pb-24 md:pb-32">
-        <div className="max-w-[1080px] mx-auto px-6 lg:px-8">
-          <div className="rounded-[2rem] bg-foreground text-background p-12 md:p-20 text-center">
-            <h2 className="text-headline mb-5 tracking-tight">
-              Bring home, home.
-            </h2>
-            <p className="text-base md:text-lg text-background/70 mb-9 max-w-xl mx-auto leading-relaxed">
-              Join thousands of buyers and sellers celebrating heritage, every day.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button
-                size="lg"
-                onClick={() => navigate('/auth')}
-                className="rounded-full px-7 h-12 text-[15px] font-medium bg-background text-foreground hover:bg-background/90"
-              >
-                Get started
-                <ArrowRight size={16} className="ml-1" />
-              </Button>
+      {/* ============ MOSAIC GALLERY ============ */}
+      <section className="py-28 md:py-36 px-6 lg:px-10">
+        <div className="max-w-[1400px] mx-auto">
+          <Reveal>
+            <div className="flex items-end justify-between mb-12 md:mb-16 flex-wrap gap-4">
+              <div>
+                <p className="text-eyebrow text-muted-foreground mb-3">The Index</p>
+                <h2
+                  className="font-semibold tracking-[-0.035em] leading-[0.95]"
+                  style={{ fontSize: "clamp(2.25rem, 5vw, 4rem)" }}
+                >
+                  A look<br />inside.
+                </h2>
+              </div>
               <button
-                onClick={() => navigate('/marketplace')}
-                className="text-[15px] font-medium text-background/80 hover:text-background underline-offset-4 hover:underline px-4 h-12 inline-flex items-center"
+                onClick={() => navigate("/marketplace")}
+                className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                Browse marketplace
+                See everything →
               </button>
             </div>
+          </Reveal>
+
+          <div className="grid grid-cols-12 gap-3 md:gap-5">
+            {[
+              { src: telsum, span: "col-span-6 md:col-span-4 row-span-2 aspect-[3/4]", label: "Telsum" },
+              { src: netela, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Netela" },
+              { src: mesob, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Mesob" },
+              { src: landingGabi, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Gabi" },
+              { src: saintGeorge, span: "col-span-12 md:col-span-4 aspect-[4/3]", label: "Iconography" },
+            ].map((it, i) => (
+              <Reveal key={it.label} delay={i * 80} className={it.span}>
+                <div className="group relative w-full h-full overflow-hidden rounded-2xl md:rounded-[1.75rem] bg-muted">
+                  <img
+                    src={it.src}
+                    alt={it.label}
+                    className="w-full h-full object-cover transition-transform duration-[1200ms] ease-spring group-hover:scale-[1.06]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute bottom-4 left-4 text-white text-[12px] tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 ease-spring">
+                    {it.label}
+                  </div>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border/60 py-10">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="font-semibold text-[15px] tracking-tight">OneTribe</span>
-          <p className="text-muted-foreground text-[13px]">
-            © {new Date().getFullYear()} OneTribe. Celebrating heritage, together.
-          </p>
+      {/* ============ NUMBERS — editorial stats, no boxes ============ */}
+      <section className="py-28 md:py-36 px-6 lg:px-10 border-t border-border/60">
+        <div className="max-w-[1400px] mx-auto grid md:grid-cols-12 gap-10 md:gap-6">
+          {[
+            { k: "100%", v: "Authentic, makers verified" },
+            { k: "40+", v: "Cities served, growing weekly" },
+            { k: "5%", v: "Flat platform fee. No surprises." },
+          ].map((s, i) => (
+            <Reveal key={s.k} delay={i * 120} className="md:col-span-4">
+              <div className="border-t border-foreground/15 pt-8">
+                <p
+                  className="font-semibold tracking-[-0.05em] leading-[0.9] mb-5"
+                  style={{ fontSize: "clamp(4rem, 9vw, 7.5rem)" }}
+                >
+                  {s.k}
+                </p>
+                <p className="text-[15px] text-muted-foreground max-w-[18ch] leading-relaxed">
+                  {s.v}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ============ TESTIMONIAL — single, bold ============ */}
+      <section className="py-28 md:py-40 px-6 lg:px-10 bg-foreground text-background">
+        <div className="max-w-[1100px] mx-auto">
+          <Reveal>
+            <p className="text-eyebrow text-background/50 mb-10">In their words</p>
+          </Reveal>
+          <Reveal delay={120}>
+            <blockquote
+              className="font-light tracking-[-0.03em] leading-[1.1]"
+              style={{ fontSize: "clamp(2rem, 5vw, 4.25rem)" }}
+            >
+              <span className="text-background/40">“</span>
+              I found a kemis that looks exactly like the one my mother wore at her wedding.
+              I cried when it arrived.
+              <span className="text-background/40">”</span>
+            </blockquote>
+          </Reveal>
+          <Reveal delay={280}>
+            <div className="mt-12 flex items-center gap-4">
+              <div className="w-11 h-11 rounded-full bg-background/15 flex items-center justify-center text-[13px] font-semibold">MT</div>
+              <div className="text-[14px]">
+                <p className="font-medium">Makda T.</p>
+                <p className="text-background/60">Buyer · Toronto</p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ============ CLOSING CTA ============ */}
+      <section className="py-32 md:py-44 px-6 lg:px-10 text-center">
+        <div className="max-w-[1100px] mx-auto">
+          <Reveal>
+            <p className="text-eyebrow text-primary mb-8">Be part of it</p>
+          </Reveal>
+          <Reveal delay={120}>
+            <h2
+              className="font-semibold tracking-[-0.045em] leading-[0.95] mb-10"
+              style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}
+            >
+              The tribe is<br />
+              <span className="italic font-light">global</span>.
+            </h2>
+          </Reveal>
+          <Reveal delay={240}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => navigate("/auth")}
+                className="px-8 h-13 py-4 rounded-full bg-foreground text-background text-[14px] font-medium hover:opacity-90 active:scale-[0.97] transition-all ease-spring"
+              >
+                Create your account
+              </button>
+              <button
+                onClick={() => navigate("/marketplace")}
+                className="px-8 py-4 text-[14px] font-medium text-foreground/70 hover:text-foreground transition-colors"
+              >
+                Browse first →
+              </button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ============ FOOTER ============ */}
+      <footer className="border-t border-border/60 py-12 px-6 lg:px-10">
+        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div>
+            <p className="font-semibold text-[15px] tracking-tight">OneTribe<span className="text-primary">.</span></p>
+            <p className="text-[12px] text-muted-foreground mt-1">© {new Date().getFullYear()} — The global Habesha marketplace.</p>
+          </div>
+          <div className="flex gap-8 text-[12px] text-muted-foreground">
+            <button onClick={() => navigate("/marketplace")} className="hover:text-foreground transition-colors">Shop</button>
+            <button onClick={() => navigate("/sell")} className="hover:text-foreground transition-colors">Sell</button>
+            <button onClick={() => navigate("/support")} className="hover:text-foreground transition-colors">Support</button>
+            <button onClick={() => navigate("/faq")} className="hover:text-foreground transition-colors">FAQ</button>
+          </div>
         </div>
       </footer>
     </div>
