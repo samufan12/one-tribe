@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Grid, List, Search, Heart, MessageCircle, Lock, ChevronDown } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -14,38 +13,23 @@ export const Marketplace = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || "");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
 
   const handleAuthRequired = (action: string) => {
     toast.error(`Please sign in to ${action}`, {
-      action: {
-        label: "Sign In",
-        onClick: () => navigate("/auth"),
-      },
+      action: { label: "Sign In", onClick: () => navigate("/auth") },
     });
   };
 
   const handleLike = (productId: string) => {
-    if (!user) {
-      handleAuthRequired("like items");
-      return;
-    }
+    if (!user) { handleAuthRequired("save items"); return; }
     toggleLike(productId);
   };
 
-  const handleMessage = () => {
-    if (!user) {
-      handleAuthRequired("contact sellers");
-      return;
-    }
-    navigate("/messages");
-  };
-
-  const allMarketplaceCategories = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
-  const categories = allMarketplaceCategories.filter((c) => {
+  const allCats = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
+  const categories = allCats.filter((c) => {
     if (c === "Home & Decor" && !featureFlags.showCategoryHomeDecor) return false;
     if (c === "Jewelry" && !featureFlags.showCategoryJewelry) return false;
     if (c === "Men" && !featureFlags.showTraditionalWearMens) return false;
@@ -53,213 +37,162 @@ export const Marketplace = () => {
     return true;
   });
 
-  // Sync URL search param with state
   useEffect(() => {
     const urlSearch = searchParams.get('search') || "";
-    if (urlSearch !== searchTerm) {
-      setSearchTerm(urlSearch);
-    }
+    if (urlSearch !== searchTerm) setSearchTerm(urlSearch);
   }, [searchParams]);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    const t = setTimeout(() => {
       fetchProducts(searchTerm, selectedCategory);
-      // Update URL when search changes
-      if (searchTerm) {
-        setSearchParams({ search: searchTerm });
-      } else {
-        setSearchParams({});
-      }
+      if (searchTerm) setSearchParams({ search: searchTerm });
+      else setSearchParams({});
     }, 300);
-    return () => clearTimeout(timeoutId);
+    return () => clearTimeout(t);
   }, [searchTerm, selectedCategory]);
 
-  const getTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+  const getTimeAgo = (d: string) => {
+    const date = new Date(d); const now = new Date();
+    const h = Math.floor((now.getTime() - date.getTime()) / 3.6e6);
+    if (h < 1) return "Just now";
+    if (h < 24) return `${h}h`;
+    if (h < 168) return `${Math.floor(h / 24)}d`;
     return format(date, 'MMM d');
   };
 
-  const getConditionColor = (condition: string) => {
-    switch (condition?.toLowerCase()) {
-      case 'new': return 'bg-green-100 text-green-800';
-      case 'like new': return 'bg-blue-100 text-blue-800';
-      case 'good': return 'bg-yellow-100 text-yellow-800';
-      case 'fair': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-muted text-muted-foreground';
-    }
-  };
-
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
-      {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Marketplace</h1>
-        <p className="text-sm text-muted-foreground mt-1">Curated finds from the global Habesha community.</p>
-      </div>
-
-      {/* Category Pills - segmented control feel */}
-      <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-all duration-200 ease-spring ${
-              selectedCategory === cat
-                ? 'bg-foreground text-background shadow-soft'
-                : 'bg-secondary text-foreground/80 hover:text-foreground hover:bg-secondary/70'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Filters Bar */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-4 flex-wrap">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search items..."
-              className="pl-9 pr-4 py-2 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20 w-48"
-            />
-          </div>
-
-          {/* Category Filter */}
-          <div className="relative">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="appearance-none px-4 py-2 pr-10 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={16} />
-          </div>
-
-          {/* Sort */}
-          <div className="relative">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none px-4 py-2 pr-10 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
-            >
-              <option value="newest">Newest</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="popular">Most Popular</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={16} />
-          </div>
-        </div>
-
-        {/* View Mode & Results Count */}
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">
-            {loading ? 'Loading...' : `${products.length} items`}
-          </span>
-          <div className="flex items-center border border-border rounded-md overflow-hidden">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 ${viewMode === 'grid' ? 'bg-foreground text-background' : 'bg-background text-foreground hover:bg-muted'}`}
-            >
-              <Grid size={18} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 ${viewMode === 'list' ? 'bg-foreground text-background' : 'bg-background text-foreground hover:bg-muted'}`}
-            >
-              <List size={18} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Products Grid */}
-      {loading ? (
-        <ProductSkeletonGrid count={12} listView={viewMode === 'list'} />
-      ) : products.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="w-24 h-24 mx-auto mb-4 rounded-lg overflow-hidden">
-            <img src={kemis1} alt="No products" className="w-full h-full object-cover opacity-50" />
-          </div>
-          <p className="text-muted-foreground text-lg">No items found</p>
-          <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters</p>
-        </div>
-      ) : (
-        <div className={`grid gap-4 ${
-          viewMode === 'grid' 
-            ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' 
-            : 'grid-cols-1'
-        }`}>
-          {products.map((product) => (
-            <div
-              key={product.id}
-              onClick={() => navigate(`/product/${product.id}`)}
-              className={`group cursor-pointer ${
-                viewMode === 'list' ? 'flex gap-4 p-3 rounded-2xl hover:bg-secondary/50 transition-colors' : ''
-              }`}
-            >
-              {/* Image */}
-              <div className={`relative overflow-hidden bg-secondary rounded-2xl ${
-                viewMode === 'list' ? 'w-40 h-40 shrink-0' : 'aspect-square mb-3'
-              }`}>
-                <img
-                  src={product.images?.[0] || kemis1}
-                  alt={product.title}
-                  className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-spring"
-                  loading="lazy"
-                />
-
-                {/* Like Button */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleLike(product.id); }}
-                  className="absolute top-2.5 right-2.5 p-2 bg-background/80 backdrop-blur-md rounded-full hover:bg-background transition-all opacity-0 group-hover:opacity-100"
-                >
-                  <Heart
-                    size={15}
-                    className={product.is_liked ? "fill-primary text-primary" : "text-foreground"}
-                  />
-                </button>
-              </div>
-
-              {/* Info */}
-              <div className={viewMode === 'list' ? 'flex-1' : ''}>
-                <p className="text-[11px] text-muted-foreground uppercase tracking-wide truncate">{product.category}</p>
-                <h3 className="font-medium text-foreground text-sm line-clamp-1 mt-0.5">
-                  {product.title}
-                </h3>
-                <div className="flex items-center justify-between mt-1">
-                  <p className="font-semibold text-foreground text-sm">${product.price}</p>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleMessage(); }}
-                    className="p-1 text-muted-foreground hover:text-foreground transition-colors relative"
-                    title={user ? "Message seller" : "Sign in to message"}
-                  >
-                    <MessageCircle size={14} />
-                    {!user && <Lock size={9} className="absolute -bottom-0.5 -right-0.5" />}
-                  </button>
-                </div>
-                <p className="text-[11px] text-muted-foreground mt-1">
-                  {product.location} · {getTimeAgo(product.created_at)}
-                </p>
-              </div>
+    <div>
+      {/* Editorial masthead */}
+      <section className="border-b border-border/60">
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-10 pt-16 pb-10">
+          <div className="flex items-baseline justify-between gap-6">
+            <div>
+              <p className="text-eyebrow text-muted-foreground mb-3">Vol. 01 — The Marketplace</p>
+              <h1
+                className="font-semibold tracking-[-0.04em] leading-[0.95]"
+                style={{ fontSize: "clamp(3rem, 7vw, 6rem)" }}
+              >
+                Everything,<br />
+                <span className="italic font-light text-muted-foreground">curated.</span>
+              </h1>
             </div>
-          ))}
+            <div className="hidden md:block max-w-xs text-right">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {loading ? "Loading the collection…" : (
+                  <><span className="text-foreground font-medium">{products.length}</span> objects from the diaspora, listed by hand.</>
+                )}
+              </p>
+            </div>
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* Sticky filter bar */}
+      <div className="sticky top-14 z-30 bg-background/85 backdrop-blur-xl border-b border-border/60">
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-10 py-4 flex items-center gap-6 overflow-x-auto scrollbar-hide">
+          {/* Categories as editorial tabs */}
+          <div className="flex items-center gap-5 shrink-0">
+            {categories.map((cat) => {
+              const active = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`relative text-[13px] tracking-tight whitespace-nowrap transition-colors duration-200 ${
+                    active ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {cat}
+                  {active && <span className="absolute -bottom-[17px] left-0 right-0 h-px bg-foreground" />}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="hidden md:block h-5 w-px bg-border ml-auto" />
+
+          {/* Search inline */}
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search the archive"
+            className="hidden md:block bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none border-b border-transparent focus:border-foreground transition-colors w-48 pb-0.5"
+          />
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="bg-transparent text-[13px] text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
+          >
+            <option value="newest">Newest</option>
+            <option value="price-low">Price ↑</option>
+            <option value="price-high">Price ↓</option>
+            <option value="popular">Most loved</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Editorial grid */}
+      <section className="max-w-[1600px] mx-auto px-6 sm:px-10 py-12">
+        {loading ? (
+          <ProductSkeletonGrid count={12} />
+        ) : products.length === 0 ? (
+          <div className="text-center py-32">
+            <p className="text-eyebrow text-muted-foreground mb-3">No results</p>
+            <h2 className="text-3xl font-semibold tracking-tight">Nothing matches — yet.</h2>
+            <p className="text-muted-foreground mt-3">Try a different category or word.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-14">
+            {products.map((product, idx) => {
+              // Asymmetric: every 7th item spans 2 columns, taller
+              const isFeature = idx % 7 === 3;
+              return (
+                <article
+                  key={product.id}
+                  onClick={() => navigate(`/product/${product.id}`)}
+                  className={`group cursor-pointer ${isFeature ? "md:col-span-2 md:row-span-2" : ""}`}
+                >
+                  <div className={`relative overflow-hidden bg-secondary ${isFeature ? "aspect-[4/5]" : "aspect-[4/5]"} rounded-sm`}>
+                    <img
+                      src={product.images?.[0] || kemis1}
+                      alt={product.title}
+                      className="w-full h-full object-cover transition-transform duration-[1.2s] ease-spring group-hover:scale-[1.06]"
+                      loading="lazy"
+                    />
+                    {/* Hover veil with editorial overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleLike(product.id); }}
+                      className="absolute top-4 right-4 text-[11px] tracking-wide uppercase text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:underline underline-offset-4"
+                    >
+                      {product.is_liked ? "Saved" : "Save"}
+                    </button>
+                    <span className="absolute bottom-4 left-4 text-[10px] tracking-widest uppercase text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      View →
+                    </span>
+                  </div>
+
+                  <div className="mt-4 flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-1">{product.category}</p>
+                      <h3 className={`text-foreground tracking-tight truncate ${isFeature ? "text-xl font-medium" : "text-[15px] font-normal"}`}>
+                        {product.title}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground mt-1.5">
+                        {product.location} · {getTimeAgo(product.created_at)}
+                      </p>
+                    </div>
+                    <p className="text-[15px] font-medium tracking-tight text-foreground shrink-0 tabular-nums">
+                      ${product.price}
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 };

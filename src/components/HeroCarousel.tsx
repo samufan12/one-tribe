@@ -1,131 +1,82 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import landingDress from "@/assets/landing-dress.jpg";
 import landingCoffee from "@/assets/landing-coffee.jpg";
 import landingGabi from "@/assets/landing-gabi.jpg";
 
 interface Slide {
-  id: number;
-  subtitle: string;
-  title: string;
-  description: string;
-  cta: string;
-  href: string;
-  image: string;
+  id: number; eyebrow: string; title: string; italic: string; description: string;
+  cta: string; href: string; image: string;
 }
 
 const slides: Slide[] = [
-  {
-    id: 1,
-    subtitle: "The Global Habesha Marketplace",
-    title: "Shop the diaspora.",
-    description: "Authentic goods. Curated by community.",
-    cta: "Shop now",
-    href: "/marketplace",
-    image: landingDress,
-  },
-  {
-    id: 2,
-    subtitle: "Connecting communities worldwide",
-    title: "Ethiopian. Eritrean.",
-    description: "One marketplace. One tribe.",
-    cta: "Explore",
-    href: "/marketplace",
-    image: landingGabi,
-  },
-  {
-    id: 3,
-    subtitle: "From our homes to yours",
-    title: "Authentic Habesha goods.",
-    description: "Coffee, textiles, and craft from trusted sellers.",
-    cta: "Discover",
-    href: "/marketplace?category=coffee",
-    image: landingCoffee,
-  },
+  { id: 1, eyebrow: "Vol. 01 — The Marketplace", title: "Shop the", italic: "diaspora.", description: "Authentic goods from trusted sellers across the world.", cta: "Enter the marketplace", href: "/marketplace", image: landingDress },
+  { id: 2, eyebrow: "Vol. 02 — One Tribe", title: "Ethiopian.", italic: "Eritrean.", description: "One marketplace, woven from many threads.", cta: "Browse the collection", href: "/marketplace", image: landingGabi },
+  { id: 3, eyebrow: "Vol. 03 — From our home", title: "Coffee, textiles,", italic: "ceremony.", description: "Pieces with provenance, listed by hand.", cta: "Discover", href: "/marketplace?category=coffee", image: landingCoffee },
 ];
 
 const HeroCarousel = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [current, setCurrent] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(timer);
+    const t = setInterval(() => setCurrent((p) => (p + 1) % slides.length), 7000);
+    return () => clearInterval(t);
   }, []);
 
-  const goToSlide = (index: number) => setCurrentSlide(index);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-
   return (
-    <div className="px-4 sm:px-6 pt-4">
-      <div className="relative w-full max-w-[1400px] mx-auto h-[460px] md:h-[600px] overflow-hidden bg-secondary rounded-[28px] shadow-soft-lg">
-        {slides.map((slide, index) => (
+    <section className="relative">
+      <div className="relative w-full h-[85vh] min-h-[600px] overflow-hidden bg-secondary">
+        {slides.map((slide, i) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-spring ${
-              index === currentSlide ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+            className={`absolute inset-0 transition-opacity duration-[1400ms] ease-spring ${i === current ? "opacity-100" : "opacity-0 pointer-events-none"}`}
           >
             <div
-              className="absolute inset-0 bg-cover bg-center scale-105"
-              style={{ backgroundImage: `url(${slide.image})` }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
-            </div>
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${slide.image})`, transform: i === current ? "scale(1.04)" : "scale(1)", transition: "transform 7s ease-out" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
 
-            <div className="relative z-10 h-full flex flex-col items-center justify-end text-center px-6 pb-16 md:pb-20">
-              <p className="text-eyebrow text-white/90 mb-3">
-                {slide.subtitle}
-              </p>
-              <h2 className="text-display text-white mb-3 max-w-3xl">
-                {slide.title}
-              </h2>
-              <p className="text-base md:text-lg text-white/80 mb-8 max-w-xl font-normal">
+            <div className="relative h-full max-w-[1600px] mx-auto px-6 sm:px-10 flex flex-col justify-end pb-20 md:pb-28">
+              <p className="text-eyebrow text-white/80 mb-5">{slide.eyebrow}</p>
+              <h1
+                className="text-white font-semibold tracking-[-0.04em] leading-[0.95] max-w-5xl"
+                style={{ fontSize: "clamp(3rem, 9vw, 8rem)" }}
+              >
+                {slide.title} <span className="italic font-light">{slide.italic}</span>
+              </h1>
+              <p className="mt-6 text-white/80 text-base md:text-lg max-w-md leading-relaxed">
                 {slide.description}
               </p>
-              <button
-                onClick={() => navigate(slide.href)}
-                className="px-7 py-3 bg-white text-foreground font-medium text-sm rounded-full hover:bg-white/90 active:scale-[0.98] transition-all duration-200 ease-spring shadow-soft"
-              >
-                {slide.cta}
-              </button>
+              <div className="mt-10 flex items-center gap-6">
+                <button
+                  onClick={() => navigate(slide.href)}
+                  className="px-7 h-12 bg-white text-foreground text-sm font-medium rounded-full hover:bg-white/90 active:scale-[0.98] transition-all duration-200 ease-spring"
+                >
+                  {slide.cta}
+                </button>
+                <span className="text-[11px] tracking-[0.2em] uppercase text-white/60 tabular-nums">
+                  {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+                </span>
+              </div>
             </div>
           </div>
         ))}
 
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all z-20"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft size={22} />
-        </button>
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all z-20"
-          aria-label="Next slide"
-        >
-          <ChevronRight size={22} />
-        </button>
-
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
-          {slides.map((_, index) => (
+        {/* Slide indicators — minimal */}
+        <div className="absolute bottom-10 right-6 sm:right-10 flex items-center gap-1 z-20">
+          {slides.map((_, i) => (
             <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`h-1.5 rounded-full transition-all duration-300 ease-spring ${
-                index === currentSlide ? "bg-white w-6" : "bg-white/40 w-1.5 hover:bg-white/60"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`h-px transition-all duration-500 ease-spring ${i === current ? "bg-white w-12" : "bg-white/40 w-6 hover:bg-white/70"}`}
+              aria-label={`Slide ${i + 1}`}
             />
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
