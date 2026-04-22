@@ -50,6 +50,96 @@ const Reveal = ({
   );
 };
 
+/* ----- cinematic scroll progress hook -----
+   Returns 0 → 1 as element travels through viewport.
+   0 = just entering bottom, 0.5 = centered, 1 = just leaving top. */
+const useScrollProgress = <T extends HTMLElement>() => {
+  const ref = useRef<T | null>(null);
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      // p=0 when top of el at bottom of viewport, p=1 when bottom of el at top
+      const total = rect.height + vh;
+      const passed = vh - rect.top;
+      const p = Math.min(1, Math.max(0, passed / total));
+      setProgress(p);
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+  return { ref, progress };
+};
+
+/* Cinematic section: crossfades + subtle vertical drift as it passes through.
+   Creates the feeling of one continuous editorial reel. */
+const Cinematic = ({
+  children,
+  className = "",
+  intensity = 1,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  intensity?: number;
+}) => {
+  const { ref, progress } = useScrollProgress<HTMLDivElement>();
+  // bell curve: peak opacity/position at p=0.5
+  const bell = 1 - Math.pow((progress - 0.5) * 2, 2); // 0 at edges, 1 at center
+  const opacity = 0.35 + 0.65 * Math.max(0, bell);
+  const translateY = (0.5 - progress) * 60 * intensity; // drift up as we scroll
+  const scale = 0.97 + 0.03 * Math.max(0, bell);
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity,
+        transform: `translate3d(0, ${translateY}px, 0) scale(${scale})`,
+        willChange: "transform, opacity",
+      }}
+      className={className}
+    >
+      {children}
+    </div>
+  );
+};
+
+/* Parallax layer — moves at a fraction of scroll speed within its parent */
+const ParallaxLayer = ({
+  children,
+  speed = 0.2,
+  className = "",
+}: {
+  children: React.ReactNode;
+  speed?: number;
+  className?: string;
+}) => {
+  const { ref, progress } = useScrollProgress<HTMLDivElement>();
+  const y = (progress - 0.5) * 200 * speed;
+  return (
+    <div
+      ref={ref}
+      style={{ transform: `translate3d(0, ${y}px, 0)`, willChange: "transform" }}
+      className={className}
+    >
+      {children}
+    </div>
+  );
+};
+
 const Landing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
