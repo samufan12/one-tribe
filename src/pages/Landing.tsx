@@ -301,36 +301,38 @@ const Landing = () => {
       </section>
 
       {/* ============ MANIFESTO ============ */}
-      <section className="py-32 md:py-44 px-6 lg:px-10">
-        <div className="max-w-[1200px] mx-auto grid md:grid-cols-12 gap-10">
-          <div className="md:col-span-3">
-            <Reveal>
-              <p className="text-eyebrow text-muted-foreground sticky top-28">A Note</p>
-            </Reveal>
-          </div>
-          <div className="md:col-span-9">
-            <Reveal delay={120}>
-              <p
-                className="font-light tracking-[-0.025em] leading-[1.15]"
-                style={{ fontSize: "clamp(1.75rem, 3.6vw, 3.25rem)" }}
-              >
-                We started OneTribe because the things that make us
-                <span className="text-muted-foreground"> — the cloth, the coffee, the way a kitchen smells on a Sunday — </span>
-                shouldn't disappear because we moved.
-              </p>
-            </Reveal>
-            <Reveal delay={260}>
-              <div className="mt-10 flex items-center gap-4 text-[13px] text-muted-foreground">
-                <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center text-[12px] font-semibold">OT</div>
-                <div>
-                  <p className="text-foreground font-medium">The OneTribe team</p>
-                  <p>Founded between Addis Ababa & Washington, D.C.</p>
+      <Cinematic intensity={0.6}>
+        <section className="py-32 md:py-44 px-6 lg:px-10">
+          <div className="max-w-[1200px] mx-auto grid md:grid-cols-12 gap-10">
+            <div className="md:col-span-3">
+              <Reveal>
+                <p className="text-eyebrow text-muted-foreground sticky top-28">A Note</p>
+              </Reveal>
+            </div>
+            <div className="md:col-span-9">
+              <Reveal delay={120}>
+                <p
+                  className="font-light tracking-[-0.025em] leading-[1.15]"
+                  style={{ fontSize: "clamp(1.75rem, 3.6vw, 3.25rem)" }}
+                >
+                  We started OneTribe because the things that make us
+                  <span className="text-muted-foreground"> — the cloth, the coffee, the way a kitchen smells on a Sunday — </span>
+                  shouldn't disappear because we moved.
+                </p>
+              </Reveal>
+              <Reveal delay={260}>
+                <div className="mt-10 flex items-center gap-4 text-[13px] text-muted-foreground">
+                  <div className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center text-[12px] font-semibold">OT</div>
+                  <div>
+                    <p className="text-foreground font-medium">The OneTribe team</p>
+                    <p>Founded between Addis Ababa & Washington, D.C.</p>
+                  </div>
                 </div>
-              </div>
-            </Reveal>
+              </Reveal>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </Cinematic>
 
       {/* ============ CHAPTER SECTIONS ============ */}
       {chapters.map((c, idx) => (
