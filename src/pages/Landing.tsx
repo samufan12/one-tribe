@@ -505,38 +505,40 @@ const Landing = () => {
       </Cinematic>
 
       {/* ============ CLOSING CTA ============ */}
-      <section className="py-32 md:py-44 px-6 lg:px-10 text-center">
-        <div className="max-w-[1100px] mx-auto">
-          <Reveal>
-            <p className="text-eyebrow text-primary mb-8">Be part of it</p>
-          </Reveal>
-          <Reveal delay={120}>
-            <h2
-              className="font-semibold tracking-[-0.045em] leading-[0.95] mb-10"
-              style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}
-            >
-              The tribe is<br />
-              <span className="italic font-light">global</span>.
-            </h2>
-          </Reveal>
-          <Reveal delay={240}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={() => navigate("/auth")}
-                className="px-8 h-13 py-4 rounded-full bg-foreground text-background text-[14px] font-medium hover:opacity-90 active:scale-[0.97] transition-all ease-spring"
+      <Cinematic intensity={0.8}>
+        <section className="py-32 md:py-44 px-6 lg:px-10 text-center">
+          <div className="max-w-[1100px] mx-auto">
+            <Reveal>
+              <p className="text-eyebrow text-primary mb-8">Be part of it</p>
+            </Reveal>
+            <Reveal delay={120}>
+              <h2
+                className="font-semibold tracking-[-0.045em] leading-[0.95] mb-10"
+                style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}
               >
-                Create your account
-              </button>
-              <button
-                onClick={() => navigate("/marketplace")}
-                className="px-8 py-4 text-[14px] font-medium text-foreground/70 hover:text-foreground transition-colors"
-              >
-                Browse first →
-              </button>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+                The tribe is<br />
+                <span className="italic font-light">global</span>.
+              </h2>
+            </Reveal>
+            <Reveal delay={240}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button
+                  onClick={() => navigate("/auth")}
+                  className="px-8 h-13 py-4 rounded-full bg-foreground text-background text-[14px] font-medium hover:opacity-90 active:scale-[0.97] transition-all ease-spring"
+                >
+                  Create your account
+                </button>
+                <button
+                  onClick={() => navigate("/marketplace")}
+                  className="px-8 py-4 text-[14px] font-medium text-foreground/70 hover:text-foreground transition-colors"
+                >
+                  Browse first →
+                </button>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      </Cinematic>
 
       {/* ============ FOOTER ============ */}
       <footer className="border-t border-border/60 py-12 px-6 lg:px-10">
