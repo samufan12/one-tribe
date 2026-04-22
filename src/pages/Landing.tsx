@@ -334,161 +334,173 @@ const Landing = () => {
 
       {/* ============ CHAPTER SECTIONS ============ */}
       {chapters.map((c, idx) => (
-        <section key={c.n} className="py-20 md:py-28 px-6 lg:px-10">
-          <div className="max-w-[1400px] mx-auto">
-            <div
-              className={`grid md:grid-cols-12 gap-8 md:gap-14 items-center ${
-                idx % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""
-              }`}
-            >
-              {/* image */}
-              <Reveal className="md:col-span-7">
-                <div className="relative group">
-                  <div className="aspect-[4/5] md:aspect-[5/4] overflow-hidden rounded-[2rem] bg-muted">
-                    <img
-                      src={c.image}
-                      alt={c.title}
-                      className="w-full h-full object-cover transition-transform duration-[1400ms] ease-spring group-hover:scale-[1.04]"
-                    />
+        <Cinematic key={c.n} intensity={0.8}>
+          <section className="py-20 md:py-28 px-6 lg:px-10">
+            <div className="max-w-[1400px] mx-auto">
+              <div
+                className={`grid md:grid-cols-12 gap-8 md:gap-14 items-center ${
+                  idx % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""
+                }`}
+              >
+                {/* image with parallax depth */}
+                <Reveal className="md:col-span-7">
+                  <div className="relative group">
+                    <div className="aspect-[4/5] md:aspect-[5/4] overflow-hidden rounded-[2rem] bg-muted">
+                      <ParallaxLayer speed={0.35} className="w-full h-full">
+                        <img
+                          src={c.image}
+                          alt={c.title}
+                          className="w-full h-[115%] object-cover -mt-[7%] transition-transform duration-[1400ms] ease-spring group-hover:scale-[1.04]"
+                        />
+                      </ParallaxLayer>
+                    </div>
+                    <div className="absolute -top-4 -left-4 bg-background text-foreground text-[11px] tracking-[0.2em] uppercase px-4 py-2 rounded-full border border-border shadow-soft">
+                      {c.tag}
+                    </div>
                   </div>
-                  <div className="absolute -top-4 -left-4 bg-background text-foreground text-[11px] tracking-[0.2em] uppercase px-4 py-2 rounded-full border border-border shadow-soft">
-                    {c.tag}
-                  </div>
-                </div>
-              </Reveal>
+                </Reveal>
 
-              {/* text */}
-              <Reveal delay={150} className="md:col-span-5">
-                <div className="flex items-baseline gap-4 mb-6">
-                  <span className="text-[clamp(3rem,6vw,5rem)] font-light text-primary tracking-tighter leading-none">
-                    {c.n}
-                  </span>
-                  <span className="text-eyebrow text-muted-foreground">{c.eyebrow}</span>
-                </div>
-                <h3
-                  className="font-semibold tracking-[-0.03em] leading-[1.05] mb-6"
-                  style={{ fontSize: "clamp(1.875rem, 3.4vw, 3rem)" }}
-                >
-                  {c.title}
-                </h3>
-                <p className="text-[15px] md:text-base text-muted-foreground leading-relaxed mb-8 max-w-md">
-                  {c.copy}
-                </p>
-                <button
-                  onClick={() => navigate("/marketplace")}
-                  className="group inline-flex items-center gap-2 text-[14px] font-medium border-b border-foreground/30 hover:border-foreground pb-1 transition-colors"
-                >
-                  Shop the chapter
-                  <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
-                </button>
-              </Reveal>
+                {/* text */}
+                <Reveal delay={150} className="md:col-span-5">
+                  <div className="flex items-baseline gap-4 mb-6">
+                    <span className="text-[clamp(3rem,6vw,5rem)] font-light text-primary tracking-tighter leading-none">
+                      {c.n}
+                    </span>
+                    <span className="text-eyebrow text-muted-foreground">{c.eyebrow}</span>
+                  </div>
+                  <h3
+                    className="font-semibold tracking-[-0.03em] leading-[1.05] mb-6"
+                    style={{ fontSize: "clamp(1.875rem, 3.4vw, 3rem)" }}
+                  >
+                    {c.title}
+                  </h3>
+                  <p className="text-[15px] md:text-base text-muted-foreground leading-relaxed mb-8 max-w-md">
+                    {c.copy}
+                  </p>
+                  <button
+                    onClick={() => navigate("/marketplace")}
+                    className="group inline-flex items-center gap-2 text-[14px] font-medium border-b border-foreground/30 hover:border-foreground pb-1 transition-colors"
+                  >
+                    Shop the chapter
+                    <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+                  </button>
+                </Reveal>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </Cinematic>
       ))}
 
       {/* ============ MOSAIC GALLERY ============ */}
-      <section className="py-28 md:py-36 px-6 lg:px-10">
-        <div className="max-w-[1400px] mx-auto">
-          <Reveal>
-            <div className="flex items-end justify-between mb-12 md:mb-16 flex-wrap gap-4">
-              <div>
-                <p className="text-eyebrow text-muted-foreground mb-3">The Index</p>
-                <h2
-                  className="font-semibold tracking-[-0.035em] leading-[0.95]"
-                  style={{ fontSize: "clamp(2.25rem, 5vw, 4rem)" }}
+      <Cinematic intensity={0.6}>
+        <section className="py-28 md:py-36 px-6 lg:px-10">
+          <div className="max-w-[1400px] mx-auto">
+            <Reveal>
+              <div className="flex items-end justify-between mb-12 md:mb-16 flex-wrap gap-4">
+                <div>
+                  <p className="text-eyebrow text-muted-foreground mb-3">The Index</p>
+                  <h2
+                    className="font-semibold tracking-[-0.035em] leading-[0.95]"
+                    style={{ fontSize: "clamp(2.25rem, 5vw, 4rem)" }}
+                  >
+                    A look<br />inside.
+                  </h2>
+                </div>
+                <button
+                  onClick={() => navigate("/marketplace")}
+                  className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  A look<br />inside.
-                </h2>
+                  See everything →
+                </button>
               </div>
-              <button
-                onClick={() => navigate("/marketplace")}
-                className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                See everything →
-              </button>
-            </div>
-          </Reveal>
+            </Reveal>
 
-          <div className="grid grid-cols-12 gap-3 md:gap-5">
-            {[
-              { src: telsum, span: "col-span-6 md:col-span-4 row-span-2 aspect-[3/4]", label: "Telsum" },
-              { src: netela, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Netela" },
-              { src: mesob, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Mesob" },
-              { src: landingGabi, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Gabi" },
-              { src: saintGeorge, span: "col-span-12 md:col-span-4 aspect-[4/3]", label: "Iconography" },
-            ].map((it, i) => (
-              <Reveal key={it.label} delay={i * 80} className={it.span}>
-                <div className="group relative w-full h-full overflow-hidden rounded-2xl md:rounded-[1.75rem] bg-muted">
-                  <img
-                    src={it.src}
-                    alt={it.label}
-                    className="w-full h-full object-cover transition-transform duration-[1200ms] ease-spring group-hover:scale-[1.06]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="absolute bottom-4 left-4 text-white text-[12px] tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 ease-spring">
-                    {it.label}
+            <div className="grid grid-cols-12 gap-3 md:gap-5">
+              {[
+                { src: telsum, span: "col-span-6 md:col-span-4 row-span-2 aspect-[3/4]", label: "Telsum", speed: 0.25 },
+                { src: netela, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Netela", speed: 0.4 },
+                { src: mesob, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Mesob", speed: 0.15 },
+                { src: landingGabi, span: "col-span-6 md:col-span-4 aspect-[4/3]", label: "Gabi", speed: 0.35 },
+                { src: saintGeorge, span: "col-span-12 md:col-span-4 aspect-[4/3]", label: "Iconography", speed: 0.2 },
+              ].map((it, i) => (
+                <Reveal key={it.label} delay={i * 80} className={it.span}>
+                  <div className="group relative w-full h-full overflow-hidden rounded-2xl md:rounded-[1.75rem] bg-muted">
+                    <ParallaxLayer speed={it.speed} className="w-full h-full">
+                      <img
+                        src={it.src}
+                        alt={it.label}
+                        className="w-full h-[120%] -mt-[10%] object-cover transition-transform duration-[1200ms] ease-spring group-hover:scale-[1.06]"
+                      />
+                    </ParallaxLayer>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute bottom-4 left-4 text-white text-[12px] tracking-[0.2em] uppercase opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 ease-spring">
+                      {it.label}
+                    </div>
                   </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      </Cinematic>
+
+      {/* ============ NUMBERS — editorial stats, no boxes ============ */}
+      <Cinematic intensity={0.7}>
+        <section className="py-28 md:py-36 px-6 lg:px-10 border-t border-border/60">
+          <div className="max-w-[1400px] mx-auto grid md:grid-cols-12 gap-10 md:gap-6">
+            {[
+              { k: "100%", v: "Authentic, makers verified" },
+              { k: "40+", v: "Cities served, growing weekly" },
+              { k: "5%", v: "Flat platform fee. No surprises." },
+            ].map((s, i) => (
+              <Reveal key={s.k} delay={i * 120} className="md:col-span-4">
+                <div className="border-t border-foreground/15 pt-8">
+                  <p
+                    className="font-semibold tracking-[-0.05em] leading-[0.9] mb-5"
+                    style={{ fontSize: "clamp(4rem, 9vw, 7.5rem)" }}
+                  >
+                    {s.k}
+                  </p>
+                  <p className="text-[15px] text-muted-foreground max-w-[18ch] leading-relaxed">
+                    {s.v}
+                  </p>
                 </div>
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ============ NUMBERS — editorial stats, no boxes ============ */}
-      <section className="py-28 md:py-36 px-6 lg:px-10 border-t border-border/60">
-        <div className="max-w-[1400px] mx-auto grid md:grid-cols-12 gap-10 md:gap-6">
-          {[
-            { k: "100%", v: "Authentic, makers verified" },
-            { k: "40+", v: "Cities served, growing weekly" },
-            { k: "5%", v: "Flat platform fee. No surprises." },
-          ].map((s, i) => (
-            <Reveal key={s.k} delay={i * 120} className="md:col-span-4">
-              <div className="border-t border-foreground/15 pt-8">
-                <p
-                  className="font-semibold tracking-[-0.05em] leading-[0.9] mb-5"
-                  style={{ fontSize: "clamp(4rem, 9vw, 7.5rem)" }}
-                >
-                  {s.k}
-                </p>
-                <p className="text-[15px] text-muted-foreground max-w-[18ch] leading-relaxed">
-                  {s.v}
-                </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+        </section>
+      </Cinematic>
 
       {/* ============ TESTIMONIAL — single, bold ============ */}
-      <section className="py-28 md:py-40 px-6 lg:px-10 bg-foreground text-background">
-        <div className="max-w-[1100px] mx-auto">
-          <Reveal>
-            <p className="text-eyebrow text-background/50 mb-10">In their words</p>
-          </Reveal>
-          <Reveal delay={120}>
-            <blockquote
-              className="font-light tracking-[-0.03em] leading-[1.1]"
-              style={{ fontSize: "clamp(2rem, 5vw, 4.25rem)" }}
-            >
-              <span className="text-background/40">“</span>
-              I found a kemis that looks exactly like the one my mother wore at her wedding.
-              I cried when it arrived.
-              <span className="text-background/40">”</span>
-            </blockquote>
-          </Reveal>
-          <Reveal delay={280}>
-            <div className="mt-12 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-full bg-background/15 flex items-center justify-center text-[13px] font-semibold">MT</div>
-              <div className="text-[14px]">
-                <p className="font-medium">Makda T.</p>
-                <p className="text-background/60">Buyer · Toronto</p>
+      <Cinematic intensity={0.9}>
+        <section className="py-28 md:py-40 px-6 lg:px-10 bg-foreground text-background">
+          <div className="max-w-[1100px] mx-auto">
+            <Reveal>
+              <p className="text-eyebrow text-background/50 mb-10">In their words</p>
+            </Reveal>
+            <Reveal delay={120}>
+              <blockquote
+                className="font-light tracking-[-0.03em] leading-[1.1]"
+                style={{ fontSize: "clamp(2rem, 5vw, 4.25rem)" }}
+              >
+                <span className="text-background/40">“</span>
+                I found a kemis that looks exactly like the one my mother wore at her wedding.
+                I cried when it arrived.
+                <span className="text-background/40">”</span>
+              </blockquote>
+            </Reveal>
+            <Reveal delay={280}>
+              <div className="mt-12 flex items-center gap-4">
+                <div className="w-11 h-11 rounded-full bg-background/15 flex items-center justify-center text-[13px] font-semibold">MT</div>
+                <div className="text-[14px]">
+                  <p className="font-medium">Makda T.</p>
+                  <p className="text-background/60">Buyer · Toronto</p>
+                </div>
               </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+            </Reveal>
+          </div>
+        </section>
+      </Cinematic>
 
       {/* ============ CLOSING CTA ============ */}
       <section className="py-32 md:py-44 px-6 lg:px-10 text-center">
