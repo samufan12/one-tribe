@@ -1,10 +1,26 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, Package, TrendingUp, Users } from 'lucide-react';
+import { BarChart3, Package, TrendingUp, Users, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const SellerTools = () => {
   const { profile, isSeller } = useUserRole();
+  const { user } = useAuth();
+  const [stripeAccountId, setStripeAccountId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('stripe_account_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => setStripeAccountId(data?.stripe_account_id ?? null));
+  }, [user?.id]);
 
   if (!isSeller()) {
     return (
@@ -43,6 +59,36 @@ export const SellerTools = () => {
           </CardHeader>
         </Card>
       )}
+
+      <Link
+        to="/seller-onboarding"
+        className={`block border rounded-sm p-6 transition-colors ${
+          stripeAccountId
+            ? 'border-border hover:border-foreground/40'
+            : 'border-primary/40 bg-primary/5 hover:border-primary'
+        }`}
+      >
+        <div className="flex items-start gap-4">
+          {stripeAccountId ? (
+            <CheckCircle2 className="text-primary mt-0.5 shrink-0" size={22} />
+          ) : (
+            <AlertCircle className="text-primary mt-0.5 shrink-0" size={22} />
+          )}
+          <div className="flex-1">
+            <h3 className="font-semibold tracking-tight">
+              {stripeAccountId ? 'Payouts connected' : 'Set up payouts'}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {stripeAccountId
+                ? 'Sales are paid out automatically to your bank account.'
+                : 'Connect your bank account to receive money from your sales.'}
+            </p>
+          </div>
+          <span className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
+            {stripeAccountId ? 'Manage →' : 'Start →'}
+          </span>
+        </div>
+      </Link>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
