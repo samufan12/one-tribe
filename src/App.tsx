@@ -68,6 +68,7 @@ const App = () => (
             <Route path="/storefront/:id" element={<StorefrontDetail />} />
             <Route path="/create-storefront" element={<CreateStorefrontPage />} />
             <Route path="/seller-onboarding" element={<SellerOnboarding />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
