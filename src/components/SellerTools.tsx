@@ -5,22 +5,93 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, Package, TrendingUp, Users, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { BarChart3, Package, TrendingUp, Users, CheckCircle2, AlertTriangle } from 'lucide-react';
+
+interface SellerOrder {
+  id: string;
+  product_id: string | null;
+  product_ids: string[];
+  amount_total: number | null;
+  seller_payout: number | null;
+  total: number;
+  status: string;
+  created_at: string;
+  product_title?: string;
+}
 
 export const SellerTools = () => {
   const { profile, isSeller } = useUserRole();
   const { user } = useAuth();
   const [stripeAccountId, setStripeAccountId] = useState<string | null>(null);
+  const [orders, setOrders] = useState<SellerOrder[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
   useEffect(() => {
     if (!user) return;
+
     supabase
       .from('profiles')
       .select('stripe_account_id')
       .eq('user_id', user.id)
       .maybeSingle()
       .then(({ data }) => setStripeAccountId(data?.stripe_account_id ?? null));
+
+    (async () => {
+      setLoadingOrders(true);
+      const { data: orderRows } = await supabase
+        .from('orders')
+        .select('id, product_id, product_ids, amount_total, seller_payout, total, status, created_at')
+        .eq('seller_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (!orderRows) {
+        setOrders([]);
+        setLoadingOrders(false);
+        return;
+      }
+
+      // Collect product ids and fetch titles (seller can read their own products via RLS)
+      const idSet = new Set<string>();
+      orderRows.forEach((o) => {
+        if (o.product_id) idSet.add(o.product_id);
+        (o.product_ids ?? []).forEach((pid: string) => pid && idSet.add(pid));
+      });
+
+      let titleMap = new Map<string, string>();
+      if (idSet.size > 0) {
+        const { data: products } = await supabase
+          .from('products')
+          .select('id, title')
+          .in('id', Array.from(idSet));
+        if (products) titleMap = new Map(products.map((p: any) => [p.id, p.title as string]));
+      }
+
+      setOrders(
+        orderRows.map((o) => {
+          const firstId = o.product_id ?? o.product_ids?.[0] ?? null;
+          const title = firstId ? titleMap.get(firstId) : undefined;
+          const extra = (o.product_ids?.length ?? 0) > 1 ? ` +${o.product_ids.length - 1} more` : '';
+          return { ...o, product_title: title ? `${title}${extra}` : 'Item' };
+        }) as SellerOrder[]
+      );
+      setLoadingOrders(false);
+    })();
   }, [user?.id]);
+
+  const totalEarnedCents = orders
+    .filter((o) => o.status === 'paid')
+    .reduce((sum, o) => sum + (o.seller_payout ?? 0), 0);
+  const totalEarned = totalEarnedCents / 100;
 
   if (!isSeller()) {
     return (
@@ -60,50 +131,56 @@ export const SellerTools = () => {
         </Card>
       )}
 
-      <Link
-        to="/seller-onboarding"
-        className={`block border rounded-sm p-6 transition-colors ${
-          stripeAccountId
-            ? 'border-border hover:border-foreground/40'
-            : 'border-primary/40 bg-primary/5 hover:border-primary'
-        }`}
-      >
-        <div className="flex items-start gap-4">
-          {stripeAccountId ? (
-            <CheckCircle2 className="text-primary mt-0.5 shrink-0" size={22} />
-          ) : (
-            <AlertCircle className="text-primary mt-0.5 shrink-0" size={22} />
-          )}
-          <div className="flex-1">
-            <h3 className="font-semibold tracking-tight">
-              {stripeAccountId ? 'Payouts connected' : 'Set up payouts'}
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {stripeAccountId
-                ? 'Sales are paid out automatically to your bank account.'
-                : 'Connect your bank account to receive money from your sales.'}
-            </p>
+      {/* Payouts status */}
+      {stripeAccountId ? (
+        <div className="flex items-center justify-between rounded-lg border border-green-600/30 bg-green-50 dark:bg-green-950/30 px-5 py-4">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="text-green-600 shrink-0" size={22} />
+            <div>
+              <p className="font-semibold text-green-900 dark:text-green-100">Payouts active</p>
+              <p className="text-xs text-green-800/80 dark:text-green-200/80">
+                Sales pay out automatically to your bank account.
+              </p>
+            </div>
           </div>
-          <span className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
-            {stripeAccountId ? 'Manage →' : 'Start →'}
-          </span>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/seller-onboarding">Manage</Link>
+          </Button>
         </div>
-      </Link>
+      ) : (
+        <div className="flex items-start justify-between gap-4 rounded-lg border border-yellow-500/40 bg-yellow-50 dark:bg-yellow-950/30 px-5 py-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="text-yellow-600 shrink-0 mt-0.5" size={22} />
+            <div>
+              <p className="font-semibold text-yellow-900 dark:text-yellow-100">
+                Set up payouts to receive money from your sales
+              </p>
+              <p className="text-xs text-yellow-800/80 dark:text-yellow-200/80 mt-1">
+                Connect your bank via Stripe — takes a couple of minutes.
+              </p>
+            </div>
+          </div>
+          <Button asChild className="shrink-0">
+            <Link to="/seller-onboarding">Set up payouts</Link>
+          </Button>
+        </div>
+      )}
 
+      {/* Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Earned</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$0</div>
+            <div className="text-2xl font-bold">${totalEarned.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
-              +0% from last month
+              From {orders.filter((o) => o.status === 'paid').length} paid {orders.filter((o) => o.status === 'paid').length === 1 ? 'order' : 'orders'}
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Listings</CardTitle>
@@ -111,25 +188,21 @@ export const SellerTools = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">
-              Items currently for sale
-            </p>
+            <p className="text-xs text-muted-foreground">Items currently for sale</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">Orders</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">
-              Total unique buyers
-            </p>
+            <div className="text-2xl font-bold">{orders.length}</div>
+            <p className="text-xs text-muted-foreground">All-time sales</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Performance</CardTitle>
@@ -137,39 +210,59 @@ export const SellerTools = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0%</div>
-            <p className="text-xs text-muted-foreground">
-              Response rate
-            </p>
+            <p className="text-xs text-muted-foreground">Response rate</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-muted-foreground py-8">
+      {/* Recent orders */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Orders</CardTitle>
+          <CardDescription>Your most recent sales and their payout status.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingOrders ? (
+            <p className="text-sm text-muted-foreground py-6 text-center">Loading orders…</p>
+          ) : orders.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-8 text-center">
               No orders yet. Start selling to see your orders here.
             </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-sm">
-              <p>• List a new item</p>
-              <p>• Update inventory</p>
-              <p>• View messages</p>
-              <p>• Check analytics</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Item</TableHead>
+                  <TableHead className="text-right">Payout</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {orders.map((o) => {
+                  const payout = o.seller_payout != null ? o.seller_payout / 100 : null;
+                  return (
+                    <TableRow key={o.id}>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {new Date(o.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="font-medium">{o.product_title}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {payout != null ? `$${payout.toFixed(2)}` : '—'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant={o.status === 'paid' ? 'default' : 'secondary'} className="capitalize">
+                          {o.status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
