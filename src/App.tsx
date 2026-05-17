@@ -31,6 +31,7 @@ import Storefronts from "./pages/Storefronts";
 import StorefrontDetail from "./pages/StorefrontDetail";
 import CreateStorefrontPage from "./pages/CreateStorefrontPage";
 import SellerOnboarding from "./pages/SellerOnboarding";
+import AdminDashboard from "./pages/AdminDashboard";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -67,6 +68,7 @@ const App = () => (
             <Route path="/storefront/:id" element={<StorefrontDetail />} />
             <Route path="/create-storefront" element={<CreateStorefrontPage />} />
             <Route path="/seller-onboarding" element={<SellerOnboarding />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
