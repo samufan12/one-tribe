@@ -16,13 +16,27 @@ const CartPage = () => {
     setIsCheckingOut(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-payment", {
-        body: { items: items.map((i) => ({ productId: i.id, productTitle: i.title, price: i.price, quantity: i.quantity })) },
+        body: {
+          items: items.map((i) => ({
+            productId: i.id,
+            productTitle: i.title,
+            price: i.price,
+            quantity: i.quantity,
+          })),
+        },
       });
-      if (error) throw error;
-      if (data?.url) { clearCart(); window.open(data.url, "_blank"); }
-    } catch {
-      toast.error("Failed to start checkout.");
-    } finally { setIsCheckingOut(false); }
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (data?.url) {
+        await clearCart();
+        window.location.href = data.url;
+        return;
+      }
+      throw new Error("No checkout URL returned");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to start checkout.");
+      setIsCheckingOut(false);
+    }
   };
 
   if (items.length === 0) {
@@ -99,19 +113,18 @@ const CartPage = () => {
           <p className="text-eyebrow text-muted-foreground mb-6">Summary</p>
           <dl className="space-y-3 text-sm">
             <div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd className="tabular-nums">${total.toFixed(2)}</dd></div>
-            <div className="flex justify-between"><dt className="text-muted-foreground">Platform fee (5%)</dt><dd className="tabular-nums">${(total * 0.05).toFixed(2)}</dd></div>
             <div className="flex justify-between"><dt className="text-muted-foreground">Shipping</dt><dd className="text-muted-foreground">Calculated next</dd></div>
           </dl>
           <div className="border-t border-border mt-6 pt-6 flex items-baseline justify-between">
             <span className="text-eyebrow text-muted-foreground">Total</span>
-            <span className="text-2xl font-medium tabular-nums tracking-tight">${(total * 1.05).toFixed(2)}</span>
+            <span className="text-2xl font-medium tabular-nums tracking-tight">${total.toFixed(2)}</span>
           </div>
           <button
             onClick={handleCheckout}
             disabled={isCheckingOut}
             className="mt-8 w-full h-14 bg-foreground text-background text-sm font-medium rounded-full hover:bg-foreground/90 active:scale-[0.99] transition-all duration-200 ease-spring disabled:opacity-60 inline-flex items-center justify-center"
           >
-            {isCheckingOut ? <Loader2 size={16} className="animate-spin" /> : `Checkout · $${(total * 1.05).toFixed(2)}`}
+            {isCheckingOut ? <Loader2 size={16} className="animate-spin" /> : `Checkout · $${total.toFixed(2)}`}
           </button>
           <p className="mt-4 text-[11px] text-muted-foreground text-center leading-relaxed">
             Secure payment · Buyer protection on every order

@@ -66,16 +66,29 @@ const ProductDetail = () => {
 
   const handleBuyNow = async () => {
     if (!product) return;
+    if (!user) {
+      toast.error("Please sign in to continue", {
+        action: { label: "Sign In", onClick: () => navigate("/auth") },
+      });
+      navigate("/auth");
+      return;
+    }
     setIsCheckingOut(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-payment", {
         body: { productId: product.id, productTitle: product.title, price: product.price, quantity: 1 },
       });
-      if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
-    } catch {
-      toast.error("Failed to start checkout.");
-    } finally { setIsCheckingOut(false); }
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+      throw new Error("No checkout URL returned");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to start checkout.");
+      setIsCheckingOut(false);
+    }
   };
 
   const handleShare = async () => {
@@ -152,7 +165,6 @@ const ProductDetail = () => {
             </h1>
             <div className="mt-8 flex items-baseline gap-3">
               <span className="text-3xl font-medium tracking-tight tabular-nums">${product.price}</span>
-              <span className="text-xs text-muted-foreground">+ ${(product.price * 0.05).toFixed(2)} fee</span>
             </div>
           </div>
 
@@ -160,9 +172,9 @@ const ProductDetail = () => {
             <button
               onClick={handleBuyNow}
               disabled={isCheckingOut}
-              className="w-full h-14 bg-foreground text-background text-sm font-medium tracking-tight rounded-full hover:bg-foreground/90 active:scale-[0.99] transition-all duration-200 ease-spring disabled:opacity-60"
+              className="w-full h-14 bg-foreground text-background text-sm font-medium tracking-tight rounded-full hover:bg-foreground/90 active:scale-[0.99] transition-all duration-200 ease-spring disabled:opacity-60 inline-flex items-center justify-center"
             >
-              {isCheckingOut ? "Processing…" : `Buy now · $${(product.price * 1.05).toFixed(2)}`}
+              {isCheckingOut ? <Loader2 size={16} className="animate-spin" /> : `Buy now · $${product.price.toFixed(2)}`}
             </button>
             <div className="grid grid-cols-3 gap-3">
               <button
