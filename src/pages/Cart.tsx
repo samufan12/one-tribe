@@ -16,13 +16,27 @@ const CartPage = () => {
     setIsCheckingOut(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-payment", {
-        body: { items: items.map((i) => ({ productId: i.id, productTitle: i.title, price: i.price, quantity: i.quantity })) },
+        body: {
+          items: items.map((i) => ({
+            productId: i.id,
+            productTitle: i.title,
+            price: i.price,
+            quantity: i.quantity,
+          })),
+        },
       });
-      if (error) throw error;
-      if (data?.url) { clearCart(); window.open(data.url, "_blank"); }
-    } catch {
-      toast.error("Failed to start checkout.");
-    } finally { setIsCheckingOut(false); }
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (data?.url) {
+        await clearCart();
+        window.location.href = data.url;
+        return;
+      }
+      throw new Error("No checkout URL returned");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to start checkout.");
+      setIsCheckingOut(false);
+    }
   };
 
   if (items.length === 0) {

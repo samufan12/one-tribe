@@ -66,16 +66,29 @@ const ProductDetail = () => {
 
   const handleBuyNow = async () => {
     if (!product) return;
+    if (!user) {
+      toast.error("Please sign in to continue", {
+        action: { label: "Sign In", onClick: () => navigate("/auth") },
+      });
+      navigate("/auth");
+      return;
+    }
     setIsCheckingOut(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-payment", {
         body: { productId: product.id, productTitle: product.title, price: product.price, quantity: 1 },
       });
-      if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
-    } catch {
-      toast.error("Failed to start checkout.");
-    } finally { setIsCheckingOut(false); }
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+      throw new Error("No checkout URL returned");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to start checkout.");
+      setIsCheckingOut(false);
+    }
   };
 
   const handleShare = async () => {
