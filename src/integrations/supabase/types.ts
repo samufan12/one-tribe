@@ -387,6 +387,7 @@ export type Database = {
           display_name: string | null
           id: string
           phone: string | null
+          rejection_reason: string | null
           stripe_account_id: string | null
           updated_at: string
           user_id: string
@@ -402,6 +403,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           phone?: string | null
+          rejection_reason?: string | null
           stripe_account_id?: string | null
           updated_at?: string
           user_id: string
@@ -417,6 +419,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           phone?: string | null
+          rejection_reason?: string | null
           stripe_account_id?: string | null
           updated_at?: string
           user_id?: string
@@ -507,6 +510,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_orders: {
+        Args: never
+        Returns: {
+          amount_total: number
+          buyer_id: string
+          created_at: string
+          id: string
+          product_id: string
+          product_ids: string[]
+          seller_id: string
+          status: string
+          total: number
+        }[]
+      }
+      admin_list_profiles: {
+        Args: never
+        Returns: {
+          business_name: string
+          created_at: string
+          display_name: string
+          rejection_reason: string
+          stripe_account_id: string
+          user_id: string
+          verification_status: string
+        }[]
+      }
+      approve_seller: { Args: { p_user_id: string }; Returns: boolean }
       assign_user_role: {
         Args: {
           new_role: Database["public"]["Enums"]["app_role"]
@@ -679,6 +709,10 @@ export type Database = {
       log_rate_limited_action: {
         Args: { p_action: string }
         Returns: undefined
+      }
+      reject_seller: {
+        Args: { p_reason: string; p_user_id: string }
+        Returns: boolean
       }
       remove_user_role: {
         Args: {
