@@ -31,6 +31,7 @@ import Storefronts from "./pages/Storefronts";
 import StorefrontDetail from "./pages/StorefrontDetail";
 import CreateStorefrontPage from "./pages/CreateStorefrontPage";
 import SellerOnboarding from "./pages/SellerOnboarding";
+import AdminDashboard from "./pages/AdminDashboard";
 const queryClient = new QueryClient();
 
 const App = () => (
