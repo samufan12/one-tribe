@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { Upload, DollarSign, Tag, Package, Camera, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProducts, CreateProductData } from "@/hooks/useProducts";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import kemis1 from "@/assets/kemis-1.jpg";
 import kemis2 from "@/assets/kemis-2.jpg";
@@ -10,6 +12,7 @@ import coffeeSet from "@/assets/coffee-set.jpg";
 export const SellItem = () => {
   const navigate = useNavigate();
   const { createProduct } = useProducts();
+  const { user } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -143,8 +146,26 @@ export const SellItem = () => {
       setSelectedImages([]);
       setImagePreviews([]);
       
-      // Navigate to marketplace
-      navigate('/marketplace');
+      // If seller hasn't set up payouts yet, route them to onboarding
+      let needsOnboarding = false;
+      if (user) {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('stripe_account_id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        needsOnboarding = !prof?.stripe_account_id;
+      }
+
+      if (needsOnboarding) {
+        toast({
+          title: "Listed! One more step.",
+          description: "Connect your bank account to receive payouts when it sells.",
+        });
+        navigate('/seller-onboarding');
+      } else {
+        navigate('/marketplace');
+      }
     }
     
     setLoading(false);
