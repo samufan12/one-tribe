@@ -8,7 +8,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PLATFORM_FEE_RATE = 0.05; // 5%
+const PLATFORM_FEE_RATE = 0.08; // 8% — taken from seller payout, not added to buyer price
 
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -39,6 +39,12 @@ serve(async (req) => {
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+  );
+
+  // Service role client for reading seller stripe_account_id (bypasses RLS on profiles)
+  const supabaseAdmin = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
   );
 
   try {
@@ -81,7 +87,6 @@ serve(async (req) => {
         );
       }
 
-      // Log the action
       await supabaseClient.rpc('log_rate_limited_action', { p_action: 'create_payment' });
     }
 
@@ -98,7 +103,6 @@ serve(async (req) => {
 
     const body = validation.data;
 
-    // Build line items from validated data
     let lineItems: { productId: string; productTitle: string; price: number; quantity: number }[];
 
     if (body.items && body.items.length > 0) {
@@ -114,18 +118,45 @@ serve(async (req) => {
 
     logStep("Line items parsed", { count: lineItems.length });
 
-    // Calculate subtotal and platform fee
+    // Calculate subtotal — fee is deducted from seller payout, not added to buyer total
     const subtotal = lineItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const platformFee = subtotal * PLATFORM_FEE_RATE;
-    const total = subtotal + platformFee;
+    const total = subtotal; // buyer only pays product price
 
     logStep("Fee calculated", { subtotal, platformFee, total });
 
-    let customerId: string | undefined;
+    // Look up product/seller info — Stripe Connect requires a single seller per session
+    const firstProductId = lineItems[0].productId;
+    const { data: productRow, error: productErr } = await supabaseAdmin
+      .from("products")
+      .select("user_id")
+      .eq("id", firstProductId)
+      .maybeSingle();
+
+    if (productErr || !productRow) {
+      logStep("Product lookup failed", { error: productErr?.message });
+      return new Response(
+        JSON.stringify({ error: "Product not found" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const sellerId = productRow.user_id as string;
+
+    const { data: sellerProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("stripe_account_id")
+      .eq("user_id", sellerId)
+      .maybeSingle();
+
+    const sellerStripeAccountId = sellerProfile?.stripe_account_id as string | null | undefined;
+    logStep("Seller resolved", { sellerId, hasStripeAccount: !!sellerStripeAccountId });
+
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
     });
 
+    let customerId: string | undefined;
     if (userEmail) {
       const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
       if (customers.data.length > 0) {
@@ -133,7 +164,7 @@ serve(async (req) => {
       }
     }
 
-    // Build Stripe line items
+    // Build Stripe line items — product prices only, no separate fee line
     const stripeLineItems = lineItems.map((item) => ({
       price_data: {
         currency: "usd",
@@ -146,22 +177,7 @@ serve(async (req) => {
       quantity: item.quantity,
     }));
 
-    // Add platform fee as a separate line item
-    stripeLineItems.push({
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: "Platform Fee (5%)",
-          metadata: { type: "platform_fee" },
-        },
-        unit_amount: Math.round(platformFee * 100),
-      },
-      quantity: 1,
-    });
-
-    const firstProductId = lineItems[0].productId;
-
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
       line_items: stripeLineItems,
@@ -174,8 +190,19 @@ serve(async (req) => {
         platform_fee: platformFee.toFixed(2),
         total: total.toFixed(2),
         buyer_id: userId || "",
+        seller_id: sellerId,
+        seller_onboarded: sellerStripeAccountId ? "true" : "false",
       },
-    });
+    };
+
+    if (sellerStripeAccountId) {
+      sessionParams.payment_intent_data = {
+        application_fee_amount: Math.round(subtotal * PLATFORM_FEE_RATE * 100),
+        transfer_data: { destination: sellerStripeAccountId },
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     logStep("Checkout session created", { sessionId: session.id });
 
