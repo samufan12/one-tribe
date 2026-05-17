@@ -241,37 +241,55 @@ export type Database = {
       }
       orders: {
         Row: {
+          amount_total: number | null
           buyer_id: string
           created_at: string
           id: string
           platform_fee: number
+          product_id: string | null
           product_ids: string[]
+          seller_id: string | null
+          seller_payout: number | null
           status: string
+          stripe_payment_intent_id: string | null
           stripe_session_id: string | null
           subtotal: number
           total: number
+          updated_at: string
         }
         Insert: {
+          amount_total?: number | null
           buyer_id: string
           created_at?: string
           id?: string
           platform_fee: number
+          product_id?: string | null
           product_ids?: string[]
+          seller_id?: string | null
+          seller_payout?: number | null
           status?: string
+          stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           subtotal: number
           total: number
+          updated_at?: string
         }
         Update: {
+          amount_total?: number | null
           buyer_id?: string
           created_at?: string
           id?: string
           platform_fee?: number
+          product_id?: string | null
           product_ids?: string[]
+          seller_id?: string | null
+          seller_payout?: number | null
           status?: string
+          stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           subtotal?: number
           total?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -369,6 +387,7 @@ export type Database = {
           display_name: string | null
           id: string
           phone: string | null
+          stripe_account_id: string | null
           updated_at: string
           user_id: string
           verification_status: string | null
@@ -383,6 +402,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           phone?: string | null
+          stripe_account_id?: string | null
           updated_at?: string
           user_id: string
           verification_status?: string | null
@@ -397,6 +417,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           phone?: string | null
+          stripe_account_id?: string | null
           updated_at?: string
           user_id?: string
           verification_status?: string | null
