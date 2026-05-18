@@ -6,7 +6,6 @@ import RecentlyViewed from "@/components/RecentlyViewed";
 
 
 const Index = () => {
-  const navigate = useNavigate();
 
   return (
     <GrailedLayout>
