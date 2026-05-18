@@ -49,6 +49,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/feed" element={<Community />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/assistant" element={<Assistant />} />
             <Route path="/profile" element={<Profile />} />

@@ -129,8 +129,11 @@ export type Database = {
         Row: {
           caption: string | null
           created_at: string
+          cultural_category: string | null
           id: string
           likes_count: number
+          origin_city: string | null
+          post_type: string
           product_id: string | null
           user_id: string
           views_count: number
@@ -138,8 +141,11 @@ export type Database = {
         Insert: {
           caption?: string | null
           created_at?: string
+          cultural_category?: string | null
           id?: string
           likes_count?: number
+          origin_city?: string | null
+          post_type?: string
           product_id?: string | null
           user_id: string
           views_count?: number
@@ -147,8 +153,11 @@ export type Database = {
         Update: {
           caption?: string | null
           created_at?: string
+          cultural_category?: string | null
           id?: string
           likes_count?: number
+          origin_city?: string | null
+          post_type?: string
           product_id?: string | null
           user_id?: string
           views_count?: number
@@ -606,12 +615,17 @@ export type Database = {
         Args: never
         Returns: {
           author_avatar_url: string
+          author_business_name: string
           author_display_name: string
+          author_verification_status: string
           caption: string
           comment_count: number
           created_at: string
+          cultural_category: string
           id: string
           likes_count: number
+          origin_city: string
+          post_type: string
           product_category: string
           product_condition: string
           product_id: string
