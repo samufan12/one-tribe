@@ -49,19 +49,27 @@ serve(async (req) => {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
 
-    // Authenticate user
-    let userId: string | undefined;
+    // Require authentication
+    let userId: string;
     let userEmail: string | undefined;
     const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      const { data } = await supabaseClient.auth.getUser(token);
-      if (data.user) {
-        userId = data.user.id;
-        userEmail = data.user.email;
-        logStep("User authenticated", { email: userEmail });
-      }
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: authData, error: authError } = await supabaseClient.auth.getUser(token);
+    if (authError || !authData.user) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    userId = authData.user.id;
+    userEmail = authData.user.email;
+    logStep("User authenticated", { email: userEmail });
 
     // Rate limiting for authenticated users
     if (userId) {
