@@ -641,6 +641,8 @@ export type Database = {
           likes: number
           location: string
           price: number
+          seller_business_name: string
+          seller_verification_status: string
           size: string
           title: string
           views: number
@@ -664,10 +666,12 @@ export type Database = {
           cover_image_url: string
           created_at: string
           description: string
+          has_physical_store: boolean
           id: string
           logo_url: string
           name: string
           product_count: number
+          verification_status: string
         }[]
       }
       get_seller_profiles: {
@@ -696,12 +700,15 @@ export type Database = {
           product_size: string
           product_title: string
           product_views: number
+          storefront_business_name: string
           storefront_cover_image_url: string
           storefront_created_at: string
           storefront_description: string
+          storefront_has_physical_store: boolean
           storefront_id: string
           storefront_logo_url: string
           storefront_name: string
+          storefront_verification_status: string
         }[]
       }
       get_user_conversations: {

@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -69,7 +70,20 @@ const ProfilePage = () => {
             >
               {displayName || "Welcome back."}
             </h1>
-            <p className="text-sm text-muted-foreground mt-3">{user.email}</p>
+            <div className="mt-3 flex items-center gap-3 flex-wrap">
+              {profile?.verification_status === "verified" ? (
+                <VerifiedBadge
+                  verificationStatus="verified"
+                  businessName={profile?.business_name}
+                  size="md"
+                />
+              ) : profile?.verification_status === "pending" ? (
+                <span className="text-[11px] tracking-wide uppercase text-muted-foreground border border-border rounded-full px-2.5 py-1">
+                  Verification pending
+                </span>
+              ) : null}
+              <p className="text-sm text-muted-foreground">{user.email}</p>
+            </div>
           </div>
         </div>
       </section>
