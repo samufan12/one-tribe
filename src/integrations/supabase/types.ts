@@ -516,28 +516,54 @@ export type Database = {
       admin_list_orders: {
         Args: never
         Returns: {
-          amount_total: number
+          amount_total: number | null
           buyer_id: string
           created_at: string
           id: string
-          product_id: string
+          platform_fee: number
+          product_id: string | null
           product_ids: string[]
-          seller_id: string
+          seller_id: string | null
+          seller_payout: number | null
           status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          subtotal: number
           total: number
+          updated_at: string
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       admin_list_profiles: {
         Args: never
         Returns: {
-          business_name: string
+          avatar_url: string | null
+          bio: string | null
+          business_address: string | null
+          business_name: string | null
+          business_phone: string | null
           created_at: string
-          display_name: string
-          rejection_reason: string
-          stripe_account_id: string
+          display_name: string | null
+          id: string
+          phone: string | null
+          rejection_reason: string | null
+          role: string | null
+          stripe_account_id: string | null
+          updated_at: string
           user_id: string
-          verification_status: string
+          verification_status: string | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       approve_seller: { Args: { p_user_id: string }; Returns: boolean }
       assign_user_role: {
