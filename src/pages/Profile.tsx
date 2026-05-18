@@ -97,6 +97,10 @@ const ProfilePage = () => {
         </div>
       </section>
 
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 pt-6">
+        <SellerOnboardingChecklist />
+      </div>
+
       <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-16 grid grid-cols-1 md:grid-cols-12 gap-12">
         <div className="md:col-span-4">
           <p className="text-eyebrow text-muted-foreground mb-3">Profile</p>
