@@ -15,19 +15,15 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[CREATE-PAYMENT] ${step}${detailsStr}`);
 };
 
-// Input validation schemas
+// Client only provides product IDs + quantities; prices come from the database
 const lineItemSchema = z.object({
   productId: z.string().uuid("Invalid product ID"),
-  productTitle: z.string().trim().min(1).max(200),
-  price: z.number().positive().max(999999),
   quantity: z.number().int().positive().max(100).default(1),
 });
 
 const bodySchema = z.object({
   items: z.array(lineItemSchema).min(1).max(50).optional(),
   productId: z.string().uuid().optional(),
-  productTitle: z.string().trim().min(1).max(200).optional(),
-  price: z.number().positive().max(999999).optional(),
   quantity: z.number().int().positive().max(100).optional(),
 });
 
@@ -53,19 +49,27 @@ serve(async (req) => {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
 
-    // Authenticate user
-    let userId: string | undefined;
+    // Require authentication
+    let userId: string;
     let userEmail: string | undefined;
     const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      const { data } = await supabaseClient.auth.getUser(token);
-      if (data.user) {
-        userId = data.user.id;
-        userEmail = data.user.email;
-        logStep("User authenticated", { email: userEmail });
-      }
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: authData, error: authError } = await supabaseClient.auth.getUser(token);
+    if (authError || !authData.user) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    userId = authData.user.id;
+    userEmail = authData.user.email;
+    logStep("User authenticated", { email: userEmail });
 
     // Rate limiting for authenticated users
     if (userId) {
@@ -103,45 +107,76 @@ serve(async (req) => {
 
     const body = validation.data;
 
-    let lineItems: { productId: string; productTitle: string; price: number; quantity: number }[];
+    let requestedItems: { productId: string; quantity: number }[];
 
     if (body.items && body.items.length > 0) {
-      lineItems = body.items;
-    } else if (body.productId && body.productTitle && body.price) {
-      lineItems = [{ productId: body.productId, productTitle: body.productTitle, price: body.price, quantity: body.quantity || 1 }];
+      requestedItems = body.items.map((i) => ({ productId: i.productId, quantity: i.quantity || 1 }));
+    } else if (body.productId) {
+      requestedItems = [{ productId: body.productId, quantity: body.quantity || 1 }];
     } else {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: provide items array or productId, productTitle, price" }),
+        JSON.stringify({ error: "Missing required fields: provide items array or productId" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    logStep("Line items parsed", { count: lineItems.length });
+    logStep("Items requested", { count: requestedItems.length });
 
-    // Calculate subtotal — fee is deducted from seller payout, not added to buyer total
-    const subtotal = lineItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const platformFee = subtotal * PLATFORM_FEE_RATE;
-    const total = subtotal; // buyer only pays product price
-
-    logStep("Fee calculated", { subtotal, platformFee, total });
-
-    // Look up product/seller info — Stripe Connect requires a single seller per session
-    const firstProductId = lineItems[0].productId;
-    const { data: productRow, error: productErr } = await supabaseAdmin
+    // Fetch authoritative product data (price, title, seller, status) from DB
+    const productIds = requestedItems.map((i) => i.productId);
+    const { data: productRows, error: productsErr } = await supabaseAdmin
       .from("products")
-      .select("user_id")
-      .eq("id", firstProductId)
-      .maybeSingle();
+      .select("id, title, price, user_id, status")
+      .in("id", productIds);
 
-    if (productErr || !productRow) {
-      logStep("Product lookup failed", { error: productErr?.message });
+    if (productsErr || !productRows || productRows.length === 0) {
+      logStep("Product lookup failed", { error: productsErr?.message });
       return new Response(
         JSON.stringify({ error: "Product not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const sellerId = productRow.user_id as string;
+    const productMap = new Map(productRows.map((p: any) => [p.id, p]));
+    const lineItems: { productId: string; productTitle: string; price: number; quantity: number; sellerId: string }[] = [];
+
+    for (const item of requestedItems) {
+      const p: any = productMap.get(item.productId);
+      if (!p) {
+        return new Response(
+          JSON.stringify({ error: `Product ${item.productId} not found` }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (p.status !== "active") {
+        return new Response(
+          JSON.stringify({ error: `Product ${item.productId} is not available` }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      lineItems.push({
+        productId: p.id,
+        productTitle: p.title,
+        price: Number(p.price),
+        quantity: item.quantity,
+        sellerId: p.user_id,
+      });
+    }
+
+    // Stripe Connect requires a single seller per session
+    const sellerId = lineItems[0].sellerId;
+    if (lineItems.some((i) => i.sellerId !== sellerId)) {
+      return new Response(
+        JSON.stringify({ error: "All items must be from the same seller" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const subtotal = lineItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const platformFee = subtotal * PLATFORM_FEE_RATE;
+    const total = subtotal;
+
+    logStep("Fee calculated", { subtotal, platformFee, total });
 
     const { data: sellerProfile } = await supabaseAdmin
       .from("profiles")
@@ -151,6 +186,8 @@ serve(async (req) => {
 
     const sellerStripeAccountId = sellerProfile?.stripe_account_id as string | null | undefined;
     logStep("Seller resolved", { sellerId, hasStripeAccount: !!sellerStripeAccountId });
+
+    const firstProductId = lineItems[0].productId;
 
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
@@ -189,7 +226,7 @@ serve(async (req) => {
         subtotal: subtotal.toFixed(2),
         platform_fee: platformFee.toFixed(2),
         total: total.toFixed(2),
-        buyer_id: userId || "",
+        buyer_id: userId,
         seller_id: sellerId,
         seller_onboarded: sellerStripeAccountId ? "true" : "false",
       },
@@ -213,7 +250,7 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
