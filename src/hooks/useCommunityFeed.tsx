@@ -4,6 +4,13 @@ import { useAuth } from "./useAuth";
 import { z } from "zod";
 import { sanitizeString } from "@/lib/sanitize";
 
+export type PostType =
+  | "seller_spotlight"
+  | "product_story"
+  | "cultural_context"
+  | "community_pick"
+  | "new_arrival";
+
 export interface CommunityPost {
   id: string;
   user_id: string;
@@ -22,6 +29,19 @@ export interface CommunityPost {
   product_size: string | null;
   comment_count: number;
   isLiked: boolean;
+  post_type: PostType;
+  cultural_category: string | null;
+  origin_city: string | null;
+  author_business_name: string | null;
+  author_verification_status: string | null;
+}
+
+export interface CreatePostInput {
+  postType: Exclude<PostType, "new_arrival">;
+  caption: string;
+  productId?: string | null;
+  culturalCategory?: string | null;
+  originCity?: string | null;
 }
 
 export const useCommunityFeed = () => {
@@ -69,22 +89,32 @@ export const useCommunityFeed = () => {
   };
 
   const postSchema = z.object({
-    productId: z.string().uuid("Invalid product ID"),
-    caption: z.string().max(500, "Caption too long").optional(),
+    postType: z.enum(["seller_spotlight", "product_story", "cultural_context", "community_pick"]),
+    caption: z.string().trim().min(3, "Write a little something").max(1000, "Too long"),
+    productId: z.string().uuid().nullable().optional(),
+    culturalCategory: z.string().trim().max(50).nullable().optional(),
+    originCity: z.string().trim().max(100).nullable().optional(),
   });
 
-  const createPost = async (productId: string, caption: string) => {
+  const createPost = async (input: CreatePostInput) => {
     if (!user) return false;
 
-    const validation = postSchema.safeParse({ productId, caption: caption || undefined });
+    const validation = postSchema.safeParse(input);
     if (!validation.success) return false;
+    const v = validation.data;
 
-    const sanitizedCaption = validation.data.caption ? sanitizeString(validation.data.caption) : null;
+    // product_story and community_pick require a product
+    if ((v.postType === "product_story" || v.postType === "community_pick") && !v.productId) {
+      return false;
+    }
 
     const { error } = await supabase.from("community_posts").insert({
       user_id: user.id,
-      product_id: validation.data.productId,
-      caption: sanitizedCaption,
+      post_type: v.postType,
+      product_id: v.productId ?? null,
+      caption: sanitizeString(v.caption),
+      cultural_category: v.culturalCategory ? sanitizeString(v.culturalCategory) : null,
+      origin_city: v.originCity ? sanitizeString(v.originCity) : null,
     });
     if (error) return false;
     await fetchPosts();
