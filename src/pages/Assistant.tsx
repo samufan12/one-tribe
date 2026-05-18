@@ -1,11 +1,11 @@
 import GrailedLayout from "@/components/GrailedLayout";
-import { Assistant as AssistantComponent } from "@/components/Assistant";
+import FindItForMe from "@/components/FindItForMe";
 
 const AssistantPage = () => {
   return (
     <GrailedLayout>
-      <div className="max-w-[1400px] mx-auto px-4 py-6">
-        <AssistantComponent />
+      <div className="max-w-[1400px] mx-auto px-4 py-10">
+        <FindItForMe />
       </div>
     </GrailedLayout>
   );
