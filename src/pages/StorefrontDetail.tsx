@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Store, Heart, MessageCircle, Package } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import kemis1 from "@/assets/kemis-1.jpg";
+import { VerifiedBadge, PhysicalStorePill } from "@/components/VerifiedBadge";
 
 interface StorefrontProduct {
   product_id: string;
@@ -27,6 +28,9 @@ interface StorefrontInfo {
   logo_url: string | null;
   cover_image_url: string | null;
   created_at: string;
+  verification_status: string | null;
+  business_name: string | null;
+  has_physical_store: boolean;
 }
 
 const StorefrontDetail = () => {
@@ -50,6 +54,9 @@ const StorefrontDetail = () => {
           logo_url: rows[0].storefront_logo_url,
           cover_image_url: rows[0].storefront_cover_image_url,
           created_at: rows[0].storefront_created_at,
+          verification_status: rows[0].storefront_verification_status ?? null,
+          business_name: rows[0].storefront_business_name ?? null,
+          has_physical_store: !!rows[0].storefront_has_physical_store,
         });
         // Filter out null product rows (storefront with no products)
         setProducts(rows.filter((r) => r.product_id != null));
