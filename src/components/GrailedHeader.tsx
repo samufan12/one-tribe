@@ -133,8 +133,9 @@ const GrailedHeader = () => {
             Sell
           </Button>
           {[
-            { label: 'AI Assistant', icon: Sparkles, path: '/assistant', auth: false },
+            { label: 'Find it', icon: Sparkles, path: '/assistant', auth: false },
             { label: 'Feed', icon: null, path: '/community', auth: false },
+            { label: 'Cultural Guide', icon: null, path: '/cultural-guide', auth: false },
             { label: 'Messages', icon: MessageSquare, path: '/messages', auth: true },
             { label: 'Wishlist', icon: Heart, path: '/watchlist', auth: true },
             { label: `Cart${itemCount > 0 ? ` (${itemCount})` : ''}`, icon: ShoppingCart, path: '/cart', auth: false },
