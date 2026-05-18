@@ -49,11 +49,10 @@ const AdminDashboard = () => {
   // Admin check supports both user_roles table and profiles.role column
   const isAdminUser = isAdmin() || (userProfile as any)?.role === "admin";
 
-  // Guard temporarily disabled for debugging — render dashboard for any visitor
-  // useEffect(() => {
-  //   if (authLoading || roleLoading) return;
-  //   if (!user || !isAdminUser) navigate("/");
-  // }, [user, authLoading, roleLoading, isAdminUser, navigate]);
+  useEffect(() => {
+    if (authLoading || roleLoading) return;
+    if (!user || !isAdminUser) navigate("/");
+  }, [user, authLoading, roleLoading, isAdminUser, navigate]);
 
   useEffect(() => {
     if (!user) return;
