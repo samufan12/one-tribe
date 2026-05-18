@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import GrailedLayout from "@/components/GrailedLayout";
 import HeroCarousel from "@/components/HeroCarousel";
 import ProductSection from "@/components/ProductSection";
