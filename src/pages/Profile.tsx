@@ -6,6 +6,8 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { SellerOnboardingChecklist } from "@/components/SellerOnboardingChecklist";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ const ProfilePage = () => {
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
+  const [shippingRegions, setShippingRegions] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => { if (!authLoading && !user) navigate("/auth"); }, [user, authLoading, navigate]);
@@ -24,7 +27,11 @@ const ProfilePage = () => {
       setPhone(profile.phone || "");
       setBio(profile.bio || "");
     }
-  }, [profile]);
+    if (user) {
+      supabase.from("profiles").select("shipping_regions").eq("user_id", user.id).maybeSingle()
+        .then(({ data }) => setShippingRegions(((data as any)?.shipping_regions ?? []).join(", ")));
+    }
+  }, [profile, user?.id]);
 
   if (authLoading || profileLoading) {
     return <GrailedLayout><div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div></GrailedLayout>;
@@ -37,6 +44,8 @@ const ProfilePage = () => {
     setSaving(true);
     try {
       await updateProfile({ display_name: displayName || null, phone: phone || null, bio: bio || null });
+      const regions = shippingRegions.split(",").map((r) => r.trim()).filter(Boolean);
+      await supabase.from("profiles").update({ shipping_regions: regions } as any).eq("user_id", user.id);
       toast({ title: "Saved", description: "Your profile is up to date." });
     } catch {
       toast({ title: "Error", description: "Failed to save.", variant: "destructive" });
@@ -103,6 +112,9 @@ const ProfilePage = () => {
           </Field>
           <Field label="Bio">
             <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="A short note about yourself" rows={3} className={`${inputCls} resize-none`} />
+          </Field>
+          <Field label="Shipping regions (comma-separated)">
+            <input value={shippingRegions} onChange={(e) => setShippingRegions(e.target.value)} placeholder="e.g. USA, Canada, Europe" className={inputCls} />
           </Field>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
