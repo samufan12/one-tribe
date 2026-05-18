@@ -33,8 +33,8 @@ const HeroCarousel = () => {
             className={`absolute inset-0 transition-opacity duration-[1400ms] ease-spring ${i === current ? "opacity-100" : "opacity-0 pointer-events-none"}`}
           >
             <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${slide.image})`, transform: i === current ? "scale(1.04)" : "scale(1)", transition: "transform 7s ease-out" }}
+              className="absolute inset-0 bg-cover"
+              style={{ backgroundImage: `url(${slide.image})`, backgroundPosition: "center 25%", transform: i === current ? "scale(1.04)" : "scale(1)", transition: "transform 7s ease-out" }}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
 
