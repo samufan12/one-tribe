@@ -20,8 +20,8 @@ type PublicProduct = {
 
 const EXAMPLE_PROMPTS = [
   "Coffee ceremony set",
-  "Handwoven gabi from Tigray",
-  "Size 10 traditional sandals",
+  "White kemis with tilet",
+  "Handwoven mesob table",
 ];
 
 const tokenize = (s: string) =>

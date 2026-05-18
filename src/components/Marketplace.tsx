@@ -29,14 +29,17 @@ export const Marketplace = () => {
     toggleLike(productId);
   };
 
-  const allCats = ["All", "Men", "Women", "Kemis & Zuria", "Netela & Gabi", "Home & Decor", "Jewelry", "Coffee & Spices"];
-  const categories = allCats.filter((c) => {
-    if (c === "Home & Decor" && !featureFlags.showCategoryHomeDecor) return false;
-    if (c === "Jewelry" && !featureFlags.showCategoryJewelry) return false;
-    if (c === "Men" && !featureFlags.showTraditionalWearMens) return false;
-    if (c === "Kemis & Zuria" && !featureFlags.showTraditionalWearKemis) return false;
-    return true;
-  });
+  const categories = [
+    "All",
+    "Traditional Wear",
+    "Coffee & Spices",
+    "Home & Decor",
+    "Jewelry & Accessories",
+    "Art & Iconography",
+    "Music & Instruments",
+    "Beauty & Personal Care",
+    "Religious Items",
+  ];
 
   useEffect(() => {
     const urlSearch = searchParams.get('search') || "";
