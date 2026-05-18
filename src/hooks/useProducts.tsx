@@ -29,6 +29,8 @@ export type Product = {
   views: number;
   created_at: string;
   is_liked?: boolean;
+  seller_verification_status?: string | null;
+  seller_business_name?: string | null;
 };
 
 export type CreateProductData = {
@@ -241,6 +243,8 @@ export const useProducts = () => {
             ...product,
             images: product.images || [],
             is_liked,
+            seller_verification_status: (product as any).seller_verification_status ?? null,
+            seller_business_name: (product as any).seller_business_name ?? null,
           };
         })
       );
