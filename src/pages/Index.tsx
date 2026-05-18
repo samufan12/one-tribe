@@ -58,8 +58,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      <WaitlistSection />
     </GrailedLayout>
   );
 };
