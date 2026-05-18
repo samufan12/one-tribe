@@ -146,8 +146,9 @@ export const SellItem = () => {
       setSelectedImages([]);
       setImagePreviews([]);
       
-      // If seller hasn't set up payouts yet, route them to onboarding
+      // Check if this is the user's first listing
       let needsOnboarding = false;
+      let isFirstListing = false;
       if (user) {
         const { data: prof } = await supabase
           .from('profiles')
@@ -155,12 +156,25 @@ export const SellItem = () => {
           .eq('user_id', user.id)
           .maybeSingle();
         needsOnboarding = !prof?.stripe_account_id;
+
+        const { count } = await supabase
+          .from('products')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+        isFirstListing = (count ?? 0) <= 1;
+      }
+
+      if (isFirstListing) {
+        toast({
+          title: 'እንኳን ደስ አለዎ! 🎉',
+          description: 'Congratulations! Your first listing is live.',
+        });
       }
 
       if (needsOnboarding) {
         toast({
-          title: "Listed! One more step.",
-          description: "Connect your bank account to receive payouts when it sells.",
+          title: 'Listed! One more step.',
+          description: 'Connect your bank account to receive payouts when it sells.',
         });
         navigate('/seller-onboarding');
       } else {

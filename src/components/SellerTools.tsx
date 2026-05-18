@@ -15,6 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { BarChart3, Package, TrendingUp, Users, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { SellerOnboardingChecklist } from '@/components/SellerOnboardingChecklist';
 
 interface SellerOrder {
   id: string;
@@ -108,6 +109,7 @@ export const SellerTools = () => {
 
   return (
     <div className="space-y-6">
+      <SellerOnboardingChecklist />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Seller Dashboard</h1>
         <p className="text-muted-foreground">
