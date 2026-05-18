@@ -15,19 +15,15 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[CREATE-PAYMENT] ${step}${detailsStr}`);
 };
 
-// Input validation schemas
+// Client only provides product IDs + quantities; prices come from the database
 const lineItemSchema = z.object({
   productId: z.string().uuid("Invalid product ID"),
-  productTitle: z.string().trim().min(1).max(200),
-  price: z.number().positive().max(999999),
   quantity: z.number().int().positive().max(100).default(1),
 });
 
 const bodySchema = z.object({
   items: z.array(lineItemSchema).min(1).max(50).optional(),
   productId: z.string().uuid().optional(),
-  productTitle: z.string().trim().min(1).max(200).optional(),
-  price: z.number().positive().max(999999).optional(),
   quantity: z.number().int().positive().max(100).optional(),
 });
 
