@@ -126,7 +126,7 @@ const AdminDashboard = () => {
     );
   }
 
-  // Guard temporarily disabled — always render for debugging
+  if (!user || !isAdminUser) return null;
 
   const pending = profiles.filter((p) => p.verification_status === "pending");
   const verified = profiles.filter((p) => p.verification_status === "verified");
