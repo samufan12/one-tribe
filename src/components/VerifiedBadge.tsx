@@ -1,4 +1,4 @@
-import { Check, Store } from "lucide-react";
+import { BadgeCheck, Store } from "lucide-react";
 
 interface Props {
   verificationStatus?: string | null;
@@ -37,7 +37,7 @@ export const VerifiedBadge = ({ verificationStatus, businessName, size = "sm", c
       className={`inline-flex items-center gap-1 rounded-full font-medium tracking-wide ${sizeCls} bg-[hsl(210_90%_55%/0.12)] text-[hsl(210_85%_40%)] border border-[hsl(210_90%_55%/0.35)] ${className}`}
       title="Verified seller"
     >
-      <Check size={iconSize} className="shrink-0" strokeWidth={3} />
+      <BadgeCheck size={iconSize} className="shrink-0" />
       Verified Seller
     </span>
   );
