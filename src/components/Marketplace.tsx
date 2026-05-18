@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import kemis1 from "@/assets/kemis-1.jpg";
 import { ProductSkeletonGrid } from "./ProductSkeleton";
 import { toast } from "sonner";
+import { VerifiedBadge } from "./VerifiedBadge";
 
 export const Marketplace = () => {
   const { products, loading, fetchProducts, toggleLike } = useProducts();
@@ -175,7 +176,13 @@ export const Marketplace = () => {
 
                   <div className="mt-4 flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-1">{product.category}</p>
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">{product.category}</p>
+                        <VerifiedBadge
+                          verificationStatus={product.seller_verification_status}
+                          businessName={product.seller_business_name}
+                        />
+                      </div>
                       <h3 className={`text-foreground tracking-tight truncate ${isFeature ? "text-xl font-medium" : "text-[15px] font-normal"}`}>
                         {product.title}
                       </h3>
