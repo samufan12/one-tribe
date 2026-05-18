@@ -132,7 +132,15 @@ const StorefrontDetail = () => {
               )}
             </div>
             <div className="pb-1">
-              <h1 className="text-2xl font-bold text-foreground">{storefront.name}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl font-bold text-foreground">{storefront.name}</h1>
+                <VerifiedBadge
+                  verificationStatus={storefront.verification_status}
+                  businessName={storefront.business_name || storefront.name}
+                  size="md"
+                />
+                {storefront.has_physical_store && <PhysicalStorePill />}
+              </div>
               {storefront.description && (
                 <p className="text-muted-foreground text-sm mt-1">{storefront.description}</p>
               )}
