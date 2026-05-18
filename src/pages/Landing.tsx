@@ -453,7 +453,7 @@ const Landing = () => {
             {[
               { k: "100%", v: "Authentic, makers verified" },
               { k: "40+", v: "Cities served, growing weekly" },
-              { k: "5%", v: "Flat platform fee. No surprises." },
+              { k: "8%", v: "8% flat platform fee — taken from your payout, never added to the buyer's price." },
             ].map((s, i) => (
               <Reveal key={s.k} delay={i * 120} className="md:col-span-4">
                 <div className="border-t border-foreground/15 pt-8">
