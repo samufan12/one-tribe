@@ -12,28 +12,28 @@ export const featureFlags = {
   showNewArrivals: true,
 
   // Category Nav items
-  showCategoryHomeDecor: false,
-  showCategoryJewelry: false,
+  showCategoryHomeDecor: true,
+  showCategoryJewelry: true,
   showCategoryArt: true,
   showCategoryCommunityPicks: true,
   showCategoryCollections: true,
   showCategoryCulturalGuide: true,
 
   // Categories page sections
-  showCategoryCardHomeDecor: false,
-  showCategoryCardJewelry: false,
+  showCategoryCardHomeDecor: true,
+  showCategoryCardJewelry: true,
   showCategoryCardMusicInstruments: true,
   showCategoryCardVintage: true,
   showCategoryCardArtCrafts: true,
 
-  // Sidebar sections  
+  // Sidebar sections
   showSidebarSelling: true,
   showSidebarShopping: true,
   showSidebarResources: true,
   showSidebarAccount: true,
 
   // Traditional Wear sub-items (Men & Women)
-  showTraditionalWearMens: false,
-  showTraditionalWearKemis: false,
+  showTraditionalWearMens: true,
+  showTraditionalWearKemis: true,
   showTraditionalWearNetela: true,
 };
