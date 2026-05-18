@@ -62,7 +62,20 @@ const GrailedHeader = () => {
             Feed
           </button>
 
-          
+          <button
+            onClick={() => navigate('/cultural-guide')}
+            className="px-3 py-1.5 text-[13px] font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+          >
+            Cultural Guide
+          </button>
+
+          <button
+            onClick={() => navigate('/assistant')}
+            className="px-3 py-1.5 text-[13px] font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-secondary inline-flex items-center gap-1.5"
+          >
+            <Sparkles size={14} strokeWidth={1.75} />
+            Find it
+          </button>
 
           <button
             onClick={() => user ? navigate('/messages') : navigate('/auth')}
