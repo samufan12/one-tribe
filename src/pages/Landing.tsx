@@ -551,17 +551,35 @@ const Landing = () => {
 
       {/* ============ FOOTER ============ */}
       <footer className="border-t border-border/60 py-12 px-6 lg:px-10">
-        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div>
-            <p className="font-semibold text-[15px] tracking-tight">OneTribe<span className="text-primary">.</span></p>
-            <p className="text-[12px] text-muted-foreground mt-1">© {new Date().getFullYear()} — The global Habesha marketplace.</p>
+        <div className="max-w-[1400px] mx-auto space-y-8">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+            <div className="space-y-2">
+              <span className="font-semibold text-[17px] tracking-tight">OneTribe</span>
+              <p className="text-sm text-muted-foreground">The Global Habesha Marketplace</p>
+              <p className="text-xs text-muted-foreground/80 pt-1" lang="am">ለሐበሻ ማህበረሰብ</p>
+            </div>
+            <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              {[
+                { label: 'Marketplace', to: '/marketplace' },
+                { label: 'Community Feed', to: '/community' },
+                { label: 'Cultural Guide', to: '/cultural-guide' },
+                { label: 'Find it for me', to: '/assistant' },
+                { label: 'Sell', to: '/sell' },
+                { label: 'About', to: '/support' },
+              ].map(({ label, to }) => (
+                <Link
+                  key={label}
+                  to={to}
+                  className="text-foreground/70 hover:text-foreground transition-colors"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
           </div>
-          <div className="flex gap-8 text-[12px] text-muted-foreground">
-            <button onClick={() => navigate("/marketplace")} className="hover:text-foreground transition-colors">Shop</button>
-            <button onClick={() => navigate("/sell")} className="hover:text-foreground transition-colors">Sell</button>
-            <button onClick={() => navigate("/support")} className="hover:text-foreground transition-colors">Support</button>
-            <button onClick={() => navigate("/faq")} className="hover:text-foreground transition-colors">FAQ</button>
-          </div>
+          <p className="text-xs text-muted-foreground border-t border-border/60 pt-6">
+            © 2026 OneTribe. The Global Habesha Marketplace.
+          </p>
         </div>
       </footer>
     </div>
