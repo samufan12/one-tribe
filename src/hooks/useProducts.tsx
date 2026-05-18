@@ -133,7 +133,7 @@ const sampleProducts: Product[] = [
     title: 'Vintage Ethiopian Painting - Saint George',
     description: 'Hand-painted religious art on goatskin. Traditional Ethiopian Orthodox iconography.',
     price: 350,
-    category: 'Home & Decor',
+    category: 'Art & Iconography',
     condition: 'Like New',
     location: 'Frankfurt, Germany',
     images: [saintGeorgePainting],
