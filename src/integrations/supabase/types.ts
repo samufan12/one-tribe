@@ -758,7 +758,7 @@ export type Database = {
         Returns: boolean
       }
       has_user_liked_product: { Args: { product_id: string }; Returns: boolean }
-      is_admin: { Args: { check_user_id?: string }; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
