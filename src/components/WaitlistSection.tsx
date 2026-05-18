@@ -40,8 +40,8 @@ const WaitlistSection = () => {
   };
 
   return (
-    <section className="py-20 px-4 sm:px-6">
-      <div className="max-w-[1400px] mx-auto bg-foreground text-background rounded-[28px] px-8 py-16 md:py-24 shadow-soft-xl">
+    <section className="bg-foreground text-background">
+      <div className="max-w-[1400px] mx-auto px-8 py-16 md:py-24">
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-eyebrow text-background/60 mb-4">Early access</p>
           <h2 className="text-display mb-5">Be first. Join the waitlist.</h2>
