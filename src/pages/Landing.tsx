@@ -193,13 +193,17 @@ const Landing = () => {
             <button onClick={() => navigate("/marketplace")} className="hover:text-foreground transition-colors">Shop</button>
             <button onClick={() => navigate("/storefronts")} className="hover:text-foreground transition-colors">Storefronts</button>
             <button onClick={() => navigate("/community")} className="hover:text-foreground transition-colors">Community</button>
-            <button onClick={() => navigate("/cultural-guide")} className="hover:text-foreground transition-colors">Journal</button>
+            <button onClick={() => navigate("/cultural-guide")} className="hover:text-foreground transition-colors">Cultural Guide</button>
+            <button onClick={() => navigate("/assistant")} className="hover:text-foreground transition-colors inline-flex items-center gap-1.5">
+              <Sparkles size={14} strokeWidth={1.75} />
+              Find it
+            </button>
           </div>
           <button
             onClick={() => navigate(user ? "/home" : "/auth")}
             className="text-[13px] font-medium px-4 h-8 rounded-full bg-foreground text-background hover:opacity-90 active:scale-[0.97] transition-all ease-spring"
           >
-            {user ? "Open app" : "Get started"}
+            {user ? "Enter OneTribe" : "Get started"}
           </button>
         </div>
       </nav>
