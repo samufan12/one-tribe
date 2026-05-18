@@ -30,7 +30,16 @@ export const SellItem = () => {
   const [imagesPreviews, setImagePreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const categories = ["Traditional Wear", "Home & Decor", "Jewelry", "Art", "Music"];
+  const categories = [
+    "Traditional Wear",
+    "Coffee & Spices",
+    "Home & Decor",
+    "Jewelry & Accessories",
+    "Art & Iconography",
+    "Music & Instruments",
+    "Beauty & Personal Care",
+    "Religious Items",
+  ];
   const conditions = ["New with tags", "New without tags", "Excellent", "Very Good", "Good", "Fair"];
 
   const [dragActive, setDragActive] = useState(false);
