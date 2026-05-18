@@ -280,6 +280,9 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* ============ WAITLIST ============ */}
+      <WaitlistSection />
+
       {/* ============ MARQUEE ============ */}
       <section className="border-y border-border/60 bg-background py-6 overflow-hidden">
         <div className="flex gap-12 whitespace-nowrap animate-[marquee_38s_linear_infinite]">
