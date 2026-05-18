@@ -47,13 +47,7 @@ const GrailedHeader = () => {
             Sell
           </Button>
 
-          <button
-            onClick={() => navigate('/assistant')}
-            className={`${iconBtn} flex items-center gap-1.5 px-3 text-sm font-medium`}
-            title="AI Assistant"
-          >
-            <Sparkles size={16} />
-          </button>
+
 
           <button
             onClick={() => navigate('/community')}
