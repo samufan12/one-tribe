@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import GrailedHeader from "./GrailedHeader";
 import { MobileBottomNav } from "./MobileBottomNav";
@@ -37,15 +38,37 @@ export const GrailedLayout = ({
         {children}
       </main>
       
-      {/* Footer - hidden on mobile */}
-      <footer className="hidden md:block border-t border-border/60 py-12 mt-12">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <span className="font-semibold text-[15px] tracking-tight">OneTribe</span>
-            <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} OneTribe. The Global Habesha Marketplace.
-            </p>
+      {/* Footer */}
+      <footer className="border-t border-border/60 py-12 mt-12">
+        <div className="max-w-[1400px] mx-auto px-6 space-y-8">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+            <div className="space-y-2">
+              <span className="font-semibold text-[17px] tracking-tight">OneTribe</span>
+              <p className="text-sm text-muted-foreground">The Global Habesha Marketplace</p>
+              <p className="text-xs text-muted-foreground/80 pt-1" lang="am">ለሐበሻ ማህበረሰብ</p>
+            </div>
+            <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              {[
+                { label: 'Marketplace', to: '/marketplace' },
+                { label: 'Community Feed', to: '/community' },
+                { label: 'Cultural Guide', to: '/cultural-guide' },
+                { label: 'Find it for me', to: '/assistant' },
+                { label: 'Sell', to: '/sell' },
+                { label: 'About', to: '/support' },
+              ].map(({ label, to }) => (
+                <Link
+                  key={label}
+                  to={to}
+                  className="text-foreground/70 hover:text-foreground transition-colors"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
           </div>
+          <p className="text-xs text-muted-foreground border-t border-border/60 pt-6">
+            © 2026 OneTribe. The Global Habesha Marketplace.
+          </p>
         </div>
       </footer>
 

@@ -47,13 +47,7 @@ const GrailedHeader = () => {
             Sell
           </Button>
 
-          <button
-            onClick={() => navigate('/assistant')}
-            className={`${iconBtn} flex items-center gap-1.5 px-3 text-sm font-medium`}
-            title="AI Assistant"
-          >
-            <Sparkles size={16} />
-          </button>
+
 
           <button
             onClick={() => navigate('/community')}
@@ -62,7 +56,20 @@ const GrailedHeader = () => {
             Feed
           </button>
 
-          
+          <button
+            onClick={() => navigate('/cultural-guide')}
+            className="px-3 py-1.5 text-[13px] font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+          >
+            Cultural Guide
+          </button>
+
+          <button
+            onClick={() => navigate('/assistant')}
+            className="px-3 py-1.5 text-[13px] font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-secondary inline-flex items-center gap-1.5"
+          >
+            <Sparkles size={14} strokeWidth={1.75} />
+            Find it
+          </button>
 
           <button
             onClick={() => user ? navigate('/messages') : navigate('/auth')}
@@ -126,8 +133,9 @@ const GrailedHeader = () => {
             Sell
           </Button>
           {[
-            { label: 'AI Assistant', icon: Sparkles, path: '/assistant', auth: false },
+            { label: 'Find it', icon: Sparkles, path: '/assistant', auth: false },
             { label: 'Feed', icon: null, path: '/community', auth: false },
+            { label: 'Cultural Guide', icon: null, path: '/cultural-guide', auth: false },
             { label: 'Messages', icon: MessageSquare, path: '/messages', auth: true },
             { label: 'Wishlist', icon: Heart, path: '/watchlist', auth: true },
             { label: `Cart${itemCount > 0 ? ` (${itemCount})` : ''}`, icon: ShoppingCart, path: '/cart', auth: false },
