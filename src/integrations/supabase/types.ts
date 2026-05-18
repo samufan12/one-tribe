@@ -395,9 +395,11 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          onboarding_completed: boolean
           phone: string | null
           rejection_reason: string | null
           role: string | null
+          shipping_regions: string[]
           stripe_account_id: string | null
           updated_at: string
           user_id: string
@@ -412,9 +414,11 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          onboarding_completed?: boolean
           phone?: string | null
           rejection_reason?: string | null
           role?: string | null
+          shipping_regions?: string[]
           stripe_account_id?: string | null
           updated_at?: string
           user_id: string
@@ -429,9 +433,11 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          onboarding_completed?: boolean
           phone?: string | null
           rejection_reason?: string | null
           role?: string | null
+          shipping_regions?: string[]
           stripe_account_id?: string | null
           updated_at?: string
           user_id?: string
@@ -559,9 +565,11 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          onboarding_completed: boolean
           phone: string | null
           rejection_reason: string | null
           role: string | null
+          shipping_regions: string[]
           stripe_account_id: string | null
           updated_at: string
           user_id: string
