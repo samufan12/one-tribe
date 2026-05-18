@@ -226,7 +226,7 @@ serve(async (req) => {
         subtotal: subtotal.toFixed(2),
         platform_fee: platformFee.toFixed(2),
         total: total.toFixed(2),
-        buyer_id: userId || "",
+        buyer_id: userId,
         seller_id: sellerId,
         seller_onboarded: sellerStripeAccountId ? "true" : "false",
       },
