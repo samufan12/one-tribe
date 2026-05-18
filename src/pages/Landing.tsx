@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import WaitlistSection from "@/components/WaitlistSection";
 import landingDress from "@/assets/landing-dress.jpg";
 import landingCoffee from "@/assets/landing-coffee.jpg";
 import landingGabi from "@/assets/landing-gabi.jpg";
