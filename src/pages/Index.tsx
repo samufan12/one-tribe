@@ -4,7 +4,7 @@ import HeroCarousel from "@/components/HeroCarousel";
 import ProductSection from "@/components/ProductSection";
 import TopSellers from "@/components/TopSellers";
 import RecentlyViewed from "@/components/RecentlyViewed";
-import WaitlistSection from "@/components/WaitlistSection";
+
 
 const Index = () => {
   const navigate = useNavigate();
@@ -58,8 +58,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      <WaitlistSection />
     </GrailedLayout>
   );
 };
