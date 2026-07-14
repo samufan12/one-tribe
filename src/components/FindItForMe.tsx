@@ -6,7 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
+
 
 type PublicProduct = {
   id: string;
@@ -33,6 +35,7 @@ const tokenize = (s: string) =>
 
 export const FindItForMe = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<PublicProduct[] | null>(null);
@@ -43,6 +46,7 @@ export const FindItForMe = () => {
   useEffect(() => {
     document.title = "Find it for me | OneTribe";
   }, []);
+
 
   const handleSearch = async (queryText?: string) => {
     const query = (queryText ?? input).trim();
@@ -126,9 +130,9 @@ export const FindItForMe = () => {
         <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground mb-3">
           <Sparkles className="w-3.5 h-3.5" /> AI Assistant
         </div>
-        <h1 className="text-4xl md:text-5xl font-serif mb-3">Find it for me</h1>
+        <h1 className="text-4xl md:text-5xl font-serif mb-3">{t('find.title')}</h1>
         <p className="text-muted-foreground max-w-xl mx-auto">
-          Describe what you're looking for in any language — we'll find it or ask the community.
+          {t('find.describe')}
         </p>
       </div>
 
@@ -145,10 +149,11 @@ export const FindItForMe = () => {
         <div className="flex justify-end">
           <Button onClick={() => handleSearch()} disabled={!input.trim() || loading} size="lg">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-            Find it
+            {t('find.button')}
           </Button>
         </div>
       </div>
+
 
       <div className="flex flex-wrap gap-2 mt-4">
         {EXAMPLE_PROMPTS.map((p) => (

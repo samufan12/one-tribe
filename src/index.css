@@ -178,3 +178,26 @@
   filter: brightness(1.1);
   transform: translateY(-1px);
 }
+
+/* ============ Simple Mode ============ */
+/* Applied when <html> has .simple-mode. Increases font size, button targets,
+   and hides community-only nav items. */
+html.simple-mode {
+  font-size: 120%;
+}
+html.simple-mode button,
+html.simple-mode a[role="button"],
+html.simple-mode .btn,
+html.simple-mode [data-simple-btn] {
+  min-height: 52px;
+}
+html.simple-mode [data-simple-hide] {
+  display: none !important;
+}
+html.simple-mode [data-simple-only] {
+  display: inline-flex;
+}
+:root:not(.simple-mode) [data-simple-only] {
+  display: none !important;
+}
+

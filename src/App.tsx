@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { I18nProvider } from "@/hooks/useTranslation";
+import SimpleModeHelp from "@/components/SimpleModeHelp";
+
 import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -37,12 +40,16 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
+    <I18nProvider>
     <AuthProvider>
+
       <CartProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <SimpleModeHelp />
         <BrowserRouter>
+
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={<Index />} />
@@ -77,8 +84,10 @@ const App = () => (
       </TooltipProvider>
       </CartProvider>
     </AuthProvider>
+    </I18nProvider>
     </ThemeProvider>
   </QueryClientProvider>
+
 );
 
 export default App;

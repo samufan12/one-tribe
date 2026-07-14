@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import WaitlistSection from "@/components/WaitlistSection";
+import LanguageModeToggles from "@/components/LanguageModeToggles";
+import { useTranslation } from "@/hooks/useTranslation";
+
 import landingDress from "@/assets/landing-dress.jpg";
 import landingCoffee from "@/assets/landing-coffee.jpg";
 import landingGabi from "@/assets/landing-gabi.jpg";
@@ -145,6 +148,8 @@ const ParallaxLayer = ({
 const Landing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
+
 
   /* parallax for hero */
   const [scrollY, setScrollY] = useState(0);
@@ -190,21 +195,25 @@ const Landing = () => {
             OneTribe<span className="text-primary">.</span>
           </span>
           <div className="hidden md:flex items-center gap-8 text-[13px] text-muted-foreground">
-            <button onClick={() => navigate("/marketplace")} className="hover:text-foreground transition-colors">Shop</button>
-            <button onClick={() => navigate("/storefronts")} className="hover:text-foreground transition-colors">Storefronts</button>
-            <button onClick={() => navigate("/community")} className="hover:text-foreground transition-colors">Community</button>
-            <button onClick={() => navigate("/cultural-guide")} className="hover:text-foreground transition-colors">Cultural Guide</button>
+            <button onClick={() => navigate("/marketplace")} className="hover:text-foreground transition-colors">{t('nav.shop')}</button>
+            <button onClick={() => navigate("/storefronts")} className="hover:text-foreground transition-colors" data-simple-hide>{t('nav.storefronts')}</button>
+            <button onClick={() => navigate("/community")} className="hover:text-foreground transition-colors" data-simple-hide>{t('nav.community')}</button>
+            <button onClick={() => navigate("/cultural-guide")} className="hover:text-foreground transition-colors" data-simple-hide>{t('nav.cultural_guide')}</button>
             <button onClick={() => navigate("/assistant")} className="hover:text-foreground transition-colors inline-flex items-center gap-1.5">
               <Sparkles size={14} strokeWidth={1.75} />
-              Find it
+              {t('nav.find_it')}
             </button>
           </div>
-          <button
-            onClick={() => navigate(user ? "/home" : "/auth")}
-            className="text-[13px] font-medium px-4 h-8 rounded-full bg-foreground text-background hover:opacity-90 active:scale-[0.97] transition-all ease-spring"
-          >
-            {user ? "Enter OneTribe" : "Get started"}
-          </button>
+          <div className="flex items-center gap-4">
+            <LanguageModeToggles />
+            <button
+              onClick={() => navigate(user ? "/home" : "/auth")}
+              className="text-[13px] font-medium px-4 h-8 rounded-full bg-foreground text-background hover:opacity-90 active:scale-[0.97] transition-all ease-spring"
+            >
+              {user ? t('nav.enter') : t('nav.get_started')}
+            </button>
+          </div>
+
         </div>
       </nav>
 
