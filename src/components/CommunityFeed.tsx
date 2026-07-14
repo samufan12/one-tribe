@@ -181,7 +181,9 @@ interface MyProduct { id: string; title: string; price: number; images: string[]
 const CreatePostDialog = ({ onCreated }: { onCreated: () => void }) => {
   const { createPost } = useCommunityFeed();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+
   const [postType, setPostType] = useState<ComposablePostType>("community_pick");
   const [myProducts, setMyProducts] = useState<MyProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
@@ -226,8 +228,9 @@ const CreatePostDialog = ({ onCreated }: { onCreated: () => void }) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="h-10 px-5 bg-foreground text-background text-sm font-medium rounded-full hover:bg-foreground/90 transition inline-flex items-center gap-2">
-          <Plus size={14} /> Share a story
+          <Plus size={14} /> {t('feed.share')}
         </button>
+
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
