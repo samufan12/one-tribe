@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const emailSchema = z.string().trim().email().max(255);
 
 const WaitlistSection = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,9 +84,10 @@ const WaitlistSection = () => {
                 disabled={status === "loading"}
                 className="px-7 py-3 bg-background text-foreground font-medium text-sm rounded-full hover:bg-background/90 active:scale-[0.98] transition-all duration-200 ease-spring disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
               >
-                {status === "loading" ? "Joining…" : "Join waitlist"}
+                {status === "loading" ? "Joining…" : t('action.join_waitlist')}
               </button>
             </form>
+
           )}
 
           {status === "error" && (
