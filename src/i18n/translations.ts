@@ -155,6 +155,10 @@ export const translations = {
     "simple.help.contact": "ተወከሱና",
     "simple.confirm_purchase": "{item} ብ{price} ክትዕድግ ትደሊ ዲኻ?",
     "simple.mode_label": "ቀሊል ኩነታት",
+    "confirm.title": "ዕድጊኻ ኣረጋግጽ",
+    "confirm.body": "{price} ንምዕዳግ {item} ትደሊ ዶ?",
+    "confirm.confirm": "ዕድጊ ኣረጋግጽ",
+    "confirm.cancel": "ሰርዝ",
   },
 } as const;
 
