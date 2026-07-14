@@ -106,6 +106,10 @@ export const translations = {
     "simple.help.contact": "ያግኙን",
     "simple.confirm_purchase": "{item}ን በ{price} መግዛት እርግጠኛ ነዎት?",
     "simple.mode_label": "ቀላል ሁነታ",
+    "confirm.title": "ግዢዎን ያረጋግጡ",
+    "confirm.body": "{price} ለ{item} መግዛት ይፈልጋሉ?",
+    "confirm.confirm": "ግዢን አረጋግጥ",
+    "confirm.cancel": "ሰርዝ",
   },
   ti: {
     "nav.shop": "ዕዳጋ",
