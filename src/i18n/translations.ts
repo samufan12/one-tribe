@@ -57,6 +57,10 @@ export const translations = {
     "simple.help.contact": "Contact us",
     "simple.confirm_purchase": "Are you sure you want to buy {item} for {price}?",
     "simple.mode_label": "Simple mode",
+    "confirm.title": "Confirm your purchase",
+    "confirm.body": "Are you sure you want to buy {item} for {price}?",
+    "confirm.confirm": "Confirm purchase",
+    "confirm.cancel": "Cancel",
   },
   am: {
     "nav.shop": "ሱቅ",
