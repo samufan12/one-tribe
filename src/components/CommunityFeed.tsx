@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { Loader2, Plus } from "lucide-react";
 import { useCommunityFeed, type PostType, type CommunityPost } from "@/hooks/useCommunityFeed";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { VerifiedBadge } from "./VerifiedBadge";
+
 
 import coffeeCeremonySet from "@/assets/coffee-ceremony-set.jpg";
 import traditionalKemis from "@/assets/traditional-kemis.jpg";
@@ -543,6 +545,8 @@ export const CommunityFeed = () => {
   const navigate = useNavigate();
   const { posts: dbPosts, loading, toggleLike, refetch } = useCommunityFeed();
   const [filter, setFilter] = useState<"latest" | "popular" | PostType>("latest");
+  const { t } = useTranslation();
+
 
   const posts = dbPosts.length > 0 ? dbPosts : SAMPLE_POSTS;
 
@@ -585,7 +589,7 @@ export const CommunityFeed = () => {
   };
 
   const FILTERS: Array<{ key: typeof filter; label: string }> = [
-    { key: "latest", label: "Latest" },
+    { key: "latest", label: t('feed.latest') },
     { key: "popular", label: "Popular" },
     { key: "seller_spotlight", label: "Spotlights" },
     { key: "product_story", label: "Stories" },
@@ -593,6 +597,7 @@ export const CommunityFeed = () => {
     { key: "community_pick", label: "Picks" },
     { key: "new_arrival", label: "New arrivals" },
   ];
+
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -611,9 +616,9 @@ export const CommunityFeed = () => {
             className="font-semibold tracking-[-0.03em] leading-[1]"
             style={{ fontSize: "clamp(2.25rem, 5vw, 4rem)" }}
           >
-            Voices of the<br />
-            <span className="italic font-light text-muted-foreground">tribe.</span>
+            {t('feed.title')}
           </h1>
+
           <CreatePostDialog onCreated={refetch} />
         </div>
         <div className="mt-8 flex items-center gap-5 text-[13px] overflow-x-auto scrollbar-hide">
