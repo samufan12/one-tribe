@@ -5,6 +5,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import SearchBar from "@/components/SearchBar";
+import LanguageModeToggles from "@/components/LanguageModeToggles";
+import { useTranslation } from "@/hooks/useTranslation";
+
+
 
 
 const GrailedHeader = () => {
@@ -12,6 +16,8 @@ const GrailedHeader = () => {
   const { user, signOut } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
+  const { t, simpleMode } = useTranslation();
+
 
   const iconBtn =
     "p-2 rounded-full text-foreground/80 hover:text-foreground hover:bg-secondary transition-all duration-200 ease-spring";
@@ -44,23 +50,23 @@ const GrailedHeader = () => {
             onClick={() => user ? navigate('/sell') : navigate('/auth')}
             className="rounded-full px-4 h-8 text-xs font-medium tracking-wide"
           >
-            Sell
+            {t('nav.sell')}
           </Button>
-
-
 
           <button
             onClick={() => navigate('/community')}
+            data-simple-hide
             className="px-3 py-1.5 text-[13px] font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-secondary"
           >
-            Feed
+            {t('nav.feed')}
           </button>
 
           <button
             onClick={() => navigate('/cultural-guide')}
+            data-simple-hide
             className="px-3 py-1.5 text-[13px] font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-secondary"
           >
-            Cultural Guide
+            {t('nav.cultural_guide')}
           </button>
 
           <button
@@ -68,11 +74,14 @@ const GrailedHeader = () => {
             className="px-3 py-1.5 text-[13px] font-medium text-foreground/80 hover:text-foreground transition-colors rounded-full hover:bg-secondary inline-flex items-center gap-1.5"
           >
             <Sparkles size={14} strokeWidth={1.75} />
-            Find it
+            {t('nav.find_it')}
           </button>
+
+          <LanguageModeToggles />
 
           <button
             onClick={() => user ? navigate('/messages') : navigate('/auth')}
+            data-simple-hide
             className={`${iconBtn} relative`}
             aria-label="Messages"
           >
@@ -81,6 +90,7 @@ const GrailedHeader = () => {
               1
             </span>
           </button>
+
 
           <button
             onClick={() => user ? navigate('/watchlist') : navigate('/auth')}
