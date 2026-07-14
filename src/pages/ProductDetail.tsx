@@ -28,11 +28,13 @@ const ProductDetail = () => {
   const { user } = useAuth();
   const { addToRecentlyViewed } = useRecentlyViewed();
   const { addItem } = useCart();
+  const { t } = useTranslation();
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<Product[]>([]);
   const [imgIdx, setImgIdx] = useState(0);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isMessaging, setIsMessaging] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (products.length > 0 && id) {
