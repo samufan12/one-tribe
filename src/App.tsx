@@ -47,7 +47,9 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <SimpleModeHelp />
         <BrowserRouter>
+
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={<Index />} />
@@ -82,8 +84,10 @@ const App = () => (
       </TooltipProvider>
       </CartProvider>
     </AuthProvider>
+    </I18nProvider>
     </ThemeProvider>
   </QueryClientProvider>
+
 );
 
 export default App;
