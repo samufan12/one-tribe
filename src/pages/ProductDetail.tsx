@@ -9,6 +9,17 @@ import { useCart } from "@/hooks/useCart";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "@/hooks/useTranslation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,11 +28,13 @@ const ProductDetail = () => {
   const { user } = useAuth();
   const { addToRecentlyViewed } = useRecentlyViewed();
   const { addItem } = useCart();
+  const { t } = useTranslation();
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<Product[]>([]);
   const [imgIdx, setImgIdx] = useState(0);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isMessaging, setIsMessaging] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (products.length > 0 && id) {
@@ -170,12 +183,31 @@ const ProductDetail = () => {
 
           <div className="space-y-3">
             <button
-              onClick={handleBuyNow}
+              onClick={() => setConfirmOpen(true)}
               disabled={isCheckingOut}
               className="w-full h-14 bg-foreground text-background text-sm font-medium tracking-tight rounded-full hover:bg-foreground/90 active:scale-[0.99] transition-all duration-200 ease-spring disabled:opacity-60 inline-flex items-center justify-center"
             >
               {isCheckingOut ? <Loader2 size={16} className="animate-spin" /> : `Buy now · $${product.price.toFixed(2)}`}
             </button>
+            <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("confirm.title")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("confirm.body", { item: product.title, price: `$${product.price.toFixed(2)}` })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isCheckingOut}>{t("confirm.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction
+                    disabled={isCheckingOut}
+                    onClick={(e) => { e.preventDefault(); setConfirmOpen(false); handleBuyNow(); }}
+                  >
+                    {t("confirm.confirm")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => { addItem({ id: product.id, title: product.title, price: product.price, image: images[0], category: product.category, condition: product.condition, size: product.size || undefined }); toast.success("Added to cart"); }}

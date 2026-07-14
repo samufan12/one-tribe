@@ -57,6 +57,10 @@ export const translations = {
     "simple.help.contact": "Contact us",
     "simple.confirm_purchase": "Are you sure you want to buy {item} for {price}?",
     "simple.mode_label": "Simple mode",
+    "confirm.title": "Confirm your purchase",
+    "confirm.body": "Are you sure you want to buy {item} for {price}?",
+    "confirm.confirm": "Confirm purchase",
+    "confirm.cancel": "Cancel",
   },
   am: {
     "nav.shop": "ሱቅ",
@@ -102,6 +106,10 @@ export const translations = {
     "simple.help.contact": "ያግኙን",
     "simple.confirm_purchase": "{item}ን በ{price} መግዛት እርግጠኛ ነዎት?",
     "simple.mode_label": "ቀላል ሁነታ",
+    "confirm.title": "ግዢዎን ያረጋግጡ",
+    "confirm.body": "{price} ለ{item} መግዛት ይፈልጋሉ?",
+    "confirm.confirm": "ግዢን አረጋግጥ",
+    "confirm.cancel": "ሰርዝ",
   },
   ti: {
     "nav.shop": "ዕዳጋ",
@@ -147,6 +155,10 @@ export const translations = {
     "simple.help.contact": "ተወከሱና",
     "simple.confirm_purchase": "{item} ብ{price} ክትዕድግ ትደሊ ዲኻ?",
     "simple.mode_label": "ቀሊል ኩነታት",
+    "confirm.title": "ዕድጊኻ ኣረጋግጽ",
+    "confirm.body": "{price} ንምዕዳግ {item} ትደሊ ዶ?",
+    "confirm.confirm": "ዕድጊ ኣረጋግጽ",
+    "confirm.cancel": "ሰርዝ",
   },
 } as const;
 
