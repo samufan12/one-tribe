@@ -94,6 +94,7 @@ const GrailedHeader = () => {
 
           <button
             onClick={() => user ? navigate('/watchlist') : navigate('/auth')}
+            data-simple-hide
             className={iconBtn}
             aria-label="Watchlist"
           >
@@ -102,10 +103,11 @@ const GrailedHeader = () => {
 
           <button
             onClick={() => navigate('/cart')}
-            className={`${iconBtn} relative`}
+            className={`${iconBtn} relative inline-flex items-center gap-1.5`}
             aria-label="Cart"
           >
             <ShoppingCart size={18} strokeWidth={1.75} />
+            {simpleMode && <span className="text-[13px] font-medium">Cart</span>}
             {itemCount > 0 && (
               <span className="absolute top-1 right-1 bg-primary text-primary-foreground text-[9px] font-semibold rounded-full w-3.5 h-3.5 flex items-center justify-center ring-2 ring-background">
                 {itemCount > 9 ? "9+" : itemCount}
@@ -115,11 +117,13 @@ const GrailedHeader = () => {
 
           <button
             onClick={() => user ? navigate('/profile') : navigate('/auth')}
-            className={iconBtn}
-            aria-label="Profile"
+            className={`${iconBtn} inline-flex items-center gap-1.5`}
+            aria-label={t('nav.my_account')}
           >
             <User size={18} strokeWidth={1.75} />
+            {simpleMode && <span className="text-[13px] font-medium">{t('nav.my_account')}</span>}
           </button>
+
         </div>
 
         {/* Mobile Menu Toggle */}
