@@ -80,6 +80,8 @@ const GrailedHeader = () => {
 
           <LanguageModeToggles />
 
+          {user && <NotificationsBell />}
+
           <button
             onClick={() => user ? navigate('/messages') : navigate('/auth')}
             data-simple-hide
