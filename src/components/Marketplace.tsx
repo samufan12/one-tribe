@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useProducts } from "@/hooks/useProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -8,11 +8,13 @@ import kemis1 from "@/assets/kemis-1.jpg";
 import { ProductSkeletonGrid } from "./ProductSkeleton";
 import { toast } from "sonner";
 import { VerifiedBadge } from "./VerifiedBadge";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export const Marketplace = () => {
   const { products, loading, fetchProducts, toggleLike } = useProducts();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t, lang } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || "");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -29,17 +31,17 @@ export const Marketplace = () => {
     toggleLike(productId);
   };
 
-  const categories = [
-    "All",
-    "Traditional Wear",
-    "Coffee & Spices",
-    "Home & Decor",
-    "Jewelry & Accessories",
-    "Art & Iconography",
-    "Music & Instruments",
-    "Beauty & Personal Care",
-    "Religious Items",
-  ];
+  const categories = useMemo(() => [
+    { value: "All", label: t("cat.all") },
+    { value: "Traditional Wear", label: t("cat.traditional") },
+    { value: "Coffee & Spices", label: t("cat.coffee") },
+    { value: "Home & Decor", label: t("cat.home") },
+    { value: "Jewelry & Accessories", label: t("cat.jewelry") },
+    { value: "Art & Iconography", label: t("cat.art") },
+    { value: "Music & Instruments", label: t("cat.music") },
+    { value: "Beauty & Personal Care", label: t("cat.beauty") },
+    { value: "Religious Items", label: t("cat.religious") },
+  ], [lang, t]);
 
   useEffect(() => {
     const urlSearch = searchParams.get('search') || "";
@@ -97,16 +99,16 @@ export const Marketplace = () => {
           {/* Categories as editorial tabs */}
           <div className="flex items-center gap-5 shrink-0">
             {categories.map((cat) => {
-              const active = selectedCategory === cat;
+              const active = selectedCategory === cat.value;
               return (
                 <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
+                  key={cat.value}
+                  onClick={() => setSelectedCategory(cat.value)}
                   className={`relative text-[13px] tracking-tight whitespace-nowrap transition-colors duration-200 ${
                     active ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {cat}
+                  {cat.label}
                   {active && <span className="absolute -bottom-[17px] left-0 right-0 h-px bg-foreground" />}
                 </button>
               );
