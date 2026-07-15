@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import NotificationsBell from "@/components/NotificationsBell";
 
 const Header = () => {
   const [helpMenuOpen, setHelpMenuOpen] = useState(false);
