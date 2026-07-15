@@ -133,29 +133,48 @@ serve(async (req) => {
         }
       }
 
-      // Notify seller — try notifications table, fall back to console
+      // Fetch product title for notification messages
+      let productTitle = "your item";
+      if (productIds.length > 0) {
+        const { data: productRow } = await admin
+          .from("products")
+          .select("title")
+          .eq("id", productIds[0])
+          .maybeSingle();
+        if (productRow?.title) productTitle = productRow.title;
+      }
+
+      const amountStr = `$${(amountTotal / 100).toFixed(2)}`;
+
+      // Notify seller
       if (sellerId) {
-        const { error: notifErr } = await admin.from("notifications").insert({
+        const { error: sellerNotifErr } = await admin.from("notifications").insert({
           user_id: sellerId,
-          type: "sale",
-          title: "You made a sale!",
-          message: `Your item sold for $${(amountTotal / 100).toFixed(2)}. Payout: $${(sellerPayout / 100).toFixed(2)}.`,
-          metadata: {
-            session_id: session.id,
-            product_ids: productIds,
-            amount_total: amountTotal,
-            seller_payout: sellerPayout,
-          },
+          type: "order_sold",
+          title: "You made a sale! 🎉",
+          message: `Someone bought ${productTitle} for ${amountStr}. Prepare it for shipment.`,
+          related_product_id: productIds[0] ?? null,
         });
-        if (notifErr) {
-          log("Seller notification (no notifications table or insert failed)", {
-            sellerId,
-            error: notifErr.message,
-            amountTotal,
-            sellerPayout,
-          });
+        if (sellerNotifErr) {
+          log("Seller notification insert failed", { error: sellerNotifErr.message });
         } else {
           log("Seller notified", { sellerId });
+        }
+      }
+
+      // Notify buyer
+      if (buyerId) {
+        const { error: buyerNotifErr } = await admin.from("notifications").insert({
+          user_id: buyerId,
+          type: "order_placed",
+          title: "Order confirmed",
+          message: `Your order for ${productTitle} is confirmed. The seller will ship it soon.`,
+          related_product_id: productIds[0] ?? null,
+        });
+        if (buyerNotifErr) {
+          log("Buyer notification insert failed", { error: buyerNotifErr.message });
+        } else {
+          log("Buyer notified", { buyerId });
         }
       }
     } else {
