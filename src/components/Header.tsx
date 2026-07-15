@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import NotificationsBell from "@/components/NotificationsBell";
 
 const Header = () => {
   const [helpMenuOpen, setHelpMenuOpen] = useState(false);
@@ -39,6 +40,8 @@ const Header = () => {
           <img src="/lovable-uploads/739ab3ed-442e-42fb-9219-25ee697b73ba.png" alt="YouTube" className="w-6 h-6" />
         </a>
         
+        {user && <NotificationsBell />}
+
         {/* Shopping Cart */}
         <button 
           onClick={() => navigate('/cart')}

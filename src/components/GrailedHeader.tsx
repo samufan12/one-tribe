@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import SearchBar from "@/components/SearchBar";
 import LanguageModeToggles from "@/components/LanguageModeToggles";
+import NotificationsBell from "@/components/NotificationsBell";
 import { useTranslation } from "@/hooks/useTranslation";
 
 
@@ -78,6 +79,8 @@ const GrailedHeader = () => {
           </button>
 
           <LanguageModeToggles />
+
+          {user && <NotificationsBell />}
 
           <button
             onClick={() => user ? navigate('/messages') : navigate('/auth')}
