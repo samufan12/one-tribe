@@ -761,6 +761,21 @@ export type Database = {
           verification_status: string
         }[]
       }
+      get_seller_orders: {
+        Args: never
+        Returns: {
+          amount_total: number
+          buyer_display_name: string
+          buyer_id: string
+          created_at: string
+          id: string
+          product_id: string
+          product_title: string
+          seller_payout: number
+          status: string
+          total: number
+        }[]
+      }
       get_seller_profiles: {
         Args: never
         Returns: {
@@ -833,6 +848,8 @@ export type Database = {
         Args: { p_action: string }
         Returns: undefined
       }
+      mark_order_delivered: { Args: { p_order_id: string }; Returns: boolean }
+      mark_order_shipped: { Args: { p_order_id: string }; Returns: boolean }
       reject_seller: {
         Args: { p_reason: string; p_user_id: string }
         Returns: boolean
