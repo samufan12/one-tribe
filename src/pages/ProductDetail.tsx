@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "@/hooks/useTranslation";
 import ProductReviews from "@/components/ProductReviews";
+import CompactProductCard, { CompactProduct } from "@/components/CompactProductCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +37,9 @@ const ProductDetail = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isMessaging, setIsMessaging] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [sellerId, setSellerId] = useState<string | null>(null);
+  const [sellerStorefrontId, setSellerStorefrontId] = useState<string | null>(null);
+  const [sellerProducts, setSellerProducts] = useState<CompactProduct[]>([]);
 
   useEffect(() => {
     if (products.length > 0 && id) {
@@ -47,6 +51,37 @@ const ProductDetail = () => {
       }
     }
   }, [products, id, addToRecentlyViewed]);
+
+  // Fetch seller-related data (other products + storefront link)
+  useEffect(() => {
+    if (!product || product.id.startsWith("sample-")) {
+      setSellerId(null);
+      setSellerStorefrontId(null);
+      setSellerProducts([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data: sId } = await supabase.rpc("get_product_seller_id", { p_product_id: product.id });
+      if (cancelled || !sId) return;
+      setSellerId(sId as string);
+
+      const [{ data: others }, { data: sf }] = await Promise.all([
+        supabase.rpc("get_other_products_by_seller", {
+          p_seller_id: sId,
+          p_exclude_product_id: product.id,
+          p_limit: 4,
+        }),
+        supabase.from("storefronts").select("id").eq("user_id", sId).maybeSingle(),
+      ]);
+      if (cancelled) return;
+      setSellerProducts((others as CompactProduct[]) ?? []);
+      setSellerStorefrontId(sf?.id ?? null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [product?.id]);
 
   const requireAuth = (action: string) => {
     toast.error(`Please sign in to ${action}`, {
@@ -267,30 +302,54 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Related — editorial */}
+      {/* More from this seller */}
+      {sellerProducts.length > 0 && (
+        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 py-16 border-t border-border">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="text-2xl font-semibold tracking-tight">More from this seller</h2>
+            {sellerStorefrontId && (
+              <button
+                onClick={() => navigate(`/storefront/${sellerStorefrontId}`)}
+                className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors"
+              >
+                See all from this seller →
+              </button>
+            )}
+          </div>
+          <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0 pb-2">
+            {sellerProducts.map((p) => (
+              <CompactProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* You might also like */}
       {related.length > 0 && (
-        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 py-20 border-t border-border">
-          <div className="flex items-baseline justify-between mb-10">
-            <h2 className="text-3xl font-semibold tracking-tight">More from the {product.category} chapter</h2>
-            <button onClick={() => navigate(`/marketplace`)} className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors">
+        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 py-16 border-t border-border">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              More in {product.category}
+            </h2>
+            <button
+              onClick={() => navigate(`/marketplace`)}
+              className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors"
+            >
               See all →
             </button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-            {related.map((item) => (
-              <button
+          <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0 pb-2">
+            {related.slice(0, 4).map((item) => (
+              <CompactProductCard
                 key={item.id}
-                onClick={() => { navigate(`/product/${item.id}`); setImgIdx(0); window.scrollTo(0, 0); }}
-                className="group text-left"
-              >
-                <div className="aspect-[4/5] overflow-hidden bg-secondary rounded-sm">
-                  <img src={item.images?.[0] || images[0]} alt={item.title} className="w-full h-full object-cover transition-transform duration-[1.2s] ease-spring group-hover:scale-[1.06]" />
-                </div>
-                <div className="mt-3 flex items-start justify-between gap-3">
-                  <h3 className="text-sm tracking-tight truncate">{item.title}</h3>
-                  <p className="text-sm font-medium tabular-nums shrink-0">${item.price}</p>
-                </div>
-              </button>
+                product={{
+                  id: item.id,
+                  title: item.title,
+                  price: item.price,
+                  condition: item.condition,
+                  images: item.images,
+                }}
+              />
             ))}
           </div>
         </section>

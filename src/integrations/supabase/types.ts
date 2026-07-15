@@ -762,6 +762,22 @@ export type Database = {
         Args: { p_other_user_id: string; p_product_id?: string }
         Returns: string
       }
+      get_other_products_by_seller: {
+        Args: {
+          p_exclude_product_id: string
+          p_limit?: number
+          p_seller_id: string
+        }
+        Returns: {
+          category: string
+          condition: string
+          created_at: string
+          id: string
+          images: string[]
+          price: number
+          title: string
+        }[]
+      }
       get_product_like_count: { Args: { product_id: string }; Returns: number }
       get_product_seller_id: { Args: { p_product_id: string }; Returns: string }
       get_public_products: {
