@@ -201,3 +201,7 @@ html.simple-mode [data-simple-only] {
   display: none !important;
 }
 
+
+/* Hide scrollbar on horizontal scroll rows */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
