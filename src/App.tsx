@@ -35,6 +35,7 @@ import StorefrontDetail from "./pages/StorefrontDetail";
 import CreateStorefrontPage from "./pages/CreateStorefrontPage";
 import SellerOnboarding from "./pages/SellerOnboarding";
 import AdminDashboard from "./pages/AdminDashboard";
+import LeaveReview from "./pages/LeaveReview";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -76,6 +77,7 @@ const App = () => (
             <Route path="/create-storefront" element={<CreateStorefrontPage />} />
             <Route path="/seller-onboarding" element={<SellerOnboarding />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/review/:orderId" element={<LeaveReview />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
