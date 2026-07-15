@@ -1,12 +1,12 @@
-import { Home, ShoppingBag, Tag, MessageCircle, User } from "lucide-react";
+import { Users, ShoppingBag, Tag, Sparkles, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
-  { id: "home", label: "Home", icon: Home, path: "/" },
+  { id: "feed", label: "Feed", icon: Users, path: "/community" },
   { id: "marketplace", label: "Shop", icon: ShoppingBag, path: "/marketplace" },
   { id: "sell", label: "Sell", icon: Tag, path: "/sell" },
-  { id: "messages", label: "Messages", icon: MessageCircle, path: "/messages" },
+  { id: "find-it", label: "Find it", icon: Sparkles, path: "/assistant" },
   { id: "profile", label: "Profile", icon: User, path: "/profile" },
 ];
 
@@ -15,13 +15,10 @@ export const MobileBottomNav = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/" || location.pathname === "/home";
-    return location.pathname.startsWith(path);
-  };
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
 
   const handleNav = (path: string) => {
-    const authRequired = ["/sell", "/messages", "/profile"];
+    const authRequired = ["/sell", "/profile"];
     if (authRequired.includes(path) && !user) {
       navigate("/auth");
     } else {
