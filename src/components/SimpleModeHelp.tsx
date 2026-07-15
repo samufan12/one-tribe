@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { HelpCircle, X, ShoppingBag, Tag, Mail } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
+
+const MARKETING_ROUTES = new Set(["/", "/landing", "/auth", "/faq", "/support", "/terms", "/privacy"]);
 
 export const SimpleModeHelp = () => {
   const { simpleMode, t } = useTranslation();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
 
   if (!simpleMode) return null;
+  if (MARKETING_ROUTES.has(location.pathname)) return null;
 
   return (
     <>
