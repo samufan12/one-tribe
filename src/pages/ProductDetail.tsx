@@ -302,30 +302,54 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Related — editorial */}
+      {/* More from this seller */}
+      {sellerProducts.length > 0 && (
+        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 py-16 border-t border-border">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="text-2xl font-semibold tracking-tight">More from this seller</h2>
+            {sellerStorefrontId && (
+              <button
+                onClick={() => navigate(`/storefront/${sellerStorefrontId}`)}
+                className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors"
+              >
+                See all from this seller →
+              </button>
+            )}
+          </div>
+          <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0 pb-2">
+            {sellerProducts.map((p) => (
+              <CompactProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* You might also like */}
       {related.length > 0 && (
-        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 py-20 border-t border-border">
-          <div className="flex items-baseline justify-between mb-10">
-            <h2 className="text-3xl font-semibold tracking-tight">More from the {product.category} chapter</h2>
-            <button onClick={() => navigate(`/marketplace`)} className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors">
+        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 py-16 border-t border-border">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              More in {product.category}
+            </h2>
+            <button
+              onClick={() => navigate(`/marketplace`)}
+              className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors"
+            >
               See all →
             </button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-            {related.map((item) => (
-              <button
+          <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-6 px-6 sm:mx-0 sm:px-0 pb-2">
+            {related.slice(0, 4).map((item) => (
+              <CompactProductCard
                 key={item.id}
-                onClick={() => { navigate(`/product/${item.id}`); setImgIdx(0); window.scrollTo(0, 0); }}
-                className="group text-left"
-              >
-                <div className="aspect-[4/5] overflow-hidden bg-secondary rounded-sm">
-                  <img src={item.images?.[0] || images[0]} alt={item.title} className="w-full h-full object-cover transition-transform duration-[1.2s] ease-spring group-hover:scale-[1.06]" />
-                </div>
-                <div className="mt-3 flex items-start justify-between gap-3">
-                  <h3 className="text-sm tracking-tight truncate">{item.title}</h3>
-                  <p className="text-sm font-medium tabular-nums shrink-0">${item.price}</p>
-                </div>
-              </button>
+                product={{
+                  id: item.id,
+                  title: item.title,
+                  price: item.price,
+                  condition: item.condition,
+                  images: item.images,
+                }}
+              />
             ))}
           </div>
         </section>
