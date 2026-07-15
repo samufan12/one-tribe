@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "@/hooks/useTranslation";
 import ProductReviews from "@/components/ProductReviews";
+import CompactProductCard, { CompactProduct } from "@/components/CompactProductCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +37,9 @@ const ProductDetail = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isMessaging, setIsMessaging] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [sellerId, setSellerId] = useState<string | null>(null);
+  const [sellerStorefrontId, setSellerStorefrontId] = useState<string | null>(null);
+  const [sellerProducts, setSellerProducts] = useState<CompactProduct[]>([]);
 
   useEffect(() => {
     if (products.length > 0 && id) {
@@ -47,6 +51,37 @@ const ProductDetail = () => {
       }
     }
   }, [products, id, addToRecentlyViewed]);
+
+  // Fetch seller-related data (other products + storefront link)
+  useEffect(() => {
+    if (!product || product.id.startsWith("sample-")) {
+      setSellerId(null);
+      setSellerStorefrontId(null);
+      setSellerProducts([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data: sId } = await supabase.rpc("get_product_seller_id", { p_product_id: product.id });
+      if (cancelled || !sId) return;
+      setSellerId(sId as string);
+
+      const [{ data: others }, { data: sf }] = await Promise.all([
+        supabase.rpc("get_other_products_by_seller", {
+          p_seller_id: sId,
+          p_exclude_product_id: product.id,
+          p_limit: 4,
+        }),
+        supabase.from("storefronts").select("id").eq("user_id", sId).maybeSingle(),
+      ]);
+      if (cancelled) return;
+      setSellerProducts((others as CompactProduct[]) ?? []);
+      setSellerStorefrontId(sf?.id ?? null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [product?.id]);
 
   const requireAuth = (action: string) => {
     toast.error(`Please sign in to ${action}`, {
