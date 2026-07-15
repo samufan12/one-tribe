@@ -6,6 +6,7 @@ import { Store, Heart, MessageCircle, Package } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import kemis1 from "@/assets/kemis-1.jpg";
 import { VerifiedBadge, PhysicalStorePill } from "@/components/VerifiedBadge";
+import SellerRating from "@/components/SellerRating";
 
 interface StorefrontProduct {
   product_id: string;
@@ -38,6 +39,7 @@ const StorefrontDetail = () => {
   const navigate = useNavigate();
   const [storefront, setStorefront] = useState<StorefrontInfo | null>(null);
   const [products, setProducts] = useState<StorefrontProduct[]>([]);
+  const [sellerId, setSellerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,6 +63,15 @@ const StorefrontDetail = () => {
         // Filter out null product rows (storefront with no products)
         setProducts(rows.filter((r) => r.product_id != null));
       }
+
+      // Fetch seller user_id for aggregate rating
+      const { data: sf } = await supabase
+        .from("storefronts")
+        .select("user_id")
+        .eq("id", id)
+        .maybeSingle();
+      if (sf?.user_id) setSellerId(sf.user_id);
+
       setLoading(false);
     };
     fetch();
@@ -143,6 +154,11 @@ const StorefrontDetail = () => {
               </div>
               {storefront.description && (
                 <p className="text-muted-foreground text-sm mt-1">{storefront.description}</p>
+              )}
+              {sellerId && (
+                <div className="mt-2">
+                  <SellerRating sellerId={sellerId} />
+                </div>
               )}
             </div>
           </div>

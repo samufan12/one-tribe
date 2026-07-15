@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "@/hooks/useTranslation";
+import ProductReviews from "@/components/ProductReviews";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -248,6 +249,9 @@ const ProductDetail = () => {
             <p className="text-eyebrow text-muted-foreground mb-4">About this piece</p>
             <p className="text-[17px] leading-[1.7] text-foreground/90 font-light">{product.description}</p>
           </div>
+
+          {/* Reviews */}
+          <ProductReviews productId={product.id} />
 
           {/* Trust — typographic, no boxes */}
           <div className="border-t border-border pt-8 grid grid-cols-2 gap-8 text-sm">
